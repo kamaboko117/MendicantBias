@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/kamaboko117/MendicantBias#readme",
   "dependencies": {
-    "discord.js": "^12.2.0"
+    "chalk": "^4.1.2",
+    "discord-api-types": "^0.37.5",
+    "discord.js": "^12.5.3",
+    "dotenv": "^16.0.1"
   }
 }
