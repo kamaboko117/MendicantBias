@@ -1,19 +1,20 @@
-const   Discord = require ('discord.js');
-const   bot = new Discord.Client();
-const   token = 'Njg4MDM1MTQ3NTU5MzM3OTk0.XrSlJw.tPelgGrlPLNUqVKg09ve0OWr8yc';
-var     PREFIX = 'PITIER ';
+const dotenv = require('dotenv');
+dotenv.config({ path: './.env' });
+const token = process.env.TOKEN;
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const fs = require('fs');
 
-bot.on('ready', () =>{
-    console.log('running full system diagnostics');
-})
+const client = new Client({ intents: GatewayIntentBits.Guilds });
+client.commands = new Collection();
+client.commandArray = [];
 
-bot.on('message', message=>{
-    let args = message.content.substring(PREFIX.length).split(" ");
+const functionFolders = fs.readdirSync('./functions');
+for (const folder of functionFolders) {
+    const functionFiles = fs.readdirSync(`./functions/${folder}`).filter(file => file.endsWith('.js'));
+    for (const file of functionFiles)
+        require(`./functions/${folder}/${file}`)(client);
+}
 
-    switch(args[0]){
-        case 'gungaginga':
-            message.channel.send('https://tenor.com/view/gunga-ginga-gunga-ginga-gangu-gongu-gif-14816269 GUNGA GINGA GUNGA GINGA GUNGA GINGA');
-        break;
-    }
-})
-bot.login(token);
+client.handleEvents();
+client.handleCommands();
+client.login(token);

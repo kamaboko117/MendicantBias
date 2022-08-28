@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ."
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "discord-api-types": "^0.37.5",
-    "discord.js": "^12.5.3",
+    "discord.js": "^14.3.0",
     "dotenv": "^16.0.1"
   }
 }
