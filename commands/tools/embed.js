@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -28,8 +28,23 @@ module.exports = {
                     inline: true
                 }
             ]);
-            await interaction.reply({
-                embeds: [embed]
-            });
-        },
+        const button1 = new ButtonBuilder()
+            .setCustomId('test')
+            .setLabel("1")
+            .setStyle(ButtonStyle.Primary)
+        //    .setEmoji('<1013407814753988609>');
+        const button2 = new ButtonBuilder()
+            .setCustomId('test2')
+            .setLabel("2")
+            .setStyle(ButtonStyle.Primary)
+        //    .setEmoji('<1013407814753988609>');
+        
+        await interaction.reply({
+                embeds: [embed],
+                components: [
+                    new ActionRowBuilder().addComponents(button1, button2)
+                ]
+        });
+        
+    },
 };
