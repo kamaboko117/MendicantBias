@@ -9,8 +9,7 @@ module.exports = {
             .setTitle('ROUND')
             .setDescription('MATCH')
             .setColor(client.color)
-            .setImage('https://cdn.pixabay.com/photo/2021/04/21/10/17/meme-6195988_960_720.png')
-            .setThumbnail('https://discord.com/assets/e7159ba0fcc85f39f95227dd85f44aeb.svg')
+            .setThumbnail('https://www.pngkey.com/png/full/898-8989988_crossed-swords-crossed-swords-emoji.png')
             .setFooter({
                 iconURL: 'https://www.dlf.pt/png/big/10/109431_picardia-png.png',
                 text: 'emotedokai season 2'
@@ -32,7 +31,7 @@ module.exports = {
             .setCustomId('test')
             .setLabel("1")
             .setStyle(ButtonStyle.Primary)
-        //    .setEmoji('<1013407814753988609>');
+            .setEmoji("777147567465168897");
         const button2 = new ButtonBuilder()
             .setCustomId('test2')
             .setLabel("2")
