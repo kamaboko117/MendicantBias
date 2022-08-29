@@ -1,4 +1,6 @@
+const Match = require ('../../schemas/match');
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const mongoose = require('mongoose');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -53,7 +55,17 @@ module.exports = {
             // .setLabel("2")
             .setStyle(ButtonStyle.Primary)
             .setEmoji(emote2);
-        
+        const matchId = await Match.estimatedDocumentCount();
+        console.log(matchId);
+        let matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: matchId,
+            playerLeft: emote1,
+            playerRight: emote2,
+        });
+
+        await matchProfile.save().catch(console.error);
+        console.log(matchProfile);
         await interaction.reply({
                 embeds: [embed],
                 components: [
