@@ -5,6 +5,7 @@ const databaseToken = process.env.DATABASE;
 const { connect } = require('mongoose');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
+const Match = require('./schemas/match')
 
 const client = new Client({ intents: GatewayIntentBits.Guilds });
 client.commands = new Collection();
@@ -26,4 +27,5 @@ client.handleComponents();
 client.login(token);
 (async () => {
     await connect(databaseToken).catch(console.error);
+    client.matchCount = await Match.estimatedDocumentCount();
 })();
