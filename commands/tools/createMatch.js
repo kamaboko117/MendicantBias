@@ -55,9 +55,14 @@ module.exports = {
             // .setLabel("2")
             .setStyle(ButtonStyle.Primary)
             .setEmoji(emote2);
-        const matchId = await Match.estimatedDocumentCount();
+        let matchId = 1;//await Match.estimatedDocumentCount();
+        let matchProfile = await Match.find({matchId: matchId});
+        console.log(matchProfile);
+        while (matchProfile[0]){
+            matchId++;
+        }
         console.log(matchId);
-        let matchProfile = new Match({
+        matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: matchId,
             playerLeft: emote1,
@@ -65,6 +70,7 @@ module.exports = {
         });
 
         await matchProfile.save().catch(console.error);
+        client.matchCount++;
         console.log(matchProfile);
         await interaction.reply({
                 embeds: [embed],
