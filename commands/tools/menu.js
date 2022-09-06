@@ -1,9 +1,6 @@
 const { SlashCommandBuilder, SelectMenuBuilder, ActionRowBuilder, SelectMenuOptionBuilder } = require('discord.js');
 const testMenu = require('../../components/selectMenus/testMenu');
-const { count } = require('../../schemas/match');
 const Match = require ('../../schemas/match');
-
-
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,11 +9,12 @@ module.exports = {
     async execute(interaction, client) {
         options = [];
         const count = await Match.estimatedDocumentCount();
-        for (i = 0; i < count - 1; i++){
+        for (i = 0; i < count; i++){
             matchProfile = await Match.findOne({matchId: i + 1});
             options[i] = {
                 label: "match ID: " + matchProfile.matchId,
-                value: matchProfile.playerLeft + " vs " + matchProfile.playerRight + " " + i
+                // value: matchProfile.playerLeft + " vs " + matchProfile.playerRight + " " + i
+                value: `` + matchProfile.matchId
             };
         }
         const menu = new SelectMenuBuilder()
