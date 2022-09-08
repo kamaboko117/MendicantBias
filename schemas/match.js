@@ -4,6 +4,9 @@ const matchSchema = new Schema({
     matchId: Number,
     playerLeft: String,
     playerRight: String,
+    votesLeft: Number,
+    votesRight: Number,
+    open: Boolean
 });
 
 module.exports = model("Match", matchSchema, "matches");
