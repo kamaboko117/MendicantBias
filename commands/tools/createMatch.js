@@ -47,7 +47,7 @@ module.exports = {
         console.log(emote1, emote2);
 
         let matchId = 1;//await Match.estimatedDocumentCount();
-        let matchProfile = await Match.find({matchId: matchId});
+        let matchProfile = await Match.findOne({matchId: matchId});
         console.log(matchProfile);
         while (matchProfile[0]){
             matchId++;
