@@ -48,9 +48,10 @@ module.exports = {
 
         let matchId = 1;//await Match.estimatedDocumentCount();
         let matchProfile = await Match.findOne({matchId: matchId});
-        console.log(matchProfile);
-        while (matchProfile[0]){
+        while (matchProfile){
+            console.log(matchProfile);
             matchId++;
+            matchProfile = await Match.findOne({matchId: matchId});  
         }
         console.log(matchId);
         matchProfile = new Match({
@@ -68,12 +69,12 @@ module.exports = {
 
         //create buttons
         const button1 = new ButtonBuilder()
-            .setCustomId(matchProfile.matchId + ' left')
+            .setCustomId(matchProfile._id + ' left')
             // .setLabel(option1)
             .setStyle(ButtonStyle.Primary)
             .setEmoji(emote1);
         const button2 = new ButtonBuilder()
-            .setCustomId(matchProfile.matchId + ' right')
+            .setCustomId(matchProfile._id + ' right')
             // .setLabel("2")
             .setStyle(ButtonStyle.Primary)
             .setEmoji(emote2);

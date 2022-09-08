@@ -6,6 +6,8 @@ const matchSchema = new Schema({
     playerRight: String,
     votesLeft: Number,
     votesRight: Number,
+    membersLeft: [String],
+    membersRight: [String],
     open: Boolean,
     winner: String
 });
