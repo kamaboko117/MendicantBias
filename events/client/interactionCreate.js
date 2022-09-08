@@ -22,12 +22,19 @@ module.exports = {
             const { buttons } = client;
             const { customId } = interaction;
             const button = buttons.get(customId);
-            if (!button)
-                return new Error('no code for this button');
-            try {
-                await button.execute(interaction, client);
-            } catch (err) {
-                console.error(err);
+            if (!button){
+                try {
+                    await buttons.get('default').execute(interaction, client);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+            else{
+                try {
+                    await button.execute(interaction, client);
+                } catch (err) {
+                    console.error(err);
+                }
             }
         } else if (interaction.isSelectMenu()) {
             const { selectMenus } = client;
