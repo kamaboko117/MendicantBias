@@ -1,10 +1,10 @@
 const { SlashCommandBuilder, SelectMenuBuilder, ActionRowBuilder, SelectMenuOptionBuilder } = require('discord.js');
-const testMenu = require('../../components/selectMenus/testMenu');
+const testMenu = require('../../components/selectMenus/deleteMenu');
 const Match = require ('../../schemas/match');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('deleteMatch')
+        .setName('deletematch')
         .setDescription('deletes match from database'),
     async execute(interaction, client) {
         options = [];
@@ -18,7 +18,7 @@ module.exports = {
             };
         }
         const menu = new SelectMenuBuilder()
-            .setCustomId('testMenu')
+            .setCustomId('deleteMenu')
             .setMinValues(1)
             .setMaxValues(1)
             .addOptions(options);
