@@ -2,7 +2,7 @@ Match = require ('../../schemas/match');
 
 module.exports = {
     data: {
-        name: `testMenu`
+        name: `deleteMenu`
     },
     async execute (interaction, client) {
         await interaction.reply({
