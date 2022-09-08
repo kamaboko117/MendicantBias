@@ -45,16 +45,7 @@ module.exports = {
         const emote1 = (client.emojis.cache.find(emoji => emoji.name === option1.split(':')[1]).id);
         const emote2 = (client.emojis.cache.find(emoji => emoji.name === option2.split(':')[1]).id);
         console.log(emote1, emote2);
-        const button1 = new ButtonBuilder()
-            .setCustomId('test')
-            // .setLabel(option1)
-            .setStyle(ButtonStyle.Primary)
-            .setEmoji(emote1);
-        const button2 = new ButtonBuilder()
-            .setCustomId('test2')
-            // .setLabel("2")
-            .setStyle(ButtonStyle.Primary)
-            .setEmoji(emote2);
+
         let matchId = 1;//await Match.estimatedDocumentCount();
         let matchProfile = await Match.find({matchId: matchId});
         console.log(matchProfile);
@@ -67,11 +58,26 @@ module.exports = {
             matchId: matchId,
             playerLeft: emote1,
             playerRight: emote2,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true
         });
-
         await matchProfile.save().catch(console.error);
         client.matchCount++;
         console.log(matchProfile);
+
+        //create buttons
+        const button1 = new ButtonBuilder()
+            .setCustomId(matchProfile.matchId + ' left')
+            // .setLabel(option1)
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji(emote1);
+        const button2 = new ButtonBuilder()
+            .setCustomId(matchProfile.matchId + ' right')
+            // .setLabel("2")
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji(emote2);
+
         await interaction.reply({
                 embeds: [embed],
                 components: [
