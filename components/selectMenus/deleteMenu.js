@@ -12,7 +12,7 @@ module.exports = {
         for (i = interaction.values[0]; i < client.matchCount; i++){
             matchProfile = await Match.findOne({matchId: i});
             matchProfile.matchId--;
-            matchProfile.save();
+            matchProfile.save().catch(console.error);
         }
         client.matchCount--;
     },
