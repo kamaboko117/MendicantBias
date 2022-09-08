@@ -10,23 +10,23 @@ module.exports = {
         matchProfile = await Match.findOne({matchId: matchId[0]});
         console.log(matchProfile);
         if (!matchProfile){
-            await interaction.reply({
-                content: 'no code for this button'
-            })
+            newMessage = 'no code for this button'
+        }else if (!matchProfile.open){
+            newMessage = '❌ match is closed'
         }else{
             if (matchId[1] == 'left'){
                 matchProfile.votesLeft++;
-                await interaction.reply({
-                    content: 'voted for: ' + matchProfile.playerLeft
-                })
+                    newMessage = 'voted for: ' + matchProfile.playerLeft   
             }else if (matchId[1] == 'right'){
                 matchProfile.votesRight++;
-                await interaction.reply({
-                    content: 'voted for: ' + matchProfile.playerRight
-                })
+                newMessage = 'voted for: ' + matchProfile.playerRight
             }
-            await matchProfile.save().catch(console.error);
-            
+            else
+                newMessage = 'what?';
+            await matchProfile.save().catch(console.error);        
         }
+        await interaction.reply({
+            content: newMessage
+        })
     }
 }
