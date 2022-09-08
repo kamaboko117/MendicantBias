@@ -6,7 +6,8 @@ const matchSchema = new Schema({
     playerRight: String,
     votesLeft: Number,
     votesRight: Number,
-    open: Boolean
+    open: Boolean,
+    winner: String
 });
 
 module.exports = model("Match", matchSchema, "matches");
