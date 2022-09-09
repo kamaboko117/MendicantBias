@@ -24,6 +24,13 @@ module.exports = {
         const emote1 = client.emojis.cache.find(emoji => emoji.name === option1.split(':')[1]);
         const emote2 = client.emojis.cache.find(emoji => emoji.name === option2.split(':')[1]);
 
+        if (!emote1 || !emote2){
+            await interaction.reply({
+                content: "Emojis missing from database: add me to the source server"
+            });
+            return ;
+        }
+
         let matchId = 1;//await Match.estimatedDocumentCount();
         let matchProfile = await Match.findOne({matchId: matchId});
         while (matchProfile){
