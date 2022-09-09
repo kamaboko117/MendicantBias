@@ -29,7 +29,10 @@ module.exports = {
                     matchProfile.votesLeft++;
                     newMessage = `voted for: ${client.emojis.cache.get(matchProfile.playerLeft)}`;
                     matchProfile.membersLeft.push(interaction.member);
-                    matchProfile.membersRight = arrayRemove(matchProfile.membersRight, interaction.member.toString());
+                    if (matchProfile.membersRight.includes(interaction.member.toString())){
+                        matchProfile.membersRight = arrayRemove(matchProfile.membersRight, interaction.member.toString());
+                        matchProfile.votesRight--;
+                    }
                 }
             }else if (matchId[1] == 'right'){
                 if (matchProfile.membersRight.includes(interaction.member.toString()))
@@ -38,7 +41,10 @@ module.exports = {
                     matchProfile.votesRight++;
                     newMessage = `voted for: ${client.emojis.cache.get(matchProfile.playerRight)}`;
                     matchProfile.membersRight.push(interaction.member);
-                    matchProfile.membersLeft = arrayRemove(matchProfile.membersLeft, interaction.member.toString());
+                    if (matchProfile.membersLeft.includes(interaction.member.toString())){
+                        matchProfile.membersLeft = arrayRemove(matchProfile.membersLeft, interaction.member.toString());
+                        matchProfile.votesLeft--;
+                    }
                 }
             }else
                 newMessage = 'what?';
