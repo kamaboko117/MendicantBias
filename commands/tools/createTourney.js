@@ -14,12 +14,15 @@ module.exports = {
             ),
     
         async execute(interaction, client) {
+            const option1 = interaction.options.getString('emote1')
             tourneyProfile = new Tournament({
                 _id: mongoose.Types.ObjectId(),
+                name: option1,
             });
             for (const emoji of client.emojis.cache){
                 tourneyProfile.players.push(emoji.toString());
             }
+            await tourneyProfile.save().catch(console.error);
             await interaction.reply({
                 content: "pouet"
             });
