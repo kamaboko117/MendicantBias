@@ -52,7 +52,8 @@ module.exports = {
         }
         console.log(interaction.member.toString());
         await interaction.reply({
-            content: newMessage
+            content: newMessage,
+            ephemeral: true
         })
     }
 }
