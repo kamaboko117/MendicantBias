@@ -42,14 +42,12 @@ module.exports = {
                     inline: true
                 }
             ]);
-        const emote1 = (client.emojis.cache.find(emoji => emoji.name === option1.split(':')[1]).id);
-        const emote2 = (client.emojis.cache.find(emoji => emoji.name === option2.split(':')[1]).id);
-        console.log(emote1, emote2);
+        const emote1 = client.emojis.cache.find(emoji => emoji.name === option1.split(':')[1]);
+        const emote2 = client.emojis.cache.find(emoji => emoji.name === option2.split(':')[1]);
 
         let matchId = 1;//await Match.estimatedDocumentCount();
         let matchProfile = await Match.findOne({matchId: matchId});
         while (matchProfile){
-            console.log(matchProfile);
             matchId++;
             matchProfile = await Match.findOne({matchId: matchId});  
         }
@@ -65,19 +63,17 @@ module.exports = {
         });
         await matchProfile.save().catch(console.error);
         client.matchCount++;
-        console.log(matchProfile);
-
         //create buttons
         const button1 = new ButtonBuilder()
             .setCustomId(matchProfile._id + ' left')
             // .setLabel(option1)
             .setStyle(ButtonStyle.Primary)
-            .setEmoji(emote1);
+            .setEmoji(emote1.id);
         const button2 = new ButtonBuilder()
             .setCustomId(matchProfile._id + ' right')
             // .setLabel("2")
             .setStyle(ButtonStyle.Primary)
-            .setEmoji(emote2);
+            .setEmoji(emote2.id);
 
         await interaction.reply({
                 embeds: [embed],
