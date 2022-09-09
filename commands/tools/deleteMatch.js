@@ -8,7 +8,13 @@ module.exports = {
         .setDescription('deletes match from database'),
     async execute(interaction, client) {
         options = [];
-        const count = await Match.estimatedDocumentCount();
+        const count = client.matchCount;
+        if (!count){
+            await interaction.reply({
+                content: "no matches"
+            });
+            return ;
+        }
         for (i = 0; i < count; i++){
             console.log(i);
             matchProfile = await Match.findOne({matchId: i + 1});
