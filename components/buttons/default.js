@@ -13,7 +13,6 @@ module.exports = {
         name: 'default'
     },
     async execute(interaction, client) {
-        console.log(interaction.component.customId.split(' ')[0]);
         const matchId = interaction.component.customId.split(' ');
         matchProfile = await Match.findOne({_id: matchId[0]});
         if (!matchProfile){
@@ -49,7 +48,9 @@ module.exports = {
                 newMessage = 'what?';
             await matchProfile.save().catch(console.error);        
         }
-        console.log(interaction.member.toString());
+        if (matchProfile)
+            console.log(matchProfile.matchId);
+        console.log(interaction.member.nickname);
         await interaction.reply({
             content: newMessage,
             ephemeral: true
