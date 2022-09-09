@@ -16,7 +16,6 @@ module.exports = {
             return ;
         }
         for (i = 0; i < count; i++){
-            console.log(i);
             matchProfile = await Match.findOne({matchId: i + 1});
             options[i] = {
                 label: "match ID: " + matchProfile.matchId,
