@@ -16,9 +16,8 @@ module.exports = {
         console.log(interaction.component.customId.split(' ')[0]);
         const matchId = interaction.component.customId.split(' ');
         matchProfile = await Match.findOne({_id: matchId[0]});
-        console.log(matchProfile.playerLeft);
         if (!matchProfile){
-            newMessage = 'no code for this button'
+            newMessage = 'match does not exist in database: Probably deleted'
         }else if (!matchProfile.open){
             newMessage = '❌ match is closed'
         }else{
