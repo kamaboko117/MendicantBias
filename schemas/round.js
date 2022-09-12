@@ -1,10 +1,11 @@
-Match = require `./match`;
 const { Schema, model } = require('mongoose');
 
 const roundSchema = new Schema({
     _id: Schema.Types.ObjectId,
     name: String,
     numPlayers: Number,
-    matches: Match[Number / 2],
+    matches: [Schema.ObjectId],
     winnerBracket: Boolean
 });
+
+module.exports = model("Round", roundSchema, "rounds");
