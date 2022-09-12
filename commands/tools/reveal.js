@@ -5,8 +5,30 @@ const Match = require ('../../schemas/match');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('reveal')
-        .setDescription('reveals a match result and closes the match'),
+        .setDescription('reveals a match result and closes the match')
+        .addStringOption(option =>
+            option.setName('match_id')
+                .setDescription('the id for the match you want to reveal')
+                .setRequired(false)
+            ),
+
     async execute(interaction, client) {
+        options = interaction.options.getString('match_id');
+        if (options){
+            matchProfile = await Match.findOne({matchId: options});
+            if (!matchProfile){
+                await interaction.reply({
+                    content: `match does not exist in database: Probably deleted`,
+                });
+            }
+            matchProfile.open = false;
+            matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ? matchProfile.playerRight : matchProfile.playerLeft;
+            matchProfile.save().catch(console.error); 
+            await interaction.reply({
+                content: `${interaction.member} match results:\n${client.emojis.cache.get(matchProfile.playerLeft)} ${matchProfile.votesLeft} | ${matchProfile.votesRight} ${client.emojis.cache.get(matchProfile.playerRight)}\n${client.emojis.cache.get(matchProfile.winner)} wins !`,
+            });
+            return ;
+        }
         options = [];
         const count = client.matchCount;
         if (!count){
