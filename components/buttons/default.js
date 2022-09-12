@@ -25,7 +25,7 @@ module.exports = {
                     newMessage = `${interaction.member}: you've already voted`;
                 else{
                     matchProfile.votesLeft++;
-                    newMessage = `voted for: ${client.emojis.cache.get(matchProfile.playerLeft)}`;
+                    newMessage = `voted for: ${matchProfile.playerLeft}`;
                     matchProfile.membersLeft.push(interaction.member);
                     if (matchProfile.membersRight.includes(interaction.member.toString())){
                         matchProfile.membersRight = arrayRemove(matchProfile.membersRight, interaction.member.toString());
@@ -37,7 +37,7 @@ module.exports = {
                     newMessage = `${interaction.member}: you've already voted`;
                 else{
                     matchProfile.votesRight++;
-                    newMessage = `voted for: ${client.emojis.cache.get(matchProfile.playerRight)}`;
+                    newMessage = `voted for: ${matchProfile.playerRight}`;
                     matchProfile.membersRight.push(interaction.member);
                     if (matchProfile.membersLeft.includes(interaction.member.toString())){
                         matchProfile.membersLeft = arrayRemove(matchProfile.membersLeft, interaction.member.toString());
