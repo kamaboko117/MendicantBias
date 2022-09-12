@@ -17,7 +17,7 @@ module.exports = {
         matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ? matchProfile.playerRight : matchProfile.playerLeft;
         matchProfile.save().catch(console.error); 
         await interaction.reply({
-            content: `match results:\n${client.emojis.cache.get(matchProfile.playerLeft)} ${matchProfile.votesLeft} | ${matchProfile.votesRight} ${client.emojis.cache.get(matchProfile.playerRight)}\n${client.emojis.cache.get(matchProfile.winner)} wins !`,
+            content: `${interaction.member} match results:\n${client.emojis.cache.get(matchProfile.playerLeft)} ${matchProfile.votesLeft} | ${matchProfile.votesRight} ${client.emojis.cache.get(matchProfile.playerRight)}\n${client.emojis.cache.get(matchProfile.winner)} wins !`,
         });
     },
 };
