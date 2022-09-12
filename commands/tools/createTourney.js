@@ -33,6 +33,9 @@ module.exports = {
             ),
     
         async execute(interaction, client) {
+            await interaction.reply({
+                content: "pouet"
+            });
             const option1 = interaction.options.getString('emote1')
             //create Tourney Profile
             tourneyProfile = new Tournament({
@@ -40,7 +43,7 @@ module.exports = {
                 name: option1,
             });
             for (const emoji of client.emojis.cache){
-                tourneyProfile.players.push(emoji.toString());
+                tourneyProfile.players.push(emoji.toString().split(',')[1]);
             }
             let bracketSize = 2;
             for (i = 1; bracketSize < tourneyProfile.players.length; i++)
@@ -74,9 +77,7 @@ module.exports = {
             //save tourney
             await tourneyProfile.save().catch(console.error);
             
-            //reply
-            await interaction.reply({
-                content: "pouet"
-            });
+            //log
+            console.log("tournament created");
     }
 }
