@@ -1,10 +1,11 @@
 const { Schema, model } = require('mongoose');
+const { matchSchema } = require('./match');
 
 const roundSchema = new Schema({
     _id: Schema.Types.ObjectId,
     name: String,
     numPlayers: Number,
-    matches: [Schema.ObjectId],
+    matches: [matchSchema],
     winnerBracket: Boolean
 });
 
