@@ -13,4 +13,5 @@ const matchSchema = new Schema({
     winner: Schema.Types.Mixed,
 });
 
-module.exports = model("Match", matchSchema, "matches");
+module.exports.Match = model("Match", matchSchema, "matches");
+module.exports.matchSchema = matchSchema;
