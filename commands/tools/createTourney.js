@@ -34,22 +34,30 @@ module.exports = {
     
         async execute(interaction, client) {
             await interaction.reply({
-                content: "pouet"
+                content: "Creating tournament..."
             });
-            const option1 = interaction.options.getString('emote1')
+            const option1 = interaction.options.getString('name')
+            
             //create Tourney Profile
             tourneyProfile = new Tournament({
                 _id: mongoose.Types.ObjectId(),
                 name: option1,
+                currentMatch: 0,
+                open: false
             });
+            i = 0;
             for (const emoji of client.emojis.cache){
                 tourneyProfile.players.push(emoji.toString().split(',')[1]);
+                i++;
+                if (i > 31)
+                    break ;
             }
             let bracketSize = 2;
             for (i = 1; bracketSize < tourneyProfile.players.length; i++)
                 bracketSize = Math.pow(2, i);
             tourneyProfile.playerCount = bracketSize;
-            
+            tourneyProfile.currentRound = `Ro${tourneyProfile.playerCount}`;
+
             //create first round
             roundProfile = new Round({
                 _id: mongoose.Types.ObjectId(),
@@ -62,8 +70,8 @@ module.exports = {
                 matchProfile = new Match({
                     _id: mongoose.Types.ObjectId(),
                     matchId: i + 1,
-                    playerLeft: tourneyProfile.players[seeds[i * 2]],
-                    playerRight: tourneyProfile.players[seeds[i * 2 + 1]],
+                    playerLeft: tourneyProfile.players[seeds[i * 2] - 1],
+                    playerRight: tourneyProfile.players[seeds[i * 2 + 1] - 1],
                     votesLeft: 0,
                     votesRight: 0,
                     open: true,
@@ -74,10 +82,11 @@ module.exports = {
             }
             roundProfile.save().catch(console.error);
             tourneyProfile.winnerRounds[0] = roundProfile;
+            
             //save tourney
             await tourneyProfile.save().catch(console.error);
             
             //log
-            console.log("tournament created");
+            interaction.channel.send("tournament created");
     }
 }
