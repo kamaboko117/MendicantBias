@@ -3,7 +3,7 @@ const Round = require('../../schemas/round');
 const { Match } = require ('../../schemas/match');
 const Tournament = require('../../schemas/tournament');
 
-maxMatches= 8
+maxMatches= 4
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -27,8 +27,8 @@ module.exports = {
 
             i = tournamentProfile.currentMatch;
             count = roundProfile.matches.length;
-            count = count - i > maxMatches ? maxMatches : count;
-            tournamentProfile.currentMatch += count;
+            count = count > maxMatches + i ? maxMatches + i : count;
+            tournamentProfile.currentMatch += count - i;
             await tournamentProfile.save().catch(console.error); 
             for (; i < count; i++){
                 matchProfile = await Match.findById(roundProfile.matches[i]);
@@ -66,7 +66,7 @@ module.exports = {
         //print next Matches
         i = tournamentProfile.currentMatch;
         count = roundProfile.matches.length;
-        count = count - i > maxMatches ? maxMatches : count;
+        count = count > maxMatches + i ? maxMatches + i : count;
         console.log(`i: ${i}, count: ${count}`);
         for (; i < count; i++)
         {        
