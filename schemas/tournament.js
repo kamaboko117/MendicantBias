@@ -7,7 +7,10 @@ const tournamentSchema = new Schema({
     players: [String],
     playerCount: Number,
     winnerRounds: [Schema.ObjectId],
-    loserRounds: [Schema.ObjectId]
+    loserRounds: [Schema.ObjectId],
+    currentRound: String,
+    currentMatch: Number,
+    open: Boolean 
 });
 
 module.exports = model("Tournament", tournamentSchema, "tournaments");
