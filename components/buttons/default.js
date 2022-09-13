@@ -1,5 +1,4 @@
-const { match } = require('assert');
-const Match = require ('../../schemas/match');
+const { Match } = require ('../../schemas/match');
 
 function arrayRemove(arr, value) { 
     

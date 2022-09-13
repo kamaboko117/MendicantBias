@@ -1,4 +1,4 @@
-Match = require ('../../schemas/match');
+const { Match } = require ('../../schemas/match');
 
 module.exports = {
     data: {

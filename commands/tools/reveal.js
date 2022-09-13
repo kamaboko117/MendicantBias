@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, SelectMenuBuilder, ActionRowBuilder, SelectMenuOptionBuilder } = require('discord.js');
 const testMenu = require('../../components/selectMenus/revealMenu');
-const Match = require ('../../schemas/match');
+const { Match } = require ('../../schemas/match');
 
 module.exports = {
     data: new SlashCommandBuilder()

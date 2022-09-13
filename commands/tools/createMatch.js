@@ -1,4 +1,4 @@
-const Match = require ('../../schemas/match');
+const { Match } = require ('../../schemas/match');
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const mongoose = require('mongoose');
 

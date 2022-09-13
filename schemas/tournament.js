@@ -1,4 +1,4 @@
-Match = require(`./match`);
+const { Match } = require(`./match`);
 const { Schema, model } = require('mongoose');
 
 const tournamentSchema = new Schema({

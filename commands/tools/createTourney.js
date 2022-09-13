@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Tournament = require('../../schemas/tournament');
 const Round = require('../../schemas/round');
-const Match = require ('../../schemas/match');
+const { Match } = require ('../../schemas/match');
 const mongoose = require('mongoose');
 
 function seeding(numPlayers){

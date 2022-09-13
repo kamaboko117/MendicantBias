@@ -1,6 +1,4 @@
-const match = require('../../schemas/match');
-
-Match = require ('../../schemas/match');
+const { Match } = require ('../../schemas/match');
 
 module.exports = {
     data: {
