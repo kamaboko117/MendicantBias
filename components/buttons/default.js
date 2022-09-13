@@ -17,7 +17,15 @@ module.exports = {
         if (!matchProfile){
             newMessage = 'match does not exist in database: Probably deleted'
         }else if (!matchProfile.open){
-            newMessage = '❌ match is closed'
+            if (matchId[1] == 'left'){
+                newMessage = `votes for ${matchProfile.playerLeft}\n`
+                newMessage += matchProfile.votesLeft ?
+                    `${matchProfile.membersLeft}` : 'noone';
+            }else if (matchId[1] == 'right'){
+                newMessage = `votes for ${matchProfile.playerRight}\n`
+                newMessage += matchProfile.votesRight ?
+                    `${matchProfile.membersRight}` : 'noone';
+            }
         }else{
             if (matchId[1] == 'left'){
                 if (matchProfile.membersLeft.includes(interaction.member.toString()))
