@@ -10,7 +10,8 @@ const matchSchema = new Schema({
     membersLeft: [String],
     membersRight: [String],
     open: Boolean,
-    winner: Schema.Types.Mixed,
+    winner: String,
+    loser: String
 });
 
 module.exports.Match = model("Match", matchSchema, "matches");
