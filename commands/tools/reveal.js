@@ -23,7 +23,7 @@ module.exports = {
             }
             matchProfile.open = false;
             matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ? matchProfile.playerRight : matchProfile.playerLeft;
-            matchProfile.save().catch(console.error); 
+            await matchProfile.save().catch(console.error); 
             await interaction.reply({
                 content: `${interaction.member} match results:\n${matchProfile.playerLeft} ${matchProfile.votesLeft} | ${matchProfile.votesRight} ${matchProfile.playerRight}\n${matchProfile.winner} wins !`,
             });

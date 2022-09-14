@@ -9,7 +9,7 @@ module.exports = {
         for (i = Number(interaction.values[0]) + 1; i < client.matchCount + 1; i++){
             matchProfile = await Match.findOne({matchId: i});
             matchProfile.matchId--;
-            matchProfile.save().catch(console.error);
+            await matchProfile.save().catch(console.error);
         }
         client.matchCount--;
         await interaction.reply({
