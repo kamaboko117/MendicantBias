@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Tournament = require('../../schemas/tournament');
-const Round = require('../../schemas/round');
+const { Round } = require('../../schemas/round');
 const { Match } = require ('../../schemas/match');
 const mongoose = require('mongoose');
 
@@ -49,21 +49,23 @@ module.exports = {
             for (const emoji of client.emojis.cache){
                 tourneyProfile.players.push(emoji.toString().split(',')[1]);
                 i++;
-                if (i > 31)
+                if (i > 15)
                     break ;
             }
             let bracketSize = 2;
             for (i = 1; bracketSize < tourneyProfile.players.length; i++)
                 bracketSize = Math.pow(2, i);
             tourneyProfile.playerCount = bracketSize;
-            tourneyProfile.currentRound = `Ro${tourneyProfile.playerCount}`;
+            tourneyProfile.currentBracket = 0;
+            tourneyProfile.currentWinner = 0;
+            tourneyProfile.currentLoser = 0
 
             //create first round
             roundProfile = new Round({
                 _id: mongoose.Types.ObjectId(),
                 name: `Ro${tourneyProfile.playerCount}`,
                 numPlayers: tourneyProfile.playerCount,
-                winnerBraket: true
+                winnerBracket: true
             })
             const seeds = seeding(tourneyProfile.playerCount);
             for(i = 0; i < tourneyProfile.playerCount / 2; i++){
@@ -76,14 +78,15 @@ module.exports = {
                     votesRight: 0,
                     open: true,
                })
-               matchProfile.save().catch(console.error);
+               await matchProfile.save().catch(console.error);
                client.count++
                roundProfile.matches[i] = matchProfile;
             }
-            roundProfile.save().catch(console.error);
-            tourneyProfile.winnerRounds[0] = roundProfile;
+            await roundProfile.save().catch(console.error);
             
             //save tourney
+            tourneyProfile.winnerRounds[0] = roundProfile;
+            // tourneyProfile.loserRounds[0] = {name: 'None'};
             await tourneyProfile.save().catch(console.error);
             
             //log
