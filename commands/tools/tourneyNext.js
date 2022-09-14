@@ -112,6 +112,7 @@ module.exports = {
                 await roundProfile.save().catch(console.error);
                 tournamentProfile.currentBracket = 1;
                 tournamentProfile.currentLoser++;
+                tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
                 await tournamentProfile.save().catch(console.error);
             }
             
@@ -149,9 +150,9 @@ module.exports = {
         }
         
         //print next Matches
-        i = tournamentProfile.currentMatch;
-        count = roundProfile.matches.length + roundProfile.matches[0].matchId - 1;
-        count = count > maxMatches + i + roundProfile.matches[0].matchId - 1 ? maxMatches + i + roundProfile.matches[0].matchId - 1 : count;
+        i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
+        count = roundProfile.matches.length;
+        count = count > maxMatches + i ? maxMatches + i : count;
         console.log(`i: ${i}, count: ${count}`);
         for (; i < count; i++)
         {        
