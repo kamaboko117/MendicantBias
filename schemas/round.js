@@ -6,7 +6,9 @@ const roundSchema = new Schema({
     name: String,
     numPlayers: Number,
     matches: [matchSchema],
-    winnerBracket: Boolean
+    winnerBracket: Boolean,
+    minor: Boolean
 });
 
-module.exports = model("Round", roundSchema, "rounds");
+module.exports.Round = model("Round", roundSchema, "rounds");
+module.exports.roundSchema = roundSchema;
