@@ -57,7 +57,7 @@ module.exports = {
         }
         if (matchProfile)
             console.log(matchProfile.matchId);
-        console.log(interaction.member.nickname);
+        console.log(interaction.member.displayName);
         await interaction.reply({
             content: newMessage,
             ephemeral: true
