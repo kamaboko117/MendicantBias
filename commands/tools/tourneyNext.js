@@ -95,16 +95,19 @@ module.exports = {
                     (tournamentProfile.currentLoser == 0 ?
                             tournamentProfile.winnerRounds[tournamentProfile.currentWinner].numPlayers / 2 :
                             tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers) :
-                    tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers / 2;
+                    tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers;
 
                 for(i = 0; i < (roundProfile.numPlayers / 2); i++){
+                    console.log(i);
                     matchProfile = new Match({
                         _id: mongoose.Types.ObjectId(),
                         matchId: i + 1 + tournamentProfile.currentMatch,
-                        playerLeft: tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].loser,
+                        playerLeft: roundProfile.name == 'LB1' ?
+                            tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].loser :
+                            tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i].winner,
                         playerRight: roundProfile.name == 'LB1' ?
-                            tournamentProfile.winnerRounds[0].matches[i * 2 + 1].loser :
-                            tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i * 2 + 1].winner,
+                            tournamentProfile.winnerRounds[0].matches[i * 2 + 1].loser :    
+                            tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i].loser,
                         votesLeft: 0,
                         votesRight: 0,
                         open: true,
@@ -158,12 +161,28 @@ module.exports = {
                 roundProfile = new Round({
                     _id: mongoose.Types.ObjectId(),
                     name: `LB${tournamentProfile.currentLoser + 1}`,
-                    numPlayers: tournamentProfile.playerCount / 2,
-                    winnerBraket: true,
+                    numPlayers: tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers / 2,
+                    winnerBracket: false,
+                    minor: true,
                 })
+                for(i = 0; i < (roundProfile.numPlayers / 2); i++){
+                    matchProfile = new Match({
+                        _id: mongoose.Types.ObjectId(),
+                        matchId: i + 1 + tournamentProfile.currentMatch,
+                        playerLeft: tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].loser,
+                        playerRight: tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i * 2 + 1].winner,
+                        votesLeft: 0,
+                        votesRight: 0,
+                        open: true,
+                   })
+                   await matchProfile.save().catch(console.error);
+                   client.count++
+                   roundProfile.matches[i] = matchProfile;
+                }
                 await roundProfile.save().catch(console.error);
-                tournamentProfile.currentBracket = 0;
-                tournamentProfile.currentWinner++;
+                tournamentProfile.currentBracket = 1;
+                tournamentProfile.currentLoser++;
+                tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
                 await tournamentProfile.save().catch(console.error);
             }
 
