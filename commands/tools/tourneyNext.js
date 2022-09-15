@@ -78,8 +78,12 @@ module.exports = {
             interaction.channel.send(`next matches:`)
         }
 
-        //if round is over
-        if (tournamentProfile.currentMatch == roundProfile.matches.length + roundProfile.matches[0].matchId - 1){
+        //if grandfinals
+        if (roundProfile.name == 'GRAND FINALS'){
+
+        }
+        //if round is over and its not grandfinals
+        else if (tournamentProfile.currentMatch == roundProfile.matches.length + roundProfile.matches[0].matchId - 1){
             
             //if previous round was winner bracket, next one has to be a loser
             if (roundProfile.winnerBracket){
@@ -87,7 +91,7 @@ module.exports = {
                 roundProfile = new Round({
                     _id: mongoose.Types.ObjectId(),
                     name: `LB${tournamentProfile.currentLoser + 1}`,        
-                    winnerBraket: false,
+                    winnerBracket: false,
                     // if this is the first loser bracket round, it should be minor
                     minor: tournamentProfile.currentLoser ? false : true,
                 })
@@ -98,16 +102,15 @@ module.exports = {
                     tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers;
 
                 for(i = 0; i < (roundProfile.numPlayers / 2); i++){
-                    console.log(i);
                     matchProfile = new Match({
                         _id: mongoose.Types.ObjectId(),
                         matchId: i + 1 + tournamentProfile.currentMatch,
                         playerLeft: roundProfile.name == 'LB1' ?
                             tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].loser :
-                            tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i].winner,
-                        playerRight: roundProfile.name == 'LB1' ?
-                            tournamentProfile.winnerRounds[0].matches[i * 2 + 1].loser :    
                             tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i].loser,
+                        playerRight: roundProfile.name == 'LB1' ?
+                            tournamentProfile.winnerRounds[0].matches[i * 2 + 1].loser :
+                            tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i].winner,
                         votesLeft: 0,
                         votesRight: 0,
                         open: true,
@@ -155,8 +158,9 @@ module.exports = {
                 await tournamentProfile.save().catch(console.error);
             }
 
-            //if previous round was a major loser bracket, next one is a minor LB
-            else{
+            //if previous round was a major loser bracket, next one is a minor LB except if
+            // its the LB finals
+            else if (roundProfile.numPlayers != 2){
                 console.log(3)
                 roundProfile = new Round({
                     _id: mongoose.Types.ObjectId(),
@@ -183,6 +187,34 @@ module.exports = {
                 tournamentProfile.currentBracket = 1;
                 tournamentProfile.currentLoser++;
                 tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+                await tournamentProfile.save().catch(console.error);
+            }
+
+            //grandFinals
+            else{
+                roundProfile = new Round({
+                    _id: mongoose.Types.ObjectId(),
+                    name: `GRAND FINALS`,
+                    numPlayers: 2,
+                    winnerBracket: true,
+                })
+                
+                matchProfile = new Match({
+                    _id: mongoose.Types.ObjectId(),
+                    matchId: 1 + tournamentProfile.currentMatch,
+                    playerLeft: tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[0].winner,
+                    playerRight: tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[0].winner,
+                    votesLeft: 0,
+                    votesRight: 0,
+                    open: true,
+                })
+                await matchProfile.save().catch(console.error);
+                client.count++
+                roundProfile.matches[0] = matchProfile;
+                await roundProfile.save().catch(console.error);
+                tournamentProfile.currentBracket = 0;
+                tournamentProfile.currentWinner++;
+                tournamentProfile.winnerRounds[tournamentProfile.currentWinner] = roundProfile;
                 await tournamentProfile.save().catch(console.error);
             }
 
