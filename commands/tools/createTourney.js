@@ -49,7 +49,7 @@ module.exports = {
             for (const emoji of client.emojis.cache){
                 tourneyProfile.players.push(emoji.toString().split(',')[1]);
                 i++;
-                if (i > 15)
+                if (i > 63)
                     break ;
             }
             let bracketSize = 2;

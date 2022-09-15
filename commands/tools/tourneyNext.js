@@ -4,7 +4,7 @@ const { Match } = require ('../../schemas/match');
 const Tournament = require('../../schemas/tournament');
 const mongoose = require('mongoose');
 
-maxMatches= 4
+maxMatches= 16
 
 module.exports = {
     data: new SlashCommandBuilder()
