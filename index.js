@@ -11,6 +11,7 @@ const client = new Client({ intents: GatewayIntentBits.Guilds });
 client.commands = new Collection();
 client.buttons = new Collection();
 client.selectMenus = new Collection();
+client.modals = new Collection();
 client.commandArray = [];
 client.color = 0x18e1ee;
 client.invite = 'https://discord.com/api/oauth2/authorize?client_id=688035147559337994&permissions=137439215616&scope=bot';
