@@ -4,7 +4,7 @@ const { Match } = require ('../../schemas/match');
 const Tournament = require('../../schemas/tournament');
 const mongoose = require('mongoose');
 
-maxMatches= 4
+maxMatches= 16
 
 // export const generateId = (size = 32) => {
 //     const bytesArray = new Uint8Array(size / 2)
@@ -45,8 +45,11 @@ module.exports = {
             currentBracket = tournamentProfile.currentBracket
             currentLoser = tournamentProfile.currentLoser
             currentWinner = tournamentProfile.currentWinner
-            await tournamentProfile.save().catch(console.error); 
+            await tournamentProfile.save().catch(console.error);
+            var j = 0;
+            componentArray = [];
             for (; i < count; i++){
+                j++;
                 matchProfile = roundProfile.matches[i];
                 matchProfile.open = false;
                 matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ?
@@ -65,21 +68,25 @@ module.exports = {
                     emote2 = roundProfile.matches[i].playerRight.split(':')[2].slice(0, -1);
 
                     const button1 = new ButtonBuilder()
-                    .setCustomId(`T ${tourneyProfile._id} ${currentBracket} ${currentBracket ? currentLoser : currentWinner} ${i} left`)
+                    .setCustomId(`T ${tournamentProfile._id} ${currentBracket} ${currentBracket ? currentLoser : currentWinner} ${i} left`)
                     .setStyle(ButtonStyle.Secondary)
                     .setLabel(`[${matchProfile.votesLeft}]`)
                     .setEmoji(emote1);
                     
                     const button2 = new ButtonBuilder()
-                    .setCustomId(`T ${tourneyProfile._id} ${currentBracket} ${currentBracket ? currentLoser : currentWinner} ${i} right`)
+                    .setCustomId(`T ${tournamentProfile._id} ${currentBracket} ${currentBracket ? currentLoser : currentWinner} ${i} right`)
                     .setStyle(ButtonStyle.Secondary)
                     .setLabel(`[${matchProfile.votesRight}]`)
                     .setEmoji(emote2);
-                    interaction.channel.send({components: [
-                        new ActionRowBuilder().addComponents(button1, button2)
-                    ]})
+                    componentArray.push(new ActionRowBuilder().addComponents(button1, button2));
+                
                 }else{
                     interaction.channel.send(`${i + 1} bye`)
+                }
+                if (j === 5 || i + 1 === count){
+                    j = 0;
+                    interaction.channel.send({components: componentArray})
+                    componentArray = [];
                 }
             }
             await tournamentProfile.save().catch(console.error);
@@ -226,8 +233,11 @@ module.exports = {
         count = roundProfile.matches.length;
         count = count > maxMatches + i ? maxMatches + i : count;
         console.log(`i: ${i}, count: ${count}`);
+        var j = 0;
+        componentArray = [];
         for (; i < count; i++)
-        {        
+        {   
+            j++;
             matchProfile = roundProfile.matches[i];
             console.log(matchProfile.playerLeft);
             console.log(matchProfile.playerRight);
@@ -238,20 +248,24 @@ module.exports = {
 
                 console.log(emote1);
                 const button1 = new ButtonBuilder()
-                .setCustomId(`T ${tourneyProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} left`)
+                .setCustomId(`T ${tournamentProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} left`)
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emote1);
                 
                 const button2 = new ButtonBuilder()
                 
-                .setCustomId(`T ${tourneyProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} right`)
+                .setCustomId(`T ${tournamentProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} right`)
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emote2);
-                interaction.channel.send({components: [
-                    new ActionRowBuilder().addComponents(button1, button2)
-                ]})
+                componentArray.push(new ActionRowBuilder().addComponents(button1, button2));
+                
             }else{
                 interaction.channel.send(`${i + 1} bye`)
+            }
+            if (j === 5 || i + 1 === count){
+                j = 0;
+                interaction.channel.send({components: componentArray})
+                componentArray = [];
             }
         }
     }
