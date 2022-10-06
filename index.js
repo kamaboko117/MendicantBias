@@ -15,6 +15,7 @@ client.modals = new Collection();
 client.commandArray = [];
 client.color = 0x18e1ee;
 client.invite = 'https://discord.com/api/oauth2/authorize?client_id=688035147559337994&permissions=137439215616&scope=bot';
+client.invite2= 'https://discord.com/api/oauth2/authorize?client_id=1026870487885815870&permissions=347136&scope=bot'
 
 const functionFolders = fs.readdirSync('./functions');
 for (const folder of functionFolders) {
