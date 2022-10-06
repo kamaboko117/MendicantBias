@@ -4,7 +4,16 @@ const { Match } = require ('../../schemas/match');
 const Tournament = require('../../schemas/tournament');
 const mongoose = require('mongoose');
 
-maxMatches= 16
+maxMatches= 4
+
+// export const generateId = (size = 32) => {
+//     const bytesArray = new Uint8Array(size / 2)
+  
+//     window.crypto.getRandomValues(bytesArray) // search alternative to this 
+//     return [...bytesArray]
+//       .map((number) => number.toString(16).padStart(2, '0'))
+//       .join('')
+//   }
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,11 +21,9 @@ module.exports = {
         .setDescription('post next matches for tournament'),
     async execute(interaction, client) {
         tournamentProfile = await Tournament.findOne();
-        roundProfile = await Round.findOne({
-            name: tournamentProfile.currentBracket ?
-                tournamentProfile.loserRounds[tournamentProfile.currentLoser].name :
-                tournamentProfile.winnerRounds[tournamentProfile.currentWinner].name,
-        })
+        roundProfile = tournamentProfile.currentBracket ?
+            tournamentProfile.loserRounds[tournamentProfile.currentLoser] :
+            tournamentProfile.winnerRounds[tournamentProfile.currentWinner]
 
         if (!tournamentProfile.open){
             tournamentProfile.open = true;
@@ -35,17 +42,18 @@ module.exports = {
             count = count > maxMatches + i ? maxMatches + i : count;
         
             tournamentProfile.currentMatch += count - i;
+            currentBracket = tournamentProfile.currentBracket
+            currentLoser = tournamentProfile.currentLoser
+            currentWinner = tournamentProfile.currentWinner
             await tournamentProfile.save().catch(console.error); 
             for (; i < count; i++){
-                matchProfile = await Match.findById(roundProfile.matches[i]);
+                matchProfile = roundProfile.matches[i];
                 matchProfile.open = false;
                 matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ?
                     matchProfile.playerRight : matchProfile.playerLeft;
                 matchProfile.loser = matchProfile.votesRight > matchProfile.votesLeft ?
                     matchProfile.playerLeft : matchProfile.playerRight;
-                await matchProfile.save().catch(console.error);
                 roundProfile.matches[i] = matchProfile;
-                await roundProfile.save().catch(console.error);
                 if (roundProfile.winnerBracket)
                     tournamentProfile.winnerRounds[tournamentProfile.currentWinner] = roundProfile;
                 else
@@ -57,13 +65,13 @@ module.exports = {
                     emote2 = roundProfile.matches[i].playerRight.split(':')[2].slice(0, -1);
 
                     const button1 = new ButtonBuilder()
-                    .setCustomId(matchProfile._id + ' left')
+                    .setCustomId(`T ${tourneyProfile._id} ${currentBracket} ${currentBracket ? currentLoser : currentWinner} ${i} left`)
                     .setStyle(ButtonStyle.Secondary)
                     .setLabel(`[${matchProfile.votesLeft}]`)
                     .setEmoji(emote1);
                     
                     const button2 = new ButtonBuilder()
-                    .setCustomId(matchProfile._id + ' right')
+                    .setCustomId(`T ${tourneyProfile._id} ${currentBracket} ${currentBracket ? currentLoser : currentWinner} ${i} right`)
                     .setStyle(ButtonStyle.Secondary)
                     .setLabel(`[${matchProfile.votesRight}]`)
                     .setEmoji(emote2);
@@ -115,11 +123,9 @@ module.exports = {
                         votesRight: 0,
                         open: true,
                    })
-                   await matchProfile.save().catch(console.error);
                    client.count++
                    roundProfile.matches[i] = matchProfile;
                 }
-                await roundProfile.save().catch(console.error);
                 tournamentProfile.currentBracket = 1;
                 tournamentProfile.currentLoser++;
                 tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
@@ -147,11 +153,9 @@ module.exports = {
                         votesRight: 0,
                         open: true,
                    })
-                   await matchProfile.save().catch(console.error);
                    client.count++
                    roundProfile.matches[i] = matchProfile;
                 }
-                await roundProfile.save().catch(console.error);
                 tournamentProfile.currentBracket = 0;
                 tournamentProfile.currentWinner++;
                 tournamentProfile.winnerRounds[tournamentProfile.currentWinner] = roundProfile;
@@ -179,11 +183,9 @@ module.exports = {
                         votesRight: 0,
                         open: true,
                    })
-                   await matchProfile.save().catch(console.error);
                    client.count++
                    roundProfile.matches[i] = matchProfile;
                 }
-                await roundProfile.save().catch(console.error);
                 tournamentProfile.currentBracket = 1;
                 tournamentProfile.currentLoser++;
                 tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
@@ -208,10 +210,8 @@ module.exports = {
                     votesRight: 0,
                     open: true,
                 })
-                await matchProfile.save().catch(console.error);
                 client.count++
                 roundProfile.matches[0] = matchProfile;
-                await roundProfile.save().catch(console.error);
                 tournamentProfile.currentBracket = 0;
                 tournamentProfile.currentWinner++;
                 tournamentProfile.winnerRounds[tournamentProfile.currentWinner] = roundProfile;
@@ -228,7 +228,7 @@ module.exports = {
         console.log(`i: ${i}, count: ${count}`);
         for (; i < count; i++)
         {        
-            matchProfile = await Match.findById(roundProfile.matches[i]);
+            matchProfile = roundProfile.matches[i];
             console.log(matchProfile.playerLeft);
             console.log(matchProfile.playerRight);
             if (matchProfile.playerRight){
@@ -238,12 +238,13 @@ module.exports = {
 
                 console.log(emote1);
                 const button1 = new ButtonBuilder()
-                .setCustomId(matchProfile._id + ' left')
+                .setCustomId(`T ${tourneyProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} left`)
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emote1);
                 
                 const button2 = new ButtonBuilder()
-                .setCustomId(matchProfile._id + ' right')
+                
+                .setCustomId(`T ${tourneyProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} right`)
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emote2);
                 interaction.channel.send({components: [

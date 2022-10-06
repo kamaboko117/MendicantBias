@@ -78,15 +78,12 @@ module.exports = {
                     votesRight: 0,
                     open: true,
                })
-               await matchProfile.save().catch(console.error);
                client.count++
                roundProfile.matches[i] = matchProfile;
             }
-            await roundProfile.save().catch(console.error);
             
             //save tourney
             tourneyProfile.winnerRounds[0] = roundProfile;
-            // tourneyProfile.loserRounds[0] = {name: 'None'};
             await tourneyProfile.save().catch(console.error);
             
             //log
