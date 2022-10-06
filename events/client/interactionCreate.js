@@ -23,10 +23,14 @@ module.exports = {
             const { customId } = interaction;
             const button = buttons.get(customId);
             if (!button){
-                try {
-                    await buttons.get('default').execute(interaction, client);
-                } catch (err) {
-                    console.error(err);
+                if (customId.split(' ')[0] === 'T'){
+                    await buttons.get('tourney').execute(interaction, client);
+                }else{
+                    try {
+                        await buttons.get('default').execute(interaction, client);
+                    } catch (err) {
+                        console.error(err);
+                    }
                 }
             }
             else{
