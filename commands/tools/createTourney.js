@@ -20,7 +20,55 @@ function seeding(numPlayers){
       });
       return out;
     }
-  }
+}
+
+function    createTourney(){
+    tourneyProfile = new Tournament({
+        _id: mongoose.Types.ObjectId(),
+        host: interaction.member.toString(),
+        name: option1,
+        currentMatch: 0,
+        open: false
+    });
+    i = 0;
+    emojiArray = [];
+    for (const emoji of client.emojis.cache){
+        emojiArray.push(emoji.toString().split(',')[1]);
+        i++;
+        if (i > 28)
+            break ;
+    }
+    tourneyProfile.players = emojiArray.sort(() => Math.random() - 0.5);
+    let bracketSize = 2;
+    for (i = 1; bracketSize < tourneyProfile.players.length; i++)
+        bracketSize = Math.pow(2, i);
+    tourneyProfile.playerCount = bracketSize;
+    tourneyProfile.currentBracket = 0;
+    tourneyProfile.currentWinner = 0;
+    tourneyProfile.currentLoser = 0
+
+    //create first round
+    roundProfile = new Round({
+        _id: mongoose.Types.ObjectId(),
+        name: `Ro${tourneyProfile.playerCount}`,
+        numPlayers: tourneyProfile.playerCount,
+        winnerBracket: true
+    })
+    const seeds = seeding(tourneyProfile.playerCount);
+    for(i = 0; i < tourneyProfile.playerCount / 2; i++){
+        matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1,
+            playerLeft: tourneyProfile.players[seeds[i * 2] - 1],
+            playerRight: tourneyProfile.players[seeds[i * 2 + 1] - 1],
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+       })
+       client.count++
+       roundProfile.matches[i] = matchProfile;
+    }
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -39,48 +87,7 @@ module.exports = {
             const option1 = interaction.options.getString('name')
             
             //create Tourney Profile
-            tourneyProfile = new Tournament({
-                _id: mongoose.Types.ObjectId(),
-                name: option1,
-                currentMatch: 0,
-                open: false
-            });
-            i = 0;
-            for (const emoji of client.emojis.cache){
-                tourneyProfile.players.push(emoji.toString().split(',')[1]);
-                i++;
-                if (i > 63)
-                    break ;
-            }
-            let bracketSize = 2;
-            for (i = 1; bracketSize < tourneyProfile.players.length; i++)
-                bracketSize = Math.pow(2, i);
-            tourneyProfile.playerCount = bracketSize;
-            tourneyProfile.currentBracket = 0;
-            tourneyProfile.currentWinner = 0;
-            tourneyProfile.currentLoser = 0
-
-            //create first round
-            roundProfile = new Round({
-                _id: mongoose.Types.ObjectId(),
-                name: `Ro${tourneyProfile.playerCount}`,
-                numPlayers: tourneyProfile.playerCount,
-                winnerBracket: true
-            })
-            const seeds = seeding(tourneyProfile.playerCount);
-            for(i = 0; i < tourneyProfile.playerCount / 2; i++){
-                matchProfile = new Match({
-                    _id: mongoose.Types.ObjectId(),
-                    matchId: i + 1,
-                    playerLeft: tourneyProfile.players[seeds[i * 2] - 1],
-                    playerRight: tourneyProfile.players[seeds[i * 2 + 1] - 1],
-                    votesLeft: 0,
-                    votesRight: 0,
-                    open: true,
-               })
-               client.count++
-               roundProfile.matches[i] = matchProfile;
-            }
+            tourneyProfile = createTourney();
             
             //save tourney
             tourneyProfile.winnerRounds[0] = roundProfile;
