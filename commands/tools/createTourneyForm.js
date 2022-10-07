@@ -15,13 +15,26 @@ module.exports = {
             .setCustomId('tournament-form')
             .setTitle('New Tournament');
 
-        const textInput = new TextInputBuilder()
+        const name = new TextInputBuilder()
             .setCustomId('tournamentName')
             .setLabel('Tournament Name:')
+            .setMaxLength(24)
+            .setPlaceholder('Emotedokai')
             .setRequired(true)
             .setStyle(TextInputStyle.Short);
 
-        modal.addComponents(new ActionRowBuilder().addComponents(textInput));
+        const guilds = new TextInputBuilder()
+        .setCustomId('guilds')
+        .setLabel(`emotes' source servers:`)
+        .setMaxLength(100)
+        .setPlaceholder('IDs separated by whitespaces. 3 max')
+        .setValue(interaction.guildId)
+        .setRequired(true)
+        .setStyle(TextInputStyle.Short);
+
+        const firstActionRow = new ActionRowBuilder().addComponents(name);
+		const secondActionRow = new ActionRowBuilder().addComponents(guilds);
+        modal.addComponents(firstActionRow, secondActionRow);
 
         await interaction.showModal(modal);
     }
