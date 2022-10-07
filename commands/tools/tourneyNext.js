@@ -18,9 +18,23 @@ maxMatches= 16
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('tourney_next')
-        .setDescription('post next matches for tournament'),
+        .setDescription('post next matches for tournament')
+        .addStringOption(option =>
+            option.setName('name')
+                .setDescription('tournament name')
+                .setRequired(true)
+            ),
     async execute(interaction, client) {
-        tournamentProfile = await Tournament.findOne();
+        const option1 = interaction.options.getString('name');
+        
+        tournamentProfile = await Tournament.findOne({name: option1, host: interaction.member.toString()});
+        if (!tournamentProfile){
+            await interaction.reply({
+                content: `Error: You are not this tournament's host. Did you type the name correctly?`
+            });
+            return;
+        }
+        
         roundProfile = tournamentProfile.currentBracket ?
             tournamentProfile.loserRounds[tournamentProfile.currentLoser] :
             tournamentProfile.winnerRounds[tournamentProfile.currentWinner]
