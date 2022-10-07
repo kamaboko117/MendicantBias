@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('creatematch')
+        .setName('create-match')
         .setDescription('creates an emotedokai match')
         .addStringOption(option =>
             option.setName('emote1')
