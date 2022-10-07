@@ -62,7 +62,7 @@ module.exports = {
                 else
                     tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
                 await tournamentProfile.save().catch(console.error);
-                if (matchProfile.playerRight){
+                if (matchProfile.playerLeft && matchProfile.playerRight){
                     
                     emote1 = roundProfile.matches[i].playerLeft.split(':')[2].slice(0, -1);
                     emote2 = roundProfile.matches[i].playerRight.split(':')[2].slice(0, -1);
@@ -241,7 +241,7 @@ module.exports = {
             matchProfile = roundProfile.matches[i];
             console.log(matchProfile.playerLeft);
             console.log(matchProfile.playerRight);
-            if (matchProfile.playerRight){
+            if (matchProfile.playerLeft && matchProfile.playerRight){
                 
                 emote1 = roundProfile.matches[i].playerLeft.split(':')[2].slice(0, -1);
                 emote2 = roundProfile.matches[i].playerRight.split(':')[2].slice(0, -1);
