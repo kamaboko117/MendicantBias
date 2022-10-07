@@ -274,6 +274,11 @@ module.exports = {
                 componentArray.push(new ActionRowBuilder().addComponents(button1, button2));
                 
             }else{
+                if (!matchProfile.playerLeft)
+                    matchProfile.votesRight++;
+                else
+                    matchProfile.votesLeft++;
+                await tournamentProfile.save().catch(console.error)
                 interaction.channel.send(`${i + 1} bye`)
             }
             if (j === 5 || i + 1 === count){
