@@ -66,9 +66,9 @@ module.exports = {
                 j++;
                 matchProfile = roundProfile.matches[i];
                 matchProfile.open = false;
-                matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ?
+                matchProfile.winner = matchProfile.playerRight && matchProfile.votesRight > matchProfile.votesLeft ?
                     matchProfile.playerRight : matchProfile.playerLeft;
-                matchProfile.loser = matchProfile.votesRight > matchProfile.votesLeft ?
+                matchProfile.loser = matchProfile.playerRight && matchProfile.votesRight > matchProfile.votesLeft ?
                     matchProfile.playerLeft : matchProfile.playerRight;
                 roundProfile.matches[i] = matchProfile;
                 if (roundProfile.winnerBracket)
