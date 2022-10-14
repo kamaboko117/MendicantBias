@@ -88,7 +88,7 @@ module.exports = {
 
         await interaction.reply({
                 // embeds: [embed],
-                content: `match ID: ${matchId}, use /reveal ${matchId} to close and show results`,
+                content: `match ID: ${matchId}`,//, use /reveal ${matchId} to close and show results`,
                 components: [
                     new ActionRowBuilder().addComponents(button1, button2)
                 ]
