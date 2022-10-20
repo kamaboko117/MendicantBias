@@ -71,6 +71,154 @@ async function showResults(tournamentProfile, roundProfile, interaction){
     await tournamentProfile.save().catch(console.error);
 }
 
+async function  createLB1(tournamentProfile){
+    for(i = 0; i < (roundProfile.numPlayers / 2); i++){
+        matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft:
+                tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].loser,
+            playerRight:
+                tournamentProfile.winnerRounds[0].matches[i * 2 + 1].loser,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        })
+        roundProfile.matches[i] = matchProfile;
+    }
+    tournamentProfile.currentBracket = 1;
+    tournamentProfile.currentLoser++;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    await tournamentProfile.save().catch(console.error);
+}
+
+async function  createLB2(tournamentProfile){
+    const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+    const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
+    const j = prevLB.matches.length;
+    
+    for(i = 0; i < (roundProfile.numPlayers / 2); i++){
+        matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft:
+                prevWB.matches[j - i].loser,
+            playerRight:
+                prevLB.matches[i].winner,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        })
+        roundProfile.matches[i] = matchProfile;
+    }
+    tournamentProfile.currentBracket = 1;
+    tournamentProfile.currentLoser++;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    await tournamentProfile.save().catch(console.error);
+}
+
+async function  createLB4(tournamentProfile){
+    const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+    const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
+    const j = prevLB.matches.length / 2;
+    
+    for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
+        matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft:
+                prevWB.matches[j - i].loser,
+            playerRight:
+                prevLB.matches[i].winner,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        })
+        roundProfile.matches[i] = matchProfile;
+    }
+    for(i = (roundProfile.numPlayers / 2) / 2; i < (roundProfile.numPlayers / 2); i++){
+        matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft:
+                prevWB.matches[(j * 2) - i].loser,
+            playerRight:
+                prevLB.matches[i].winner,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        })
+        roundProfile.matches[i] = matchProfile;
+    }
+    tournamentProfile.currentBracket = 1;
+    tournamentProfile.currentLoser++;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    await tournamentProfile.save().catch(console.error);
+}
+
+async function  createLB6(tournamentProfile){
+    const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+    const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
+    const j = prevLB.matches.length / 2;
+    
+    for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
+        matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft:
+                prevWB.matches[j + i].loser,
+            playerRight:
+                prevLB.matches[i].winner,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        })
+        roundProfile.matches[i] = matchProfile;
+    }
+    for(i = (roundProfile.numPlayers / 2) / 2; i < (roundProfile.numPlayers / 2); i++){
+        matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft:
+                prevWB.matches[i - j].loser,
+            playerRight:
+                prevLB.matches[i].winner,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        })
+        roundProfile.matches[i] = matchProfile;
+    }
+    tournamentProfile.currentBracket = 1;
+    tournamentProfile.currentLoser++;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    await tournamentProfile.save().catch(console.error);
+}
+
+async function  createLB8(tournamentProfile){
+    const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+    const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
+    
+    for(i = 0; i < (roundProfile.numPlayers / 2); i++){
+        matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft:
+                prevWB.matches[i].loser,
+            playerRight:
+                prevLB.matches[i].winner,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        })
+        roundProfile.matches[i] = matchProfile;
+    }
+    tournamentProfile.currentBracket = 1;
+    tournamentProfile.currentLoser++;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    await tournamentProfile.save().catch(console.error);
+}
+
 async function newRound(tournamentProfile, client){
     //if previous round was winner bracket, next one has to be a loser
     if (roundProfile.winnerBracket){
@@ -87,27 +235,27 @@ async function newRound(tournamentProfile, client){
                     tournamentProfile.winnerRounds[tournamentProfile.currentWinner].numPlayers / 2 :
                     tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers) :
             tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers;
-
-        for(i = 0; i < (roundProfile.numPlayers / 2); i++){
-            matchProfile = new Match({
-                _id: mongoose.Types.ObjectId(),
-                matchId: i + 1 + tournamentProfile.currentMatch,
-                playerLeft: roundProfile.name == 'LB1' ?
-                    tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].loser :
-                    tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i].loser,
-                playerRight: roundProfile.name == 'LB1' ?
-                    tournamentProfile.winnerRounds[0].matches[i * 2 + 1].loser :
-                    tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i].winner,
-                votesLeft: 0,
-                votesRight: 0,
-                open: true,
-           })
-           roundProfile.matches[i] = matchProfile;
+        if (tournamentProfile.currentLoser + 1){
+            await createLB1(tournamentProfile);
+            return;
         }
-        tournamentProfile.currentBracket = 1;
-        tournamentProfile.currentLoser++;
-        tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
-        await tournamentProfile.save().catch(console.error);
+        switch ((tournamentProfile.currentLoser + 1) % 8){
+            case 0:
+                await createLB8(tournamentProfile);
+                break;
+            case 2:
+                await createLB2(tournamentProfile);
+                break;
+            case 4:
+                await createLB4(tournamentProfile);
+                break;
+            case 6:
+                await createLB6(tournamentProfile);
+                break;
+            
+            default:
+                await createLB2(tournamentProfile);
+        }
     }
     
     //if previous round was a minor loser bracket, next one has to be a winner
