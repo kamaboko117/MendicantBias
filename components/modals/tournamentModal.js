@@ -64,7 +64,6 @@ async function    createTourney(name, guilds, client, interaction){
             votesRight: 0,
             open: true,
        })
-       client.count++
        roundProfile.matches[i] = matchProfile;
     }
     tourneyProfile.winnerRounds[0] = roundProfile;
