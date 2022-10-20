@@ -7,7 +7,7 @@ module.exports = {
     async execute(interaction, client) {
         
         await interaction.reply({
-            content: client.invite
+            content: client.invite2
         })
     }
 }
