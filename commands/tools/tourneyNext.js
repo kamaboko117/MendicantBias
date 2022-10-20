@@ -31,9 +31,9 @@ async function showResults(tournamentProfile, roundProfile, interaction){
         j++;
         matchProfile = roundProfile.matches[i];
         matchProfile.open = false;
-        matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ?
+        matchProfile.winner = !matchProfile.playerLeft || matchProfile.votesRight > matchProfile.votesLeft ?
             matchProfile.playerRight : matchProfile.playerLeft;
-        matchProfile.loser = matchProfile.votesRight > matchProfile.votesLeft ?
+        matchProfile.loser = !matchProfile.playerLeft || matchProfile.votesRight > matchProfile.votesLeft ?
             matchProfile.playerLeft : matchProfile.playerRight;
         roundProfile.matches[i] = matchProfile;
         if (roundProfile.winnerBracket)
@@ -62,7 +62,7 @@ async function showResults(tournamentProfile, roundProfile, interaction){
         }else{
             interaction.channel.send(`${i + 1} bye`)
         }
-        if (j === 5 || i + 1 === count){
+        if ((j === 5 || i + 1 === count) && componentArray.length){
             j = 0;
             interaction.channel.send({components: componentArray})
             componentArray = [];
