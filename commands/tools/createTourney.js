@@ -1,99 +1,41 @@
-const { SlashCommandBuilder } = require('discord.js');
-const Tournament = require('../../schemas/tournament');
-const { Round } = require('../../schemas/round');
-const { Match } = require ('../../schemas/match');
-const mongoose = require('mongoose');
-
-function seeding(numPlayers){
-    var rounds = Math.log(numPlayers)/Math.log(2)-1;
-    var pls = [1,2];
-    for(var i=0;i<rounds;i++){
-      pls = nextLayer(pls);
-    }
-    return pls;
-    function nextLayer(pls){
-      var out=[];
-      var length = pls.length*2+1;
-      pls.forEach(function(d){
-        out.push(d);
-        out.push(length-d);
-      });
-      return out;
-    }
-}
-
-function    createTourney(){
-    tourneyProfile = new Tournament({
-        _id: mongoose.Types.ObjectId(),
-        host: interaction.member.toString(),
-        name: option1,
-        currentMatch: 0,
-        open: false
-    });
-    i = 0;
-    emojiArray = [];
-    for (const emoji of client.emojis.cache){
-        emojiArray.push(emoji.toString().split(',')[1]);
-        i++;
-        if (i > 28)
-            break ;
-    }
-    tourneyProfile.players = emojiArray.sort(() => Math.random() - 0.5);
-    let bracketSize = 2;
-    for (i = 1; bracketSize < tourneyProfile.players.length; i++)
-        bracketSize = Math.pow(2, i);
-    tourneyProfile.playerCount = bracketSize;
-    tourneyProfile.currentBracket = 0;
-    tourneyProfile.currentWinner = 0;
-    tourneyProfile.currentLoser = 0
-
-    //create first round
-    roundProfile = new Round({
-        _id: mongoose.Types.ObjectId(),
-        name: `Ro${tourneyProfile.playerCount}`,
-        numPlayers: tourneyProfile.playerCount,
-        winnerBracket: true
-    })
-    const seeds = seeding(tourneyProfile.playerCount);
-    for(i = 0; i < tourneyProfile.playerCount / 2; i++){
-        matchProfile = new Match({
-            _id: mongoose.Types.ObjectId(),
-            matchId: i + 1,
-            playerLeft: tourneyProfile.players[seeds[i * 2] - 1],
-            playerRight: tourneyProfile.players[seeds[i * 2 + 1] - 1],
-            votesLeft: 0,
-            votesRight: 0,
-            open: true,
-       })
-       client.count++
-       roundProfile.matches[i] = matchProfile;
-    }
-}
+const {
+    SlashCommandBuilder,
+    ModalBuilder,
+    ActionRowBuilder,
+    TextInputBuilder,
+    TextInputStyle
+} = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('createtourney')
-        .setDescription('creates an emotedokai tournament')
-        .addStringOption(option =>
-            option.setName('name')
-                .setDescription(`the tournament's name`)
-                .setRequired(true)
-            ),
-    
-        async execute(interaction, client) {
-            await interaction.reply({
-                content: "Creating tournament..."
-            });
-            const option1 = interaction.options.getString('name')
-            
-            //create Tourney Profile
-            tourneyProfile = createTourney();
-            
-            //save tourney
-            tourneyProfile.winnerRounds[0] = roundProfile;
-            await tourneyProfile.save().catch(console.error);
-            
-            //log
-            interaction.channel.send("tournament created");
+        .setName('create-tourney')
+        .setDescription('create an emotedokai tournament through a form'),
+    async execute(interaction, client) {
+        const modal = new ModalBuilder()
+            .setCustomId('tournament-form')
+            .setTitle('New Tournament');
+
+        const name = new TextInputBuilder()
+            .setCustomId('tournamentName')
+            .setLabel('Tournament Name:')
+            .setMaxLength(24)
+            .setPlaceholder('Emotedokai')
+            .setRequired(true)
+            .setStyle(TextInputStyle.Short);
+
+        const guilds = new TextInputBuilder()
+        .setCustomId('guilds')
+        .setLabel(`emotes' source servers:`)
+        .setMaxLength(100)
+        .setPlaceholder('IDs separated by whitespaces. 3 max')
+        .setValue(interaction.guildId)
+        .setRequired(true)
+        .setStyle(TextInputStyle.Short);
+
+        const firstActionRow = new ActionRowBuilder().addComponents(name);
+		const secondActionRow = new ActionRowBuilder().addComponents(guilds);
+        modal.addComponents(firstActionRow, secondActionRow);
+
+        await interaction.showModal(modal);
     }
 }
