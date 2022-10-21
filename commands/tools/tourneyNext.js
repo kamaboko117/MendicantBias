@@ -95,7 +95,7 @@ async function  createLB1(tournamentProfile){
 async function  createLB2(tournamentProfile){
     const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
     const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    const j = prevLB.matches.length;
+    const j = prevLB.matches.length - 1;
     
     for(i = 0; i < (roundProfile.numPlayers / 2); i++){
         matchProfile = new Match({
@@ -120,7 +120,7 @@ async function  createLB2(tournamentProfile){
 async function  createLB4(tournamentProfile){
     const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
     const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    const j = prevLB.matches.length / 2;
+    const j = (prevLB.matches.length / 2) - 1;
     
     for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
         matchProfile = new Match({
@@ -159,7 +159,7 @@ async function  createLB4(tournamentProfile){
 async function  createLB6(tournamentProfile){
     const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
     const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    const j = prevLB.matches.length / 2;
+    const j = (prevLB.matches.length / 2) - 1;
     
     for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
         matchProfile = new Match({
@@ -235,7 +235,7 @@ async function newRound(tournamentProfile, client){
                     tournamentProfile.winnerRounds[tournamentProfile.currentWinner].numPlayers / 2 :
                     tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers) :
             tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers;
-        if (tournamentProfile.currentLoser + 1){
+        if (tournamentProfile.currentLoser + 1 == 1){
             await createLB1(tournamentProfile);
             return;
         }
