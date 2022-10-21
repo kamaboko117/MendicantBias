@@ -95,7 +95,7 @@ async function  createLB1(tournamentProfile){
 async function  createLB2(tournamentProfile){
     const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
     const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    const j = prevLB.matches.length - 1;
+    const j = prevWB.matches.length - 1;
     
     for(i = 0; i < (roundProfile.numPlayers / 2); i++){
         matchProfile = new Match({
@@ -120,7 +120,7 @@ async function  createLB2(tournamentProfile){
 async function  createLB4(tournamentProfile){
     const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
     const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    const j = (prevLB.matches.length / 2) - 1;
+    let j = (prevWB.matches.length / 2) - 1;
     
     for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
         matchProfile = new Match({
@@ -136,12 +136,13 @@ async function  createLB4(tournamentProfile){
         })
         roundProfile.matches[i] = matchProfile;
     }
-    for(i = (roundProfile.numPlayers / 2) / 2; i < (roundProfile.numPlayers / 2); i++){
+    j = prevWB.matches.length - 1;
+    for(i = (roundProfile.numPlayers / 2) / 2; i < roundProfile.numPlayers / 2; i++){
         matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tournamentProfile.currentMatch,
             playerLeft:
-                prevWB.matches[(j * 2) - i].loser,
+                prevWB.matches[j - i].loser,
             playerRight:
                 prevLB.matches[i].winner,
             votesLeft: 0,
@@ -159,7 +160,7 @@ async function  createLB4(tournamentProfile){
 async function  createLB6(tournamentProfile){
     const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
     const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    const j = (prevLB.matches.length / 2) - 1;
+    let j = (prevWB.matches.length / 2) - 1;
     
     for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
         matchProfile = new Match({
@@ -175,12 +176,13 @@ async function  createLB6(tournamentProfile){
         })
         roundProfile.matches[i] = matchProfile;
     }
+    j = prevWB.matches.length - 1;
     for(i = (roundProfile.numPlayers / 2) / 2; i < (roundProfile.numPlayers / 2); i++){
         matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tournamentProfile.currentMatch,
             playerLeft:
-                prevWB.matches[i - j].loser,
+                prevWB.matches[i + j].loser,
             playerRight:
                 prevLB.matches[i].winner,
             votesLeft: 0,
