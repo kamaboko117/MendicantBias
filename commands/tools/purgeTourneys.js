@@ -9,6 +9,10 @@ module.exports = {
         .setName('purge-tourney')
         .setDescription('delete all tourneys from database'),
     async execute(interaction, client) {
+        if (interaction.member.id != '180611811412803584'){
+            await interaction.reply('forbiden');
+            return;
+        }
         await Tournament.deleteMany({});
         await interaction.reply('done');
     }
