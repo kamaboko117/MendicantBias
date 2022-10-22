@@ -304,7 +304,7 @@ async function newRound(tournamentProfile, client){
             matchProfile = new Match({
                 _id: mongoose.Types.ObjectId(),
                 matchId: i + 1 + tournamentProfile.currentMatch,
-                playerLeft: tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].loser,
+                playerLeft: tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i * 2].winner,
                 playerRight: tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i * 2 + 1].winner,
                 votesLeft: 0,
                 votesRight: 0,
