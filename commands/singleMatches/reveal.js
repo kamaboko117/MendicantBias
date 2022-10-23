@@ -13,10 +13,10 @@ const { Match } = require ('../../schemas/match');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('reveal')
-        .setDescription('reveals a match result and closes the match')
+        .setDescription('Reveals a match result and closes the match')
         .addStringOption(option =>
             option.setName('match_id')
-                .setDescription('the id for the match you want to reveal')
+                .setDescription('the ID of the match you want to reveal')
                 .setRequired(false)
             ),
 
@@ -34,35 +34,12 @@ module.exports = {
             matchProfile = await Match.findOne({matchId: options});
             if (!matchProfile){
                 await interaction.reply({
-                    content: `match does not exist in database: Probably deleted`,
+                    content: `Match does not exist in database: Probably deleted`,
                 });
             }
             matchProfile.open = false;
             matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ? matchProfile.playerRight : matchProfile.playerLeft;
             await matchProfile.save().catch(console.error); 
-            // return ;
-        // }
-        // options = [];
-        // const count = client.matchCount;
-        // if (!count){
-        //     await interaction.reply({
-        //         content: "no matches"
-        //     });
-        //     return ;
-        // }
-        // for (i = 0; i < count; i++){
-        //     matchProfile = await Match.findOne({matchId: i + 1});
-        //     options[i] = {
-        //         label: "match ID: " + matchProfile.matchId,
-        //         // value: matchProfile.playerLeft + " vs " + matchProfile.playerRight + " " + i
-        //         value: `` + matchProfile.matchId
-        //     };
-        // }
-        // const menu = new SelectMenuBuilder()
-        //     .setCustomId('revealMenu')
-        //     .setMinValues(1)
-        //     .setMaxValues(1)
-        //     .addOptions(options);
         
         const emote1 = matchProfile.playerLeft.split(':')[2].slice(0, -1);
         const emote2 = matchProfile.playerRight.split(':')[2].slice(0, -1);
@@ -84,4 +61,6 @@ module.exports = {
             components: [new ActionRowBuilder().addComponents(button1, button2)]
         });
     },
+
+    usage: 'Use the match ID given at match creation. **A closed match can no longer receive votes**'
 };

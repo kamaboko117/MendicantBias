@@ -37,5 +37,9 @@ module.exports = {
         modal.addComponents(firstActionRow, secondActionRow);
 
         await interaction.showModal(modal);
-    }
+    },
+
+    usage: "if you want to use emotes from multiple servers, you should prepare these server IDs in advance in order to easily paste them into the form. Once your tourney is created, you can use \
+    \`/tourney-next\` to advance the tournament. \n**I cannot use an emoji if I\'m not a member of the \
+    emoji\'s source server**"
 }

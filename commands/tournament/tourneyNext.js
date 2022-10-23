@@ -388,8 +388,8 @@ function printNextMatches(tournamentProfile, roundProfile, interaction){
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('tourney_next')
-        .setDescription('post next matches for tournament')
+        .setName('tourney-next')
+        .setDescription('post next matches for the tournament')
         .addStringOption(option =>
             option.setName('name')
                 .setDescription('tournament name')
@@ -438,5 +438,7 @@ module.exports = {
         //print next Matches
         printNextMatches(tournamentProfile, roundProfile, interaction);
         
-    }
+    },
+
+    usage: "You can only use this command on tournaments YOU created. Use the name you gave your tournament when you used `/create-tourney`. Once this command is used the revealed matches are closed: give some time to your members to vote."
 }
