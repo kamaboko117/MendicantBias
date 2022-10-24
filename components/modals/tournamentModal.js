@@ -24,6 +24,7 @@ function seeding(numPlayers){
 async function    createTourney(name, guilds, client, interaction){
     tourneyProfile = new Tournament({
         _id: mongoose.Types.ObjectId(),
+        type: 0,
         name: name,
         host: interaction.member.toString(),
         currentMatch: 0,
