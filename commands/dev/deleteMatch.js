@@ -4,8 +4,8 @@ const { Match } = require ('../../schemas/match');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('deletematch')
-        .setDescription('deletes match from database'),
+        .setName('delete-match')
+        .setDescription('Deletes a match from database'),
     async execute(interaction, client) {
         options = [];
         const count = client.matchCount;

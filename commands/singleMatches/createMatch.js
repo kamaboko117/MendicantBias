@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('create-match')
-        .setDescription('creates an emotedokai match')
+        .setDescription('Creates an emotedokai match')
         .addStringOption(option =>
             option.setName('emote1')
                 .setDescription('the first emote')
@@ -94,4 +94,10 @@ module.exports = {
                 ]
         });
     },
+
+    usage: 'Use this command to create an emote 1v1. I will reply with your **matchID** \
+    and the match. Once you are ready to display \
+    the results, use \`/reveal <matchID>\`.  Only use custom emojis: default\
+    emojis are not supported yet.\n**I cannot use an emoji if I\'m not a member of the \
+    emoji\'s source server**'
 };
