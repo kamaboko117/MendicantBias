@@ -343,7 +343,8 @@ async function newRound(tournamentProfile, client){
         await tournamentProfile.save().catch(console.error);
     }
 }
-function printNextMatches(tournamentProfile, roundProfile, interaction){
+
+function printNextMatchesCompact(tournamentProfile, roundProfile, interaction){
     i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
     count = roundProfile.matches.length;
     count = count > maxMatches + i ? maxMatches + i : count;
@@ -383,6 +384,51 @@ function printNextMatches(tournamentProfile, roundProfile, interaction){
             interaction.channel.send({components: componentArray})
             componentArray = [];
         }
+    }
+}
+
+function printNextMatchesFull(tournamentProfile, roundProfile, interaction){
+    i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
+    count = roundProfile.matches.length;
+    count = count > maxMatches + i ? maxMatches + i : count;
+    console.log(`i: ${i}, count: ${count}`);
+    var j = 0;
+    componentArray = [];
+    for (; i < count; i++)
+    {   
+        j++;
+        matchProfile = roundProfile.matches[i];
+        console.log(matchProfile.playerLeft);
+        console.log(matchProfile.playerRight);
+        if (matchProfile.playerLeft && matchProfile.playerRight){
+            
+            emote1 = roundProfile.matches[i].playerLeft//.split(':')[2].slice(0, -1);
+            emote2 = roundProfile.matches[i].playerRight//.split(':')[2].slice(0, -1);
+
+            console.log(emote1);
+            const button1 = new ButtonBuilder()
+            .setCustomId(`T ${tournamentProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} left`)
+            .setStyle(ButtonStyle.Secondary)
+            .setEmoji('1️⃣');
+            
+            const button2 = new ButtonBuilder()
+            
+            .setCustomId(`T ${tournamentProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} right`)
+            .setStyle(ButtonStyle.Secondary)
+            .setEmoji('2️⃣');
+            componentArray.push(new ActionRowBuilder().addComponents(button1, button2));
+            
+            interaction.channel.send({
+                content: `${emote1} :crossed_swords: ${emote2}`,
+                components: componentArray
+            })
+            componentArray = [];
+        }else{
+            interaction.channel.send(`${i + 1} bye`)
+        }
+        console.log(`i: ${i}`);
+        
+            
     }
 }
 
@@ -436,7 +482,9 @@ module.exports = {
         }
         
         //print next Matches
-        printNextMatches(tournamentProfile, roundProfile, interaction);
+        tounamentProfile.fullTheme ?
+            printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
+            printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
         
     },
 
