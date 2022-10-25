@@ -136,7 +136,7 @@ async function  createLB4(tournamentProfile){
         })
         roundProfile.matches[i] = matchProfile;
     }
-    j = prevWB.matches.length - 1;
+    j = prevWB.matches.length - 1 + i;
     for(i = (roundProfile.numPlayers / 2) / 2; i < roundProfile.numPlayers / 2; i++){
         matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
@@ -176,7 +176,7 @@ async function  createLB6(tournamentProfile){
         })
         roundProfile.matches[i] = matchProfile;
     }
-    j = prevWB.matches.length - 1;
+    j = prevWB.matches.length - 1 + i;
     for(i = (roundProfile.numPlayers / 2) / 2; i < (roundProfile.numPlayers / 2); i++){
         matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
@@ -482,7 +482,7 @@ module.exports = {
         }
         
         //print next Matches
-        tounamentProfile.fullTheme ?
+        tournamentProfile.fullTheme ?
             printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
             printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
         
