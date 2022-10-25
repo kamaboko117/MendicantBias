@@ -1,6 +1,14 @@
 const { SlashCommandBuilder, VoiceChannel } = require('discord.js');
 const ytdl = require('ytdl-core');
-const { joinVoiceChannel } = require("@discordjs/voice");
+const {
+    joinVoiceChannel,
+    getVoiceConnection,
+    VoiceConnectionStatus,
+    createAudioPlayer,
+    createAudioResource,
+    StreamType
+} = require("@discordjs/voice");
+const { connection } = require('mongoose');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,36 +20,44 @@ module.exports = {
                 .setRequired(true)
             ),
     async execute(interaction, client) {
-        // const option1 = interaction.options.getString('url');
-        // try{
-        //     const stream = ytdl(option1, { filter: 'audioonly' })
-        // }
-        // catch (error) {
-        //     interaction.reply(`ytdl module error: ${error}`);
-        //     return ;
-        // }
-
+        const option1 = interaction.options.getString('url');
+        let stream;
+        try{
+            stream = ytdl(option1, { filter: 'audioonly' })
+        } catch (error) {
+            interaction.reply(`ytdl module error: ${error}`);
+            return ;
+        }
+        if (interaction.inRawGuild)
+            await interaction.guild.members.fetch();
         const { voice } = interaction.member;
-        
         if (!voice.channelId){
             interaction.reply("Error: You are not in a voice channel");
             return ;
         }
 
-        const connection = joinVoiceChannel(
-        {
-            channelId: voice.channel,
-            guildId: interaction.guildId,
+        const connection = joinVoiceChannel({
+            channelId: voice.channel.id,
+            guildId: interaction.guild.id,
             adapterCreator: interaction.guild.voiceAdapterCreator
         });
-        (connection) => {
-            const dispatcher = connection.play(path.join('./', 'intro.m4a'));
-            dispatcher.on('end', () => {
-                VoiceChannel.leave();
-            })
-        };
+        connection.on(VoiceConnectionStatus.Signalling, (connection) => {
+            console.log(`signalling...`);
+        })
+        connection.on(VoiceConnectionStatus.Ready, () => {
+            console.log(`Ready`);
+            con = getVoiceConnection(interaction.guild.id);
+            const player = createAudioPlayer();
+            const dispatcher = con.subscribe(player);
+            let resource = createAudioResource(stream, {
+                inputType: StreamType.Arbitrary
+            });
+            player.play(resource);
+        })
+        
         await interaction.reply({
-            content: "yo"
+            content: "yo",
+            ephemeral: true
         })
     }
 }

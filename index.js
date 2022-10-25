@@ -10,7 +10,8 @@ const { Match } = require('./schemas/match')
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildVoiceStates
     ],
 });
 client.commands = new Collection();
