@@ -14,7 +14,7 @@ module.exports = {
             } catch (error) {
                 console.error(error);
                 await interaction.reply({
-                    content: 'Command execution error',
+                    content: `Command execution error: ${error}`,
                     ephemeral: true
                 });
             }
@@ -23,8 +23,11 @@ module.exports = {
             const { customId } = interaction;
             const button = buttons.get(customId);
             if (!button){
-                if (customId.split(' ')[0] === 'T'){
+                let type = customId.split(' ')[0]
+                if (type === 'T'){
                     await buttons.get('tourney').execute(interaction, client);
+                }else if (type === 'P'){
+                    await buttons.get('play').execute(interaction, client);
                 }else{
                     try {
                         await buttons.get('default').execute(interaction, client);
