@@ -42,7 +42,7 @@ function    mendicantJoin(voice, guild){
     return connection;
 }
 
-async function    mendicantPlay(interaction, stream){
+async function    mendicantPlay(interaction, stream, client, resourceTitle){
     if (interaction.inRawGuild)
         await interaction.guild.members.fetch();
     const { voice } = interaction.member;
@@ -52,25 +52,43 @@ async function    mendicantPlay(interaction, stream){
     }
 
     let connection = mendicantJoin(voice, interaction.guild);
-    
-    const player = createAudioPlayer();
-    // An AudioPlayer will always emit an "error" event with a .resource property
-    player.on('error', error => {
-        console.error('Error:', error.message, 'with track', error.resource.metadata.title);
-    });
-    let dispatcher = connection.subscribe(player);
     let resource = createAudioResource(stream, {
-        inputType: StreamType.Arbitrary
+        inputType: StreamType.Arbitrary,
+        metadata: {
+            title: resourceTitle,
+        },
     });
-    player.play(resource);
-    player.on(AudioPlayerStatus.Idle, () => {
-        dispatcher.unsubscribe(),
-        console.log("unsubscribed");
-    })
+    if (client.queue.isEmpty){
+        console.log("creating new player")
+
+        const player = createAudioPlayer();
+        // An AudioPlayer will always emit an "error" event with a .resource property
+        player.on('error', error => {
+            console.error('Error:', error.message, 'with track', error.resource);
+        });
+        let dispatcher = connection.subscribe(player);
+        client.queue.enqueue(resource)
+        player.play(resource);
+        player.on(AudioPlayerStatus.Idle, () => {
+            if (!client.queue.isEmpty){
+                client.queue.dequeue()
+                if (!client.queue.isEmpty){
+                    console.log("play new resource")
+                    player.play(client.queue.peek());
+                }
+            } else {
+                dispatcher.unsubscribe(),
+                player.stop();
+                console.log("unsubscribed");
+            }
+        })
+    } else {
+        client.queue.enqueue(resource);
+    }
     
     await interaction.reply({
         content: "yo",
-        ephemeral: false,
+        ephemeral: true,
     })
 }
 
@@ -92,7 +110,7 @@ module.exports = {
             let stream = ytdl(option1, { filter: 'audioonly' }).on('error', (err) =>
                 interaction.channel.send(`ytdl module error: ${err}`))
             
-            await mendicantPlay(interaction, stream);
+            await mendicantPlay(interaction, stream, client, await ytdl.getInfo(option1).title);
             return ;
         }
         let results = (await search(option1, opts));
@@ -121,8 +139,8 @@ module.exports = {
         i = 0;
         let buttons = []
         for (const result of results.results){
-            buttons[i++] = new ButtonBuilder()
-            .setCustomId(`P ${result.id}`)
+            buttons[i] = new ButtonBuilder()
+            .setCustomId(`P ${result.id} ${fields[i++].value}`)
             .setStyle(ButtonStyle.Secondary)
             .setLabel(`${i}`);
             if (i === 5)
