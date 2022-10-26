@@ -24,45 +24,54 @@ const opts = {
     key: process.env.GOOGLE
 }
 
+function    mendicantJoin(voice, guild){
+    let connection;
+    if (!(connection = getVoiceConnection(guild.id))){
+        connection = joinVoiceChannel({
+            channelId: voice.channel.id,
+            guildId: guild.id,
+            adapterCreator: guild.voiceAdapterCreator
+        });
+    }
+    connection.on(VoiceConnectionStatus.Signalling, () => {
+        console.log(`signalling...`);
+    })
+    connection.on(VoiceConnectionStatus.Ready, () => {
+        console.log(`Ready`);
+    })
+    return connection;
+}
+
 async function    mendicantPlay(interaction, stream){
     if (interaction.inRawGuild)
-            await interaction.guild.members.fetch();
-        const { voice } = interaction.member;
-        if (!voice.channelId){
-            interaction.reply("Error: You are not in a voice channel");
-            return ;
-        }
+        await interaction.guild.members.fetch();
+    const { voice } = interaction.member;
+    if (!voice.channelId){
+        interaction.reply("Error: You are not in a voice channel");
+        return ;
+    }
 
-        const connection = joinVoiceChannel({
-            channelId: voice.channel.id,
-            guildId: interaction.guild.id,
-            adapterCreator: interaction.guild.voiceAdapterCreator
-        });
-        connection.on(VoiceConnectionStatus.Signalling, (connection) => {
-            console.log(`signalling...`);
-        })
-        connection.on(VoiceConnectionStatus.Ready, () => {
-            console.log(`Ready`);
-            con = getVoiceConnection(interaction.guild.id);
-            const player = createAudioPlayer();
-            // An AudioPlayer will always emit an "error" event with a .resource property
-            player.on('error', error => {
-                console.error('Error:', error.message, 'with track', error.resource.metadata.title);
-            });
-            let dispatcher = con.subscribe(player);
-            let resource = createAudioResource(stream, {
-                inputType: StreamType.Arbitrary
-            });
-            player.play(resource);
-            player.on(AudioPlayerStatus.Idle, dispatcher => {
-                dispatcher.unsubscribe();
-            })
-        })
-        
-        await interaction.reply({
-            content: "yo",
-            ephemeral: false,
-        })
+    let connection = mendicantJoin(voice, interaction.guild);
+    
+    const player = createAudioPlayer();
+    // An AudioPlayer will always emit an "error" event with a .resource property
+    player.on('error', error => {
+        console.error('Error:', error.message, 'with track', error.resource.metadata.title);
+    });
+    let dispatcher = connection.subscribe(player);
+    let resource = createAudioResource(stream, {
+        inputType: StreamType.Arbitrary
+    });
+    player.play(resource);
+    player.on(AudioPlayerStatus.Idle, () => {
+        dispatcher.unsubscribe(),
+        console.log("unsubscribed");
+    })
+    
+    await interaction.reply({
+        content: "yo",
+        ephemeral: false,
+    })
 }
 
 module.exports = {
@@ -128,5 +137,7 @@ module.exports = {
                 new ActionRowBuilder().addComponents(buttons)
             ]
         })
-    }
+    },
+
+    usage: "play a video from youtube. you can either use the video's URL or search for an input"
 }
