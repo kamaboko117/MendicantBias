@@ -113,7 +113,10 @@ module.exports = {
         const option1 = interaction.options.getString('url-or-search');
 
         if (ytdl.validateURL(option1)){
-            let stream = ytdl(option1, { filter: 'audioonly' }).on('error', (err) =>
+            let stream = ytdl(option1, {
+                    filter: 'audioonly',
+                    highWaterMark: 1 << 25,
+                }).on('error', (err) =>
                 interaction.channel.send(`ytdl module error: ${err}`))
             
             await mendicantPlay(interaction, stream, client, await ytdl.getInfo(option1).title);
