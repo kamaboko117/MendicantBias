@@ -9,7 +9,15 @@ module.exports = {
         //create embed
         let fields = []
         let titles = []
-        for (let i = 0; i < client.queue.length; i++){
+        if (client.queue.isEmpty){
+            await interaction.reply({
+                content: "Queue is empty",
+                ephemeral: false,
+            })
+            return ;
+        }
+        titles[0] = `**▶️ ${client.queue.elements[0].metadata.title}**`
+        for (let i = 1; i < client.queue.length; i++){
             titles[i] =  `**${i}:** ${client.queue.elements[i].metadata.title}`
         }
         let i = 0;

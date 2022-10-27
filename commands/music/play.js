@@ -139,8 +139,9 @@ module.exports = {
         i = 0;
         let buttons = []
         for (const result of results.results){
-            buttons[i] = new ButtonBuilder()
-            .setCustomId(`P ${result.id} ${fields[i++].value}`)
+            let customID = `P ${result.id} ${fields[i].value}`.substring(0, 99)
+            buttons[i++] = new ButtonBuilder()
+            .setCustomId(customID)
             .setStyle(ButtonStyle.Secondary)
             .setLabel(`${i}`);
             if (i === 5)
