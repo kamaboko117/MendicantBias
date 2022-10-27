@@ -21,11 +21,13 @@ const {
 const search = require('youtube-search');
 const opts = {
     maxResults: 5,
-    key: process.env.GOOGLE
+    key: process.env.GOOGLE,
+    type: 'video'
 }
 
 function    mendicantJoin(voice, guild){
     let connection;
+    
     if (!(connection = getVoiceConnection(guild.id))){
         connection = joinVoiceChannel({
             channelId: voice.channel.id,
@@ -38,6 +40,10 @@ function    mendicantJoin(voice, guild){
     })
     connection.on(VoiceConnectionStatus.Ready, () => {
         console.log(`Ready`);
+    })
+    connection.on(VoiceConnectionStatus.Disconnected, () => {
+        connection.destroy()
+        console.log(`Connection destroyed`);
     })
     return connection;
 }
