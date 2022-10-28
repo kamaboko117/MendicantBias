@@ -9,6 +9,7 @@ const {
     ActionRowBuilder
 } = require('discord.js');
 const ytdl = require('ytdl-core');
+const ytdl2 = require('play-dl');
 const {
     joinVoiceChannel,
     getVoiceConnection,
@@ -50,7 +51,7 @@ function    mendicantJoin(voice, guild, client){
     return connection;
 }
 
-async function    mendicantPlay(interaction, stream, client, resourceTitle){
+async function    mendicantPlay(interaction, resource, client, resourceTitle){
     if (interaction.inRawGuild)
         await interaction.guild.members.fetch();
     const { voice } = interaction.member;
@@ -60,12 +61,7 @@ async function    mendicantPlay(interaction, stream, client, resourceTitle){
     }
 
     let connection = mendicantJoin(voice, interaction.guild, client);
-    let resource = createAudioResource(stream, {
-        inputType: StreamType.Arbitrary,
-        metadata: {
-            title: resourceTitle,
-        },
-    });
+    
     if (client.queue.isEmpty){
         console.log("creating new player")
 
@@ -100,8 +96,45 @@ async function    mendicantPlay(interaction, stream, client, resourceTitle){
     })
 }
 
+async function mendicantCreateResource(interaction, url){
+    // let resourceTitle = (await ytdl.getInfo(`https://www.youtube.com/watch?v=${url}`)).videoDetails
+    // console.log(resourceTitle)
+    // let stream = ytdl(url, {
+    //     filter: 'audioonly',
+    //     highWaterMark: 1 << 25,
+    // }).on('error', (err) =>
+    //     interaction.channel.send(`ytdl module error: ${err}`))
+    // let resource = createAudioResource(stream, {
+    //         inputType: StreamType.Arbitrary,
+    //         metadata: {
+    //             title: resourceTitle,
+    //         },
+    //     });
+    // if (resource.playStream.readableEnded || resource.playStream.destroyed){
+    //         interaction.reply('Error: Could not create resource');
+    //         return null;
+    //     }
+    let title = null;
+    await ytdl2.video_basic_info(url).then(value => {
+        title = value.video_details.title;
+        console.log(title)
+    }).catch(console.error)
+    if (!title)
+        return null;
+    let stream = await ytdl2.stream(url);
+    let resource = createAudioResource(stream.stream, {
+        inputType: stream.type,
+        metadata: {
+            title: title
+        }
+    })
+
+    return (resource);
+}
+
 module.exports = {
     mendicantPlay: mendicantPlay,
+    mendicantCreateResource: mendicantCreateResource,
 
     data: new SlashCommandBuilder()
         .setName('play')
@@ -115,13 +148,13 @@ module.exports = {
         const option1 = interaction.options.getString('url-or-search');
 
         if (ytdl.validateURL(option1)){
-            let stream = ytdl(option1, {
-                    filter: 'audioonly',
-                    highWaterMark: 1 << 25,
-                }).on('error', (err) =>
-                interaction.channel.send(`ytdl module error: ${err}`))
+            let resource = await mendicantCreateResource(interaction, option1)
+            if (!resource){
+                interaction.reply('Error: Could not create resource')
+                return ;
+            }
             
-            await mendicantPlay(interaction, stream, client, await ytdl.getInfo(option1).title);
+            await mendicantPlay(interaction, resource, client);
             return ;
         }
         let results = (await search(option1, opts));

@@ -1,5 +1,4 @@
-const { mendicantPlay } = require("../../commands/music/play")
-const ytdl = require('ytdl-core');
+const { mendicantPlay, mendicantCreateResource } = require("../../commands/music/play")
 
 module.exports = {
     data: {
@@ -8,15 +7,11 @@ module.exports = {
     async execute(interaction, client) {
         let idsplit = interaction.component.customId.split(' '); 
         let option1 = idsplit[1]
-        let title = idsplit[3]
-        let i = 3;
-        while (idsplit[i]){
-            title += ` ${idsplit[i]}`;
-            i++;
+        let resource = await mendicantCreateResource(interaction, option1)
+        if (!resource){
+            interaction.reply('Error: Could not create resource')
+            return ;
         }
-        let stream = ytdl(option1, { filter: 'audioonly' }).on('error', (err) =>
-            interaction.channel.send(`ytdl Module: ${err}`))
-            
-        return mendicantPlay(interaction, stream, client, title);
+        return mendicantPlay(interaction, resource, client);
     }
 }
