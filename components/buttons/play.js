@@ -9,7 +9,7 @@ module.exports = {
         let option1 = idsplit[1]
         let resource = await mendicantCreateResource(interaction, option1)
         if (!resource){
-            interaction.reply('Error: Could not create resource')
+            interaction.channel.send('Error: Could not create resource')
             return ;
         }
         return mendicantPlay(interaction, resource, client);
