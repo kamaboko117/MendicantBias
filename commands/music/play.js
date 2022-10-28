@@ -25,7 +25,7 @@ const opts = {
     type: 'video'
 }
 
-function    mendicantJoin(voice, guild){
+function    mendicantJoin(voice, guild, client){
     let connection;
     
     if (!(connection = getVoiceConnection(guild.id))){
@@ -43,6 +43,8 @@ function    mendicantJoin(voice, guild){
     })
     connection.on(VoiceConnectionStatus.Disconnected, () => {
         connection.destroy()
+        while(!client.queue.isEmpty)
+            client.queue.dequeue();
         console.log(`Connection destroyed`);
     })
     return connection;
@@ -57,7 +59,7 @@ async function    mendicantPlay(interaction, stream, client, resourceTitle){
         return ;
     }
 
-    let connection = mendicantJoin(voice, interaction.guild);
+    let connection = mendicantJoin(voice, interaction.guild, client);
     let resource = createAudioResource(stream, {
         inputType: StreamType.Arbitrary,
         metadata: {
