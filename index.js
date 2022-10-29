@@ -5,9 +5,17 @@ const databaseToken = process.env.DATABASE;
 const { connect } = require('mongoose');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
-const { Match } = require('./schemas/match')
+const { Match } = require('./schemas/match');
+const { Queue } = require('./classes/Queue');
 
-const client = new Client({ intents: GatewayIntentBits.Guilds });
+
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildVoiceStates
+    ],
+});
 client.commands = new Collection();
 client.buttons = new Collection();
 client.selectMenus = new Collection();
@@ -16,6 +24,7 @@ client.commandArray = [];
 client.color = 0x18e1ee;
 client.invite = 'https://discord.com/api/oauth2/authorize?client_id=688035147559337994&permissions=137439215616&scope=bot';
 client.invite2= 'https://discord.com/api/oauth2/authorize?client_id=1026870487885815870&permissions=347136&scope=bot'
+client.queue = new Queue();
 
 const functionFolders = fs.readdirSync('./functions');
 for (const folder of functionFolders) {

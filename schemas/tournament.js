@@ -4,6 +4,7 @@ const { roundSchema } = require('./round');
 
 const tournamentSchema = new Schema({
     id: Schema.Types.ObjectId,
+    type: Number,
     name: String,
     host: String,
     players: [String],

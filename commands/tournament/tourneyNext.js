@@ -160,7 +160,7 @@ async function  createLB4(tournamentProfile){
 async function  createLB6(tournamentProfile){
     const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
     const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    let j = (prevWB.matches.length / 2) - 1;
+    let j = (prevWB.matches.length / 2);
     
     for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
         matchProfile = new Match({
@@ -176,13 +176,12 @@ async function  createLB6(tournamentProfile){
         })
         roundProfile.matches[i] = matchProfile;
     }
-    j = prevWB.matches.length - 1 + i;
     for(i = (roundProfile.numPlayers / 2) / 2; i < (roundProfile.numPlayers / 2); i++){
         matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tournamentProfile.currentMatch,
             playerLeft:
-                prevWB.matches[i + j].loser,
+                prevWB.matches[i - j].loser,
             playerRight:
                 prevLB.matches[i].winner,
             votesLeft: 0,
@@ -444,6 +443,7 @@ module.exports = {
     async execute(interaction, client) {
         const option1 = interaction.options.getString('name');
         
+        await interaction.deferReply();
         tournamentProfile = await Tournament.findOne({name: option1, host: interaction.member.toString()});
         if (!tournamentProfile){
             await interaction.reply({
@@ -459,12 +459,12 @@ module.exports = {
         if (!tournamentProfile.open){
             tournamentProfile.open = true;
             await tournamentProfile.save().catch(console.error);
-            await interaction.reply({
+            await interaction.channel.send({
                 content: `${roundProfile.name}: `
             });
         }else{
             //show previous day's results and close matches
-            await interaction.reply({
+            await interaction.channel.send({
                 content: "last day's results:"
             });
             await showResults(tournamentProfile, roundProfile, interaction);
@@ -485,7 +485,7 @@ module.exports = {
         tournamentProfile.fullTheme ?
             printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
             printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
-        
+        await interaction.editReply("NEW DAY");
     },
 
     usage: "You can only use this command on tournaments YOU created. Use the name you gave your tournament when you used `/create-tourney`. Once this command is used the revealed matches are closed: give some time to your members to vote."
