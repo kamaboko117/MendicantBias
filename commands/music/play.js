@@ -9,7 +9,7 @@ const {
     ActionRowBuilder
 } = require('discord.js');
 const ytdl = require('ytdl-core');
-const ytdl2 = require('play-dl');
+// const ytdl2 = require('play-dl');
 const {
     joinVoiceChannel,
     getVoiceConnection,
