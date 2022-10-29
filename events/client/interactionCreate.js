@@ -13,6 +13,10 @@ module.exports = {
                 await command.execute(interaction, client);
             } catch (error) {
                 console.error(error);
+                if (interaction.deferred){
+                    await interaction.editReply(`Command execution error: ${error}`)
+                    return ;
+                }
                 await interaction.reply({
                     content: `Command execution error: ${error}`,
                     ephemeral: true
