@@ -92,8 +92,8 @@ async function    mendicantPlay(interaction, resource, client, resourceTitle){
     }
     
     await interaction.reply({
-        content: "yo",
-        ephemeral: true,
+        content: `Queued **${resource.metadata.title}**`,
+        ephemeral: false,
     })
 }
 
@@ -160,9 +160,10 @@ module.exports = {
             ),
     async execute(interaction, client) {
         const option1 = interaction.options.getString('url-or-search');
-
+    
         if (ytdl.validateURL(option1)){
-            let resource = await mendicantCreateResource(interaction, option1)
+            let ID = ytdl.getURLVideoID(option1)
+            let resource = await mendicantCreateResource(interaction, ID)
             if (!resource){
                 interaction.reply('Error: Could not create resource')
                 return ;
@@ -172,7 +173,7 @@ module.exports = {
             return ;
         }
         let results = (await search(option1, opts));
-        if (!results){
+        if (!results.results.length){
             interaction.reply(`No results for "${option1}"`);
             return ;
         }
