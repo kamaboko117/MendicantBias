@@ -482,9 +482,10 @@ module.exports = {
         }
         
         //print next Matches
-        tournamentProfile.fullTheme ?
-            printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
-            printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
+        // tournamentProfile.fullTheme ?
+        //     printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
+        //     printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
+        printNextMatchesFull(tournamentProfile, roundProfile, interaction);
         await interaction.editReply("NEW DAY");
     },
 

@@ -23,16 +23,17 @@ module.exports = {
             matchProfile = tourneyProfile.winnerRounds[matchId[3]].matches[matchId[4]];
         if (!matchProfile){
             newMessage = 'match does not exist in database: Probably deleted'
+        
+        //if match is closed, button is used to see results
         }else if (!matchProfile.open){
-            if (matchId[5] == 'left'){
-                newMessage = `votes for ${matchProfile.playerLeft}\n`
-                newMessage += matchProfile.votesLeft ?
-                    `${matchProfile.membersLeft}` : 'noone';
-            }else if (matchId[5] == 'right'){
-                newMessage = `votes for ${matchProfile.playerRight}\n`
-                newMessage += matchProfile.votesRight ?
-                    `${matchProfile.membersRight}` : 'noone';
-            }
+            newMessage = `votes for ${matchProfile.playerLeft}\n`
+            newMessage += matchProfile.votesLeft ?
+                `${matchProfile.membersLeft}` : 'noone';
+            newMessage += `\nvotes for ${matchProfile.playerRight}\n`
+            newMessage += matchProfile.votesRight ?
+                `${matchProfile.membersRight}` : 'noone';
+        
+        //if match is still open, button is used to vote
         }else{
             if (matchId[5] == 'left'){
                 if (matchProfile.membersLeft.includes(interaction.member.toString()))
