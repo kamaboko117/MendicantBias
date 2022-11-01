@@ -9,17 +9,20 @@ module.exports = {
         //create embed
         let fields = []
         let titles = []
-        if (client.queue.isEmpty){
+        let queue = client.queues.find(queue => queue.id === interaction.guild.id)
+        if (queue)
+        queue = queue.queue
+        if (!queue || queue.isEmpty){
             await interaction.reply({
                 content: "Queue is empty",
                 ephemeral: false,
             })
             return ;
         }
-        titles[0] = `**▶️ ${client.queue.elements[client.queue.head].metadata.title}**`
+        titles[0] = `**▶️ ${queue.elements[queue.head].metadata.title}**`
         let j = 1
-        for (let i = client.queue.head + 1; i < client.queue.tail; i++){
-            titles[j] =  `**${j++}:** ${client.queue.elements[i].metadata.title}`
+        for (let i = queue.head + 1; i < queue.tail; i++){
+            titles[j] =  `**${j++}:** ${queue.elements[i].metadata.title}`
         }
         let i = 0;
         for (const title of titles){

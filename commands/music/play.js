@@ -20,6 +20,7 @@ const {
     AudioPlayerStatus
 } = require("@discordjs/voice");
 const search = require('youtube-search');
+const { Queue } = require('../../classes/Queue');
 const opts = {
     maxResults: 5,
     key: process.env.GOOGLE,
@@ -36,6 +37,12 @@ function    mendicantJoin(voice, guild, client){
             guildId: guild.id,
             adapterCreator: guild.voiceAdapterCreator
         });
+        if (!(client.queues.find(queue => queue.id === guild.id))){
+            client.queues.push({
+                id: guild.id,
+                queue: new Queue()
+            })
+        }
     }
     connection.on(VoiceConnectionStatus.Signalling, () => {
         console.log(`signalling...`);
@@ -45,8 +52,9 @@ function    mendicantJoin(voice, guild, client){
     })
     connection.on(VoiceConnectionStatus.Disconnected, () => {
         connection.destroy()
-        while(!client.queue.isEmpty)
-            client.queue.dequeue();
+        let queue = client.queues.find(queue => queue.id === guild.id).queue
+        while(!queue.isEmpty)
+            queue.dequeue();
         console.log(`Connection destroyed`);
     })
     return connection;
@@ -60,10 +68,9 @@ async function    mendicantPlay(interaction, resource, client, resourceTitle){
         interaction.reply("Error: You are not in a voice channel");
         return ;
     }
-
     let connection = mendicantJoin(voice, interaction.guild, client);
-    
-    if (client.queue.isEmpty){
+    let queue = await client.queues.find(queue => queue.id === interaction.guild.id).queue
+    if (queue.isEmpty){
         console.log("creating new player")
 
         const player = createAudioPlayer();
@@ -72,14 +79,14 @@ async function    mendicantPlay(interaction, resource, client, resourceTitle){
             console.error('Error:', error.message, 'with track', error.resource);
         });
         let dispatcher = connection.subscribe(player);
-        client.queue.enqueue(resource)
+        queue.enqueue(resource)
         player.play(resource);
         player.on(AudioPlayerStatus.Idle, () => {
-            if (!client.queue.isEmpty){
-                client.queue.dequeue()
-                if (!client.queue.isEmpty){
+            if (!queue.isEmpty){
+                queue.dequeue()
+                if (!queue.isEmpty){
                     console.log("play new resource")
-                    player.play(client.queue.peek());
+                    player.play(queue.peek());
                 }
             } else {
                 dispatcher.unsubscribe(),
@@ -88,7 +95,7 @@ async function    mendicantPlay(interaction, resource, client, resourceTitle){
             }
         })
     } else {
-        client.queue.enqueue(resource);
+        queue.enqueue(resource);
     }
     
     await interaction.reply({
