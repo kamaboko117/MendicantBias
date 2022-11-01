@@ -17,14 +17,17 @@ module.exports = {
             return ;
         }
         titles[0] = `**▶️ ${client.queue.elements[client.queue.head].metadata.title}**`
+        let j = 1
         for (let i = client.queue.head + 1; i < client.queue.tail; i++){
-            titles[i] =  `**${i}:** ${client.queue.elements[i].metadata.title}`
+            titles[j] =  `**${j++}:** ${client.queue.elements[i].metadata.title}`
         }
         let i = 0;
         for (const title of titles){
             fields[i] = new Object();
             fields[i].name = "\u200B";
             fields[i++].value = title;
+            if (i === 25)
+                break;
         }
         const embed = new EmbedBuilder()
         .setDescription(`track list`)

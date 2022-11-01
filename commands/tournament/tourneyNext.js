@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const { Round } = require('../../schemas/round');
 const { Match } = require ('../../schemas/match');
 const Tournament = require('../../schemas/tournament');
@@ -69,6 +69,19 @@ async function showResults(tournamentProfile, roundProfile, interaction){
         }
     }
     await tournamentProfile.save().catch(console.error);
+}
+
+async function showTourneyWinner(tournamentProfile, roundProfile, interaction, client){
+    const winner = roundProfile.matches[0].winner;
+    let emote = client.emojis.cache.find(emoji => emoji.id === winner.split(':')[2].slice(0, -1))
+    const embed = new EmbedBuilder()
+        .setTitle(tournamentProfile.name)
+        .setDescription(`🎊🎉 ${winner} wins!!🎉🎊 🏆` )
+        .setColor(client.color)
+        .setImage(emote.url)
+    await interaction.channel.send({
+        embeds: [embed]
+    })
 }
 
 async function  createLB1(tournamentProfile){
@@ -465,15 +478,16 @@ module.exports = {
         }else{
             //show previous day's results and close matches
             await interaction.channel.send({
-                content: "last day's results:"
+                content: "Last day's results:"
             });
             await showResults(tournamentProfile, roundProfile, interaction);
-            interaction.channel.send(`next matches:`)
         }
 
         //if grandfinals
         if (roundProfile.name == 'GRAND FINALS'){
-
+            await interaction.editReply("GRAND FINALS RESULT");
+            await showTourneyWinner(tournamentProfile, roundProfile, interaction, client)
+            return ;
         }
         //if round is over and its not grandfinals
         else if (tournamentProfile.currentMatch == roundProfile.matches.length + roundProfile.matches[0].matchId - 1){
@@ -482,9 +496,11 @@ module.exports = {
         }
         
         //print next Matches
-        tournamentProfile.fullTheme ?
-            printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
-            printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
+        // tournamentProfile.fullTheme ?
+        //     printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
+        //     printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
+        interaction.channel.send(`Next matches:`)
+        printNextMatchesFull(tournamentProfile, roundProfile, interaction);
         await interaction.editReply("NEW DAY");
     },
 
