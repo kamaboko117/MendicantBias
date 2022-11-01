@@ -34,8 +34,10 @@ async function    createTourney(name, guilds, client, interaction){
     emojiArray = [];
     for (const guild of guilds){
         for (const emoji of guild.emojis.cache){
-            emojiArray.push(emoji.toString().split(',')[1]);
-            i++;
+            if (!emoji.managed){
+                emojiArray.push(emoji.toString().split(',')[1]);
+                i++;
+            }
         }
     }
     tourneyProfile.players = emojiArray.sort(() => Math.random() - 0.5);
