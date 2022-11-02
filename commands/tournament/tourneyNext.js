@@ -500,7 +500,7 @@ module.exports = {
         //     printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
         //     printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
         interaction.channel.send(`Next matches:`)
-        printNextMatchesFull(tournamentProfile, roundProfile, interaction);
+        printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
         await interaction.editReply("NEW DAY");
     },
 
