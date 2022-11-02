@@ -21,7 +21,8 @@ module.exports = {
     async execute(interaction, client) {
         const option1 = interaction.options.getString('emote1');
         const option2 = interaction.options.getString('emote2');
-        const re = emojiRegex();
+        const re1 = emojiRegex();
+        const re2 = emojiRegex();
         console.log(`option1: ${option1}`)
         
         let emote1 = client.emojis.cache.find(emoji => emoji.name === option1.split(':')[1]);
@@ -32,11 +33,11 @@ module.exports = {
         //if no emotes are found in cache, we check if the emotes are unicode
         if (!emote1){
             unicode1 = true;
-            emote1 = re.exec(option1)[0];
+            emote1 = re1.exec(option1)[0];
         }
         if (!emote2){
             unicode2 = true;
-            emote2 = re.exec(option2)[0];
+            emote2 = re2.exec(option2)[0];
         }
         if (!emote1 || !emote2){
             await interaction.reply({
