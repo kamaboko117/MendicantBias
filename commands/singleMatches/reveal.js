@@ -41,8 +41,11 @@ module.exports = {
             matchProfile.winner = matchProfile.votesRight > matchProfile.votesLeft ? matchProfile.playerRight : matchProfile.playerLeft;
             await matchProfile.save().catch(console.error); 
         
-        const emote1 = matchProfile.playerLeft.split(':')[2].slice(0, -1);
-        const emote2 = matchProfile.playerRight.split(':')[2].slice(0, -1);
+        const customEmote1 = matchProfile.playerLeft.split(':')[2];
+        const customEmote2 = matchProfile.playerRight.split(':')[2];
+
+        const emote1 = customEmote1 ? customEmote1.slice(0, -1) : matchProfile.playerLeft;
+        const emote2 = customEmote1 ? customEmote2.slice(0, -1) : matchProfile.playerRight;
 
         const button1 = new ButtonBuilder()
             .setCustomId(matchProfile._id + ' left')
