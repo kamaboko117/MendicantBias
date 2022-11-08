@@ -92,6 +92,8 @@ async function    mendicantPlay(interaction, resource, client, resourceTitle){
                 dispatcher.unsubscribe(),
                 player.stop();
                 console.log("unsubscribed");
+                connection.destroy();
+                console.log("connection destroyed");
             }
         })
     } else {
