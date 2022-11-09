@@ -17,9 +17,10 @@ const getGeocode = async (location) => {
     const coordinates = geocodeList[0].center;
     // The ternary operator prevents return of placeName in non-Latin letters (places with Japanese letters for example)
     const placeName = geocodeList[0].matching_text ? geocodeList[0].matching_text : geocodeList[0].text;
-  
+    // console.log(geocodeList[0]);
     const state = geocodeList[0].context[0].text;
-    const country = geocodeList[0].context[1].text;
+    const country = geocodeList[0].context[1] ? geocodeList[0].context[1].text : geocodeList[0].context[0].text;
+    
     return { coordinates, placeName, state, country };
 }
 
@@ -39,7 +40,7 @@ const getWeather = async (location) => {
   const weatherResult = await fetch(URL).then(data => data.json()).then(result => result);
     console.log(weatherResult.weather);
   const currentTemp = weatherResult.main.temp;
-  const feelsLike = weatherResult.main.feels_ike;
+  const feelsLike = weatherResult.main.feels_like;
   const description = weatherResult.weather[0].description;
 //   const tempMax = weatherResult.main.temp_max;
 //   const tempMin = weatherResult.main.temp_min;
