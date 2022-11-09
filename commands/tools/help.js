@@ -20,13 +20,13 @@ function listCommands(interaction, client){
     }
 
     const embed = new EmbedBuilder()
-    .setTitle(`Command list`)
-    .setDescription('use /<command> for more detailed help on a specific command')
-    .setColor(client.color)
-    .addFields(fields)
-    return interaction.reply({
-        embeds: [embed]
-    });
+        .setTitle(`Command list`)
+        .setDescription('use /<command> for more detailed help on a specific command')
+        .setColor(client.color)
+        .addFields(fields)
+        return interaction.reply({
+            embeds: [embed]
+        });
 }
 
 function    searchCommand(cmd){
