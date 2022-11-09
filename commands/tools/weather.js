@@ -53,7 +53,7 @@ const getWeather = async (location) => {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('weather')
-        .setDescription('Insults the doggo named Johnnyeco')
+        .setDescription('Gets the weather for a location')
         .addStringOption(option =>
             option.setName('location')
                 .setDescription('location')
@@ -89,5 +89,5 @@ module.exports = {
           });
     },
 
-    usage: 'Use carefully: Yellow Members might endure the consequences of this action'
+    // usage: 'Use carefully: Yellow Members might endure the consequences of this action'
 }
