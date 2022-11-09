@@ -87,6 +87,12 @@ async function    mendicantPlay(interaction, resource, client, resourceTitle){
                 if (!queue.isEmpty){
                     console.log("play new resource")
                     player.play(queue.peek());
+                } else {
+                    dispatcher.unsubscribe(),
+                    player.stop();
+                    console.log("unsubscribed");
+                    connection.destroy();
+                    console.log("connection destroyed");
                 }
             } else {
                 dispatcher.unsubscribe(),
