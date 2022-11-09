@@ -39,7 +39,7 @@ const getWeather = async (location) => {
   const weatherResult = await fetch(URL).then(data => data.json()).then(result => result);
     console.log(weatherResult.weather);
   const currentTemp = weatherResult.main.temp;
-  const feelsLike = weatherResult.main.feels_ike;
+  const feelsLike = weatherResult.main.feels_like;
   const description = weatherResult.weather[0].description;
 //   const tempMax = weatherResult.main.temp_max;
 //   const tempMin = weatherResult.main.temp_min;
