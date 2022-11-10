@@ -2,6 +2,8 @@ const fs = require('fs');
 const { SlashCommandBuilder, EmbedBuilder } = require('@discordjs/builders');
 
 function listCommands(interaction, client){
+    console.log(`${interaction.member.displayName} used /help`);
+
     const commandFolders = fs.readdirSync('./commands');
     let i = 0;
     let fields = [];

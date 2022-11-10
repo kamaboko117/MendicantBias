@@ -7,6 +7,7 @@ module.exports = {
         .setDescription('skip current song'),
     
     async execute(interaction, client) {
+        console.log(`${interaction.member.displayName} used /skip`)
         const { voice } = interaction.member;
         if (!voice.channelId){
             interaction.reply("Error: You are not in a voice channel");

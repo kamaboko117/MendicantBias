@@ -21,6 +21,8 @@ module.exports = {
     async execute(interaction, client) {
         const option1 = interaction.options.getString('emote1');
         const option2 = interaction.options.getString('emote2');
+        console.log(`${interaction.member.displayName} used /create-match ${option1} ${option2}`);
+
         const re1 = emojiRegex();
         const re2 = emojiRegex();
         console.log(`option1: ${option1}`)

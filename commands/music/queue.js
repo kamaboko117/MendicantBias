@@ -6,6 +6,7 @@ module.exports = {
         .setDescription('get the music queue'),
     
     async execute(interaction, client) {
+        console.log(`${interaction.member.displayName} used /queue`)
         //create embed
         let fields = []
         let titles = []
