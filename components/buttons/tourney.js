@@ -63,8 +63,6 @@ module.exports = {
                 newMessage = 'what?';
             await tourneyProfile.save().catch(console.error);        
         }
-        if (matchProfile)
-            console.log(matchProfile.matchId);
         console.log(interaction.member.displayName);
         await interaction.reply({
             content: newMessage,

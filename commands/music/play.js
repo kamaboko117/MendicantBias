@@ -173,9 +173,10 @@ module.exports = {
                 .setDescription('youtube video link or search')
                 .setRequired(true)
             ),
-    async execute(interaction, client) {
+    async execute(interaction, client) {  
         const option1 = interaction.options.getString('url-or-search');
-    
+        console.log(`${interaction.member.displayName} used /play ${option1}`);
+
         if (ytdl.validateURL(option1)){
             let ID = ytdl.getURLVideoID(option1)
             let resource = await mendicantCreateResource(interaction, ID)

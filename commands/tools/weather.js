@@ -25,29 +25,24 @@ const getGeocode = async (location) => {
 }
 
 const getWeather = async (location) => {
-    const geocodeResult = await getGeocode(location);
-    const [lon, lat] = geocodeResult.coordinates;
-    // .split(/\b\s[Ss]hi\b/) cut off japanese city sufix ('Iwata Shi' == after split() ==> 'Iwata')
-    const placeName = {
-      city: geocodeResult.placeName.split(/\b\s[Ss]hi\b/)[0],
-      state: geocodeResult.state,
-      country: geocodeResult.country
-    }
-    
+  const geocodeResult = await getGeocode(location);
+  const [lon, lat] = geocodeResult.coordinates;
+  // .split(/\b\s[Ss]hi\b/) cut off japanese city sufix ('Iwata Shi' == after split() ==> 'Iwata')
+  const placeName = {
+    city: geocodeResult.placeName.split(/\b\s[Ss]hi\b/)[0],
+    state: geocodeResult.state,
+    country: geocodeResult.country
+  }  
 
   const URL = `${WEATHER_BASE}?lat=${lat}&lon=${lon}&exclude=minutely,hourly,alerts&units=metric&appid=${key}&units=metric`;
 
   const weatherResult = await fetch(URL).then(data => data.json()).then(result => result);
-    console.log(weatherResult.weather);
   const currentTemp = weatherResult.main.temp;
   const feelsLike = weatherResult.main.feels_like;
   const description = weatherResult.weather[0].description;
-//   const tempMax = weatherResult.main.temp_max;
-//   const tempMin = weatherResult.main.temp_min;
-    const humidity = weatherResult.main.humidity;
+  const humidity = weatherResult.main.humidity;
 
   return [{ currentTemp, description, feelsLike, humidity }, placeName];
-
 }
 
 module.exports = {
@@ -61,11 +56,10 @@ module.exports = {
             ),
     
         async execute(interaction, client) {
-          const option1 = interaction.options.getString('location')
-          let ret = "nope";
+          const option1 = interaction.options.getString('location');
+          console.log(`${interaction.member.displayName} used /weather ${option1}`);
           
-          const response = await getWeather(option1);
-          console.log(response[1].city)  
+          const response = await getWeather(option1); 
           let embed = new EmbedBuilder()
                 .setTitle(`weather for **${response[1].country}, ${response[1].city}**`)
                 .setDescription(response[0].description)
@@ -80,7 +74,7 @@ module.exports = {
                     },
                     {
                         name: "Humidity:",
-                        value: `${response[0].humidity}`
+                        value: `${response[0].humidity}%`
                     }
                 ])
             

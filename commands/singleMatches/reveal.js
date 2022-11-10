@@ -17,11 +17,11 @@ module.exports = {
         .addStringOption(option =>
             option.setName('match_id')
                 .setDescription('the ID of the match you want to reveal')
-                .setRequired(false)
+                .setRequired(true)
             ),
 
     async execute(interaction, client) {
-        console.log(`${interaction.member.displayName} used reveal`)
+        console.log(`${interaction.member.displayName} used /reveal`)
         options = interaction.options.getString('match_id');
         // if (options){
             if (isNaN(options))
