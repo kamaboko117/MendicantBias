@@ -21,7 +21,7 @@ const {
 } = require("@discordjs/voice");
 const search = require("youtube-search");
 const { Queue } = require("../../classes/Queue");
-const opts = {
+const YTopts = {
     maxResults: 5,
     key: process.env.GOOGLE,
     type: "video",
@@ -59,7 +59,7 @@ function mendicantJoin(voice, guild, client) {
     return connection;
 }
 
-async function mendicantPlay(interaction, resource, client, resourceTitle) {
+async function mendicantPlay(interaction, resource, client) {
     if (interaction.inRawGuild) await interaction.guild.members.fetch();
     const { voice } = interaction.member;
     if (!voice.channelId) {
@@ -163,53 +163,12 @@ async function mendicantCreateResource(interaction, url) {
         interaction.channel.send("Error: Could not create resource");
         return null;
     }
-    // let title = null;
-    // await ytdl2.video_basic_info(url).then(value => {
-    //     title = value.video_details.title;
-    //     console.log(title)
-    // }).catch(console.error)
-    // if (!title)
-    //     return null;
-    // let stream = await ytdl2.stream(url);
-    // let resource = createAudioResource(stream.stream, {
-    //     inputType: stream.type,
-    //     metadata: {
-    //         title: title
-    //     }
-    // })
 
     return resource;
 }
 
-module.exports = {
-    mendicantPlay: mendicantPlay,
-    mendicantCreateResource: mendicantCreateResource,
-
-    data: new SlashCommandBuilder()
-        .setName("play")
-        .setDescription("plays a video from youtube in voice chat")
-        .addStringOption((option) =>
-            option
-                .setName("url-or-search")
-                .setDescription("youtube video link or search")
-                .setRequired(true)
-        ),
-    async execute(interaction, client) {
-        const option1 = interaction.options.getString("url-or-search");
-        console.log(`${interaction.member.displayName} used /play ${option1}`);
-
-        if (ytdl.validateURL(option1)) {
-            let ID = ytdl.getURLVideoID(option1);
-            let resource = await mendicantCreateResource(interaction, ID);
-            if (!resource) {
-                interaction.reply("Error: Could not create resource");
-                return;
-            }
-
-            await mendicantPlay(interaction, resource, client);
-            return;
-        }
-        let results = await search(option1, opts);
+async function mendicantSearch(option1, interaction, client){
+    let results = await search(option1, YTopts);
         if (!results.results.length) {
             interaction.reply(`No results for "${option1}"`);
             return;
@@ -249,6 +208,46 @@ module.exports = {
             embeds: [embed],
             components: [new ActionRowBuilder().addComponents(buttons)],
         });
+}
+
+function isPlaylist(url){
+    return (url.includes("&list=") || url.includes("/playlist?"));
+}
+
+module.exports = {
+    mendicantPlay: mendicantPlay,
+    mendicantCreateResource: mendicantCreateResource,
+
+    data: new SlashCommandBuilder()
+        .setName("play")
+        .setDescription("plays a video from youtube in voice chat")
+        .addStringOption((option) =>
+            option
+                .setName("url-or-search")
+                .setDescription("youtube video link or search")
+                .setRequired(true)
+        ),
+    async execute(interaction, client) {
+        const option1 = interaction.options.getString("url-or-search");
+        console.log(`${interaction.member.displayName} used /play ${option1}`);
+
+        if (isPlaylist(option1)){
+            console.log('playlist');
+        }
+
+        if (ytdl.validateURL(option1)) {
+            let ID = ytdl.getURLVideoID(option1);
+            let resource = await mendicantCreateResource(interaction, ID);
+            if (!resource) {
+                interaction.reply("Error: Could not create resource");
+                return;
+            }
+
+            await mendicantPlay(interaction, resource, client);
+            return;
+        }
+        await mendicantSearch(option1, interaction, client)
+        
     },
 
     usage: "play a video from youtube. you can either use the video's URL or search for an input",
