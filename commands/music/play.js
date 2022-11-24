@@ -81,27 +81,36 @@ async function    mendicantPlay(interaction, resource, client, resourceTitle){
         let dispatcher = connection.subscribe(player);
         queue.enqueue(resource)
         player.play(resource);
+        let timeoutID;
         player.on(AudioPlayerStatus.Idle, () => {
             if (!queue.isEmpty){
                 queue.dequeue()
                 if (!queue.isEmpty){
                     console.log("play new resource")
                     player.play(queue.peek());
-                } else {
+                } else { //30 min timer until a disconnection if still Idle
+                    timeoutID = setTimeout(() => {
+                        dispatcher.unsubscribe(),
+                        player.stop();
+                        console.log("unsubscribed");
+                        connection.destroy();
+                        console.log("connection destroyed");
+                    }, 1800000);    
+                }
+            } else { //30 min timer until a disconnection if still Idle
+                timeoutID = setTimeout(() => {
                     dispatcher.unsubscribe(),
                     player.stop();
                     console.log("unsubscribed");
                     connection.destroy();
                     console.log("connection destroyed");
-                }
-            } else {
-                dispatcher.unsubscribe(),
-                player.stop();
-                console.log("unsubscribed");
-                connection.destroy();
-                console.log("connection destroyed");
+                }, 1800000);    
             }
         })
+        player.on(AudioPlayerStatus.Playing, () => {
+            clearTimeout(timeoutID);
+        })
+
     } else {
         queue.enqueue(resource);
     }
