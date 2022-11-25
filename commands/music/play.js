@@ -18,6 +18,7 @@ const {
     createAudioResource,
     StreamType,
     AudioPlayerStatus,
+    entersState,
 } = require("@discordjs/voice");
 const search = require("youtube-search");
 const { Queue } = require("../../classes/Queue");
@@ -50,12 +51,39 @@ function mendicantJoin(voice, guild, client) {
     connection.on(VoiceConnectionStatus.Ready, () => {
         console.log(`Ready`);
     });
-    connection.on(VoiceConnectionStatus.Disconnected, () => {
-        connection.destroy();
-        let queue = client.queues.find((queue) => queue.id === guild.id).queue;
-        while (!queue.isEmpty) queue.dequeue();
-        console.log(`Connection destroyed`);
-    });
+    connection.on(
+        VoiceConnectionStatus.Disconnected,
+        async (oldState, newState) => {
+            try {
+                await Promise.race([
+                    entersState(
+                        connection,
+                        VoiceConnectionStatus.Signalling,
+                        5_000
+                    ),
+                    entersState(
+                        connection,
+                        VoiceConnectionStatus.Connecting,
+                        5_000
+                    ),
+                ]);
+                // Seems to be reconnecting to a new channel - ignore disconnect
+            } catch (error) {
+                // Seems to be a real disconnect which SHOULDN'T be recovered from
+                let logMsg = `Connection destroyed`;
+                try {
+                    connection.destroy();
+                } catch (error) {
+                    logMsg = `Could not destroy connection: ${error}`;
+                }
+                let queue = client.queues.find(
+                    (queue) => queue.id === guild.id
+                ).queue;
+                while (!queue.isEmpty) queue.dequeue();
+                console.log(logMsg);
+            }
+        }
+    );
     return connection;
 }
 
@@ -86,7 +114,6 @@ async function mendicantPlay(interaction, resource, client) {
         let dispatcher = connection.subscribe(player);
         queue.enqueue(resource);
         player.play(resource);
-        let timeoutID;
         player.on(AudioPlayerStatus.Idle, () => {
             if (!queue.isEmpty) {
                 queue.dequeue();
@@ -95,27 +122,28 @@ async function mendicantPlay(interaction, resource, client) {
                     player.play(queue.peek());
                 } else {
                     //30 min timer until a disconnection if still Idle
-                    timeoutID = setTimeout(() => {
+
+                    client.timeoutID = setTimeout(() => {
                         dispatcher.unsubscribe();
                         player.stop();
                         console.log("unsubscribed");
-                        connection.destroy();
-                        console.log("connection destroyed");
-                    }, 1800000);
+                        connection.disconnect();
+                        console.log("connection disconnected");
+                    }, 800_000);
                 }
             } else {
                 //30 min timer until a disconnection if still Idle
-                timeoutID = setTimeout(() => {
+                client.timeoutID = setTimeout(() => {
                     dispatcher.unsubscribe();
                     player.stop();
                     console.log("unsubscribed");
-                    connection.destroy();
-                    console.log("connection destroyed");
-                }, 1800000);
+                    connection.disconnect();
+                    console.log("connection disconnected");
+                }, 800_000);
             }
         });
         player.on(AudioPlayerStatus.Playing, () => {
-            clearTimeout(timeoutID);
+            clearTimeout(client.timeoutID);
         });
     } else {
         queue.enqueue(resource);
@@ -167,51 +195,51 @@ async function mendicantCreateResource(interaction, url) {
     return resource;
 }
 
-async function mendicantSearch(option1, interaction, client){
+async function mendicantSearch(option1, interaction, client) {
     let results = await search(option1, YTopts);
-        if (!results.results.length) {
-            interaction.reply(`No results for "${option1}"`);
-            return;
-        }
-        let i = 0;
-        let titles = results.results.map((result) => {
-            i++;
-            return `**${i}:** ${result.title}`;
-        });
+    if (!results.results.length) {
+        interaction.reply(`No results for "${option1}"`);
+        return;
+    }
+    let i = 0;
+    let titles = results.results.map((result) => {
+        i++;
+        return `**${i}:** ${result.title}`;
+    });
 
-        //create embed
-        let fields = [];
-        i = 0;
-        for (const title of titles) {
-            fields[i] = new Object();
-            fields[i].name = "\u200B";
-            fields[i++].value = title;
-        }
-        const embed = new EmbedBuilder()
-            .setDescription(`results for **${option1}**: select a track`)
-            .setColor(client.color)
-            .addFields(fields);
-        i = 0;
-        let buttons = [];
-        for (const result of results.results) {
-            let customID = `P ${result.id} ${fields[i].value}`.substring(0, 99);
-            buttons[i++] = new ButtonBuilder()
-                .setCustomId(customID)
-                .setStyle(ButtonStyle.Secondary)
-                .setLabel(`${i}`);
-            if (i === 5) break;
-        }
+    //create embed
+    let fields = [];
+    i = 0;
+    for (const title of titles) {
+        fields[i] = new Object();
+        fields[i].name = "\u200B";
+        fields[i++].value = title;
+    }
+    const embed = new EmbedBuilder()
+        .setDescription(`results for **${option1}**: select a track`)
+        .setColor(client.color)
+        .addFields(fields);
+    i = 0;
+    let buttons = [];
+    for (const result of results.results) {
+        let customID = `P ${result.id} ${fields[i].value}`.substring(0, 99);
+        buttons[i++] = new ButtonBuilder()
+            .setCustomId(customID)
+            .setStyle(ButtonStyle.Secondary)
+            .setLabel(`${i}`);
+        if (i === 5) break;
+    }
 
-        await interaction.reply({
-            // content: "yo",
-            ephemeral: false,
-            embeds: [embed],
-            components: [new ActionRowBuilder().addComponents(buttons)],
-        });
+    await interaction.reply({
+        // content: "yo",
+        ephemeral: false,
+        embeds: [embed],
+        components: [new ActionRowBuilder().addComponents(buttons)],
+    });
 }
 
-function isPlaylist(url){
-    return (url.includes("&list=") || url.includes("/playlist?"));
+function isPlaylist(url) {
+    return url.includes("&list=") || url.includes("/playlist?");
 }
 
 module.exports = {
@@ -231,8 +259,8 @@ module.exports = {
         const option1 = interaction.options.getString("url-or-search");
         console.log(`${interaction.member.displayName} used /play ${option1}`);
 
-        if (isPlaylist(option1)){
-            console.log('playlist');
+        if (isPlaylist(option1)) {
+            console.log("playlist");
         }
 
         if (ytdl.validateURL(option1)) {
@@ -246,8 +274,7 @@ module.exports = {
             await mendicantPlay(interaction, resource, client);
             return;
         }
-        await mendicantSearch(option1, interaction, client)
-        
+        await mendicantSearch(option1, interaction, client);
     },
 
     usage: "play a video from youtube. you can either use the video's URL or search for an input",
