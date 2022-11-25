@@ -2,7 +2,6 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "../../.env" });
 const {
     SlashCommandBuilder,
-    VoiceChannel,
     ButtonBuilder,
     ButtonStyle,
     EmbedBuilder,
@@ -27,6 +26,7 @@ const YTopts = {
     key: process.env.GOOGLE,
     type: "video",
 };
+const youtubesearchapi=require('youtube-search-api');
 const ytCookie = process.env.YTCOOKIE;
 
 function mendicantJoin(voice, guild, client) {
@@ -239,7 +239,18 @@ async function mendicantSearch(option1, interaction, client) {
 }
 
 function isPlaylist(url) {
-    return url.includes("&list=") || url.includes("/playlist?");
+    return url.includes("&list=") || url.includes("?list=");
+}
+
+function getPlaylistId(url) {
+    let keyword;
+    if (url.includes("&list=")) keyword = "&list=";
+    else if (url.includes("?list=")) keyword = "?list=";
+    let index = url.indexOf(keyword);
+    let end = url.indexOf("&", index + 1);
+    console.log(`index: ${index}`);
+    if (end === -1) return url.substring(index + keyword.length);
+    else return url.substring(index + keyword.length, end);
 }
 
 module.exports = {
@@ -260,7 +271,10 @@ module.exports = {
         console.log(`${interaction.member.displayName} used /play ${option1}`);
 
         if (isPlaylist(option1)) {
+            let playlistID = getPlaylistId(option1);
             console.log("playlist");
+            console.log(`URL: ${option1} ID: ${playlistID}`);
+            youtubesearchapi.GetPlaylistData(playlistID).then(console.log).catch(console.error)
         }
 
         if (ytdl.validateURL(option1)) {
