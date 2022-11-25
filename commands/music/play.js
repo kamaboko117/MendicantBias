@@ -26,8 +26,18 @@ const YTopts = {
     key: process.env.GOOGLE,
     type: "video",
 };
-const youtubesearchapi=require('youtube-search-api');
+const youtubesearchapi = require("youtube-search-api");
 const ytCookie = process.env.YTCOOKIE;
+
+function isValidHttpUrl(string) {
+    let url;
+    try {
+        url = new URL(string);
+    } catch (_) {
+        return false;
+    }
+    return url.protocol === "http:" || url.protocol === "https:";
+}
 
 function mendicantJoin(voice, guild, client) {
     let connection;
@@ -239,6 +249,7 @@ async function mendicantSearch(option1, interaction, client) {
 }
 
 function isPlaylist(url) {
+    if (!isValidHttpUrl(url)) return false;
     return url.includes("&list=") || url.includes("?list=");
 }
 
@@ -251,6 +262,21 @@ function getPlaylistId(url) {
     console.log(`index: ${index}`);
     if (end === -1) return url.substring(index + keyword.length);
     else return url.substring(index + keyword.length, end);
+}
+
+function findVideoIndex(url, playlist) {
+    let videoID;
+    if (ytdl.validateURL(url)) {
+        videoID = ytdl.getURLVideoID(url);
+    } else {
+        return 0;
+    }
+    let i = 0;
+    for (const video of playlist.items) {
+        if (videoID === video.id) return i + 1;
+        i++;
+    }
+    return 0;
 }
 
 module.exports = {
@@ -269,14 +295,30 @@ module.exports = {
     async execute(interaction, client) {
         const option1 = interaction.options.getString("url-or-search");
         console.log(`${interaction.member.displayName} used /play ${option1}`);
-
-        if (isPlaylist(option1)) {
+        let playlistFlag = isPlaylist(option1);
+        if (playlistFlag) {
             let playlistID = getPlaylistId(option1);
             console.log("playlist");
             console.log(`URL: ${option1} ID: ${playlistID}`);
-            youtubesearchapi.GetPlaylistData(playlistID).then(console.log).catch(console.error)
+            youtubesearchapi
+                .GetPlaylistData(playlistID)
+                .then(async (playlist) => {
+                    let index = findVideoIndex(option1, playlist);
+                    const button1 = new ButtonBuilder()
+                        .setCustomId(`A ${playlistID} ${index}`)
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("✅");
+                    await interaction.channel.send({
+                        content: `Add the this playlist to the queue? (${
+                            playlist.items.length - index
+                        } videos)`,
+                        components: [
+                            new ActionRowBuilder().addComponents(button1),
+                        ],
+                    });
+                })
+                .catch(console.error);
         }
-
         if (ytdl.validateURL(option1)) {
             let ID = ytdl.getURLVideoID(option1);
             let resource = await mendicantCreateResource(interaction, ID);
@@ -288,7 +330,9 @@ module.exports = {
             await mendicantPlay(interaction, resource, client);
             return;
         }
-        await mendicantSearch(option1, interaction, client);
+
+        if (!playlistFlag) await mendicantSearch(option1, interaction, client);
+        else interaction.reply("Playlist detected");
     },
 
     usage: "play a video from youtube. you can either use the video's URL or search for an input",
