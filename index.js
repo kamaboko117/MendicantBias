@@ -6,7 +6,6 @@ const { connect } = require("mongoose");
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
 const fs = require("fs");
 const { Match } = require("./schemas/match");
-const { Queue } = require("./classes/Queue");
 
 const client = new Client({
     intents: [
