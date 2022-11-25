@@ -1,19 +1,17 @@
-const dotenv = require('dotenv');
-dotenv.config({ path: './.env' });
+const dotenv = require("dotenv");
+dotenv.config({ path: "./.env" });
 const token = process.env.TOKEN;
 const databaseToken = process.env.DATABASE;
-const { connect } = require('mongoose');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
-const fs = require('fs');
-const { Match } = require('./schemas/match');
-const { Queue } = require('./classes/Queue');
-
+const { connect } = require("mongoose");
+const { Client, Collection, GatewayIntentBits } = require("discord.js");
+const fs = require("fs");
+const { Match } = require("./schemas/match");
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildVoiceStates
+        GatewayIntentBits.GuildVoiceStates,
     ],
 });
 client.commands = new Collection();
@@ -22,13 +20,18 @@ client.selectMenus = new Collection();
 client.modals = new Collection();
 client.commandArray = [];
 client.color = 0x18e1ee;
-client.invite = 'https://discord.com/api/oauth2/authorize?client_id=688035147559337994&permissions=137439215616&scope=bot';
-client.invite2= 'https://discord.com/api/oauth2/authorize?client_id=1026870487885815870&permissions=347136&scope=bot'
+client.invite =
+    "https://discord.com/api/oauth2/authorize?client_id=688035147559337994&permissions=137439215616&scope=bot";
+client.invite2 =
+    "https://discord.com/api/oauth2/authorize?client_id=1026870487885815870&permissions=347136&scope=bot";
 client.queues = [];
+client.timeoutId = [];
 
-const functionFolders = fs.readdirSync('./functions');
+const functionFolders = fs.readdirSync("./functions");
 for (const folder of functionFolders) {
-    const functionFiles = fs.readdirSync(`./functions/${folder}`).filter(file => file.endsWith('.js'));
+    const functionFiles = fs
+        .readdirSync(`./functions/${folder}`)
+        .filter((file) => file.endsWith(".js"));
     for (const file of functionFiles)
         require(`./functions/${folder}/${file}`)(client);
 }
