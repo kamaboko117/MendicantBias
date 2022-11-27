@@ -26,7 +26,7 @@ module.exports = {
                         );
                         continue;
                     }
-                    mendicantPlay(interaction, resource, client);
+                    mendicantPlay(interaction, resource, client, true);
                 }
             }
         });
