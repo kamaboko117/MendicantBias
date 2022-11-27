@@ -168,27 +168,29 @@ async function mendicantPlay(interaction, resource, client, silent) {
     });
 }
 
-async function mendicantCreateResource(interaction, url) {
-    let resourceTitle = null;
-    await ytdl
-        .getInfo(`https://www.youtube.com/watch?v=${url}`, {
-            requestOptions: {
-                headers: {
-                    Cookie: ytCookie,
+async function mendicantCreateResource(interaction, videoID, details) {
+    let videoDetails = details ? details : null;
+    if (!details){
+        await ytdl
+            .getInfo(`https://www.youtube.com/watch?v=${videoID}`, {
+                requestOptions: {
+                    headers: {
+                        Cookie: ytCookie,
+                    },
                 },
-            },
-        })
-        .catch((error) =>
-            interaction.channel.send(`ytdl module error: ${error}`)
-        )
-        .then((value) => {
-            resourceTitle = value.videoDetails;
-        });
-    if (!resourceTitle) return null;
+            })
+            .catch((error) =>
+                interaction.channel.send(`ytdl module error: ${error} [COULD NOT GET VIDEO DETAILS]`)
+            )
+            .then((value) => {
+                videoDetails = value.videoDetails;
+            });
+        if (!videoDetails) return null;
+    }
 
-    resourceTitle = resourceTitle.title;
-    console.log(resourceTitle);
-    let stream = ytdl(url, {
+    let resourceTitle = videoDetails.title;
+    console.log(videoDetails.title);
+    let stream = ytdl(videoID, {
         filter: "audioonly",
         highWaterMark: 1 << 25,
     }).on("error", (err) =>
@@ -198,6 +200,7 @@ async function mendicantCreateResource(interaction, url) {
         inputType: StreamType.Arbitrary,
         metadata: {
             title: resourceTitle,
+            length: videoDetails.length,
         },
     });
     if (resource.playStream.readableEnded || resource.playStream.destroyed) {
@@ -299,29 +302,29 @@ module.exports = {
         const option1 = interaction.options.getString("url-or-search");
         console.log(`${interaction.member.displayName} used /play ${option1}`);
         let playlistFlag = isPlaylist(option1);
-        // if (playlistFlag) {
-        //     let playlistID = getPlaylistId(option1);
-        //     console.log("playlist");
-        //     console.log(`URL: ${option1} ID: ${playlistID}`);
-        //     youtubesearchapi
-        //         .GetPlaylistData(playlistID)
-        //         .then(async (playlist) => {
-        //             let index = findVideoIndex(option1, playlist);
-        //             const button1 = new ButtonBuilder()
-        //                 .setCustomId(`A ${playlistID} ${index}`)
-        //                 .setStyle(ButtonStyle.Secondary)
-        //                 .setEmoji("✅");
-        //             await interaction.channel.send({
-        //                 content: `Add this playlist to the queue? (${
-        //                     playlist.items.length - index
-        //                 } videos)`,
-        //                 components: [
-        //                     new ActionRowBuilder().addComponents(button1),
-        //                 ],
-        //             });
-        //         })
-        //         .catch(console.error);
-        // }
+        if (playlistFlag) {
+            let playlistID = getPlaylistId(option1);
+            console.log("playlist");
+            console.log(`URL: ${option1} ID: ${playlistID}`);
+            youtubesearchapi
+                .GetPlaylistData(playlistID)
+                .then(async (playlist) => {
+                    let index = findVideoIndex(option1, playlist);
+                    const button1 = new ButtonBuilder()
+                        .setCustomId(`A ${playlistID} ${index}`)
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("✅");
+                    await interaction.channel.send({
+                        content: `Add this playlist to the queue? (${
+                            playlist.items.length - index
+                        } videos)`,
+                        components: [
+                            new ActionRowBuilder().addComponents(button1),
+                        ],
+                    });
+                })
+                .catch(console.error);
+        }
         if (ytdl.validateURL(option1)) {
             let ID = ytdl.getURLVideoID(option1);
             let resource = await mendicantCreateResource(interaction, ID);
