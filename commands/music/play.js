@@ -170,7 +170,6 @@ async function mendicantPlay(interaction, resource, client, silent) {
 
 async function mendicantCreateResource(interaction, videoID, details) {
     let videoDetails = details ? details : null;
-    console.log(videoDetails)
     if (!details){
         await ytdl
             .getInfo(`https://www.youtube.com/watch?v=${videoID}`, {

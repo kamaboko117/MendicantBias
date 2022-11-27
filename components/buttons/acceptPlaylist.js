@@ -26,7 +26,6 @@ module.exports = {
                     videoDetails.id = video.id;
                     videoDetails.title = video.title;
                     videoDetails.length = toSeconds(video.length.simpleText);
-                    console.log(video.length.simpleText);
                     let resource = await mendicantCreateResource(
                         interaction,
                         video.id,
@@ -38,6 +37,8 @@ module.exports = {
                     }
                     mendicantPlay(interaction, resource, client, true);
                 }
+                // if (i - index > 30)
+                //     break ;
             }
         });
 
