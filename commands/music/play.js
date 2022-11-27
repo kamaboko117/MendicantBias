@@ -54,50 +54,51 @@ function mendicantJoin(voice, guild, client) {
                 queue: new Queue(),
             });
         }
-    }
-    connection.on(VoiceConnectionStatus.Signalling, () => {
-        console.log(`signalling...`);
-    });
-    connection.on(VoiceConnectionStatus.Ready, () => {
-        console.log(`Ready`);
-    });
-    connection.on(
-        VoiceConnectionStatus.Disconnected,
-        async (oldState, newState) => {
-            try {
-                await Promise.race([
-                    entersState(
-                        connection,
-                        VoiceConnectionStatus.Signalling,
-                        5_000
-                    ),
-                    entersState(
-                        connection,
-                        VoiceConnectionStatus.Connecting,
-                        5_000
-                    ),
-                ]);
-                // Seems to be reconnecting to a new channel - ignore disconnect
-            } catch (error) {
-                // Seems to be a real disconnect which SHOULDN'T be recovered from
-                let logMsg = `Connection destroyed`;
+        connection.on(VoiceConnectionStatus.Signalling, () => {
+            console.log(`signalling...`);
+        });
+        connection.on(VoiceConnectionStatus.Ready, () => {
+            console.log(`Ready`);
+        });
+        connection.on(
+            VoiceConnectionStatus.Disconnected,
+            async (oldState, newState) => {
                 try {
-                    connection.destroy();
+                    await Promise.race([
+                        entersState(
+                            connection,
+                            VoiceConnectionStatus.Signalling,
+                            5_000
+                        ),
+                        entersState(
+                            connection,
+                            VoiceConnectionStatus.Connecting,
+                            5_000
+                        ),
+                    ]);
+                    // Seems to be reconnecting to a new channel - ignore disconnect
                 } catch (error) {
-                    logMsg = `Could not destroy connection: ${error}`;
+                    // Seems to be a real disconnect which SHOULDN'T be recovered from
+                    let logMsg = `Connection destroyed`;
+                    try {
+                        connection.destroy();
+                    } catch (error) {
+                        logMsg = `Could not destroy connection: ${error}`;
+                    }
+                    let queue = client.queues.find(
+                        (queue) => queue.id === guild.id
+                    ).queue;
+                    while (!queue.isEmpty) queue.dequeue();
+                    console.log(logMsg);
                 }
-                let queue = client.queues.find(
-                    (queue) => queue.id === guild.id
-                ).queue;
-                while (!queue.isEmpty) queue.dequeue();
-                console.log(logMsg);
             }
-        }
-    );
+        );
+    }
+    
     return connection;
 }
 
-async function mendicantPlay(interaction, resource, client) {
+async function mendicantPlay(interaction, resource, client, silent) {
     if (interaction.inRawGuild) await interaction.guild.members.fetch();
     const { voice } = interaction.member;
     if (!voice.channelId) {
@@ -159,6 +160,8 @@ async function mendicantPlay(interaction, resource, client) {
         queue.enqueue(resource);
     }
 
+    if (silent)
+        return ;
     await interaction.reply({
         content: `Queued **${resource.metadata.title}**`,
         ephemeral: false,
