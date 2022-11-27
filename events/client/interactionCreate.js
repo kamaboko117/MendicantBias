@@ -32,6 +32,8 @@ module.exports = {
                     await buttons.get('tourney').execute(interaction, client);
                 }else if (type === 'P'){
                     await buttons.get('play').execute(interaction, client);
+                }else if (type === 'A'){
+                    await buttons.get('acceptplaylist').execute(interaction, client);
                 }else{
                     try {
                         await buttons.get('default').execute(interaction, client);

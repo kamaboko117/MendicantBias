@@ -2,7 +2,6 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "../../.env" });
 const {
     SlashCommandBuilder,
-    VoiceChannel,
     ButtonBuilder,
     ButtonStyle,
     EmbedBuilder,
@@ -27,7 +26,18 @@ const YTopts = {
     key: process.env.GOOGLE,
     type: "video",
 };
+const youtubesearchapi = require("youtube-search-api");
 const ytCookie = process.env.YTCOOKIE;
+
+function isValidHttpUrl(string) {
+    let url;
+    try {
+        url = new URL(string);
+    } catch (_) {
+        return false;
+    }
+    return url.protocol === "http:" || url.protocol === "https:";
+}
 
 function mendicantJoin(voice, guild, client) {
     let connection;
@@ -44,50 +54,51 @@ function mendicantJoin(voice, guild, client) {
                 queue: new Queue(),
             });
         }
-    }
-    connection.on(VoiceConnectionStatus.Signalling, () => {
-        console.log(`signalling...`);
-    });
-    connection.on(VoiceConnectionStatus.Ready, () => {
-        console.log(`Ready`);
-    });
-    connection.on(
-        VoiceConnectionStatus.Disconnected,
-        async (oldState, newState) => {
-            try {
-                await Promise.race([
-                    entersState(
-                        connection,
-                        VoiceConnectionStatus.Signalling,
-                        5_000
-                    ),
-                    entersState(
-                        connection,
-                        VoiceConnectionStatus.Connecting,
-                        5_000
-                    ),
-                ]);
-                // Seems to be reconnecting to a new channel - ignore disconnect
-            } catch (error) {
-                // Seems to be a real disconnect which SHOULDN'T be recovered from
-                let logMsg = `Connection destroyed`;
+        connection.on(VoiceConnectionStatus.Signalling, () => {
+            console.log(`signalling...`);
+        });
+        connection.on(VoiceConnectionStatus.Ready, () => {
+            console.log(`Ready`);
+        });
+        connection.on(
+            VoiceConnectionStatus.Disconnected,
+            async (oldState, newState) => {
                 try {
-                    connection.destroy();
+                    await Promise.race([
+                        entersState(
+                            connection,
+                            VoiceConnectionStatus.Signalling,
+                            5_000
+                        ),
+                        entersState(
+                            connection,
+                            VoiceConnectionStatus.Connecting,
+                            5_000
+                        ),
+                    ]);
+                    // Seems to be reconnecting to a new channel - ignore disconnect
                 } catch (error) {
-                    logMsg = `Could not destroy connection: ${error}`;
+                    // Seems to be a real disconnect which SHOULDN'T be recovered from
+                    let logMsg = `Connection destroyed`;
+                    try {
+                        connection.destroy();
+                    } catch (error) {
+                        logMsg = `Could not destroy connection: ${error}`;
+                    }
+                    let queue = client.queues.find(
+                        (queue) => queue.id === guild.id
+                    ).queue;
+                    while (!queue.isEmpty) queue.dequeue();
+                    console.log(logMsg);
                 }
-                let queue = client.queues.find(
-                    (queue) => queue.id === guild.id
-                ).queue;
-                while (!queue.isEmpty) queue.dequeue();
-                console.log(logMsg);
             }
-        }
-    );
+        );
+    }
+    
     return connection;
 }
 
-async function mendicantPlay(interaction, resource, client) {
+async function mendicantPlay(interaction, resource, client, silent) {
     if (interaction.inRawGuild) await interaction.guild.members.fetch();
     const { voice } = interaction.member;
     if (!voice.channelId) {
@@ -149,6 +160,8 @@ async function mendicantPlay(interaction, resource, client) {
         queue.enqueue(resource);
     }
 
+    if (silent)
+        return ;
     await interaction.reply({
         content: `Queued **${resource.metadata.title}**`,
         ephemeral: false,
@@ -239,7 +252,34 @@ async function mendicantSearch(option1, interaction, client) {
 }
 
 function isPlaylist(url) {
-    return url.includes("&list=") || url.includes("/playlist?");
+    if (!isValidHttpUrl(url)) return false;
+    return url.includes("&list=") || url.includes("?list=");
+}
+
+function getPlaylistId(url) {
+    let keyword;
+    if (url.includes("&list=")) keyword = "&list=";
+    else if (url.includes("?list=")) keyword = "?list=";
+    let index = url.indexOf(keyword);
+    let end = url.indexOf("&", index + 1);
+    console.log(`index: ${index}`);
+    if (end === -1) return url.substring(index + keyword.length);
+    else return url.substring(index + keyword.length, end);
+}
+
+function findVideoIndex(url, playlist) {
+    let videoID;
+    if (ytdl.validateURL(url)) {
+        videoID = ytdl.getURLVideoID(url);
+    } else {
+        return 0;
+    }
+    let i = 0;
+    for (const video of playlist.items) {
+        if (videoID === video.id) return i + 1;
+        i++;
+    }
+    return 0;
 }
 
 module.exports = {
@@ -258,11 +298,30 @@ module.exports = {
     async execute(interaction, client) {
         const option1 = interaction.options.getString("url-or-search");
         console.log(`${interaction.member.displayName} used /play ${option1}`);
-
-        if (isPlaylist(option1)) {
-            console.log("playlist");
-        }
-
+        let playlistFlag = isPlaylist(option1);
+        // if (playlistFlag) {
+        //     let playlistID = getPlaylistId(option1);
+        //     console.log("playlist");
+        //     console.log(`URL: ${option1} ID: ${playlistID}`);
+        //     youtubesearchapi
+        //         .GetPlaylistData(playlistID)
+        //         .then(async (playlist) => {
+        //             let index = findVideoIndex(option1, playlist);
+        //             const button1 = new ButtonBuilder()
+        //                 .setCustomId(`A ${playlistID} ${index}`)
+        //                 .setStyle(ButtonStyle.Secondary)
+        //                 .setEmoji("✅");
+        //             await interaction.channel.send({
+        //                 content: `Add this playlist to the queue? (${
+        //                     playlist.items.length - index
+        //                 } videos)`,
+        //                 components: [
+        //                     new ActionRowBuilder().addComponents(button1),
+        //                 ],
+        //             });
+        //         })
+        //         .catch(console.error);
+        // }
         if (ytdl.validateURL(option1)) {
             let ID = ytdl.getURLVideoID(option1);
             let resource = await mendicantCreateResource(interaction, ID);
@@ -274,7 +333,9 @@ module.exports = {
             await mendicantPlay(interaction, resource, client);
             return;
         }
-        await mendicantSearch(option1, interaction, client);
+
+        if (!playlistFlag) await mendicantSearch(option1, interaction, client);
+        else interaction.reply("Playlist detected");
     },
 
     usage: "play a video from youtube. you can either use the video's URL or search for an input",
