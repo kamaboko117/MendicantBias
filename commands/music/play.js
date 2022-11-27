@@ -200,6 +200,7 @@ async function mendicantCreateResource(interaction, videoID, details) {
         inputType: StreamType.Arbitrary,
         metadata: {
             title: resourceTitle,
+            length: videoDetails.length,
         },
     });
     if (resource.playStream.readableEnded || resource.playStream.destroyed) {
