@@ -128,7 +128,7 @@ async function mendicantPlay(interaction, item, client, silent) {
             if (!queue.isEmpty) {
                 queue.dequeue();
                 if (!queue.isEmpty) {
-                    console.log("play new resource");
+                    console.log(queue.peek().title);
                     player.play(mendicantCreateResource(interaction, queue.peek()));
                 } else {
                     //30 min timer until a disconnection if still Idle
