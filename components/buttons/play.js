@@ -1,4 +1,4 @@
-const { mendicantPlay, mendicantCreateResource } = require("../../commands/music/play")
+const { mendicantPlay, mendicantCreateItem } = require("../../commands/music/play")
 
 module.exports = {
     data: {
@@ -7,11 +7,11 @@ module.exports = {
     async execute(interaction, client) {
         let idsplit = interaction.component.customId.split(' '); 
         let option1 = idsplit[1]
-        let resource = await mendicantCreateResource(interaction, option1)
-        if (!resource){
-            interaction.channel.send('Error: Could not create resource')
+        let item = await mendicantCreateItem(interaction, option1)
+        if (!item){
+            interaction.channel.send('Error: Could not create item (3)')
             return ;
         }
-        return mendicantPlay(interaction, resource, client);
+        return mendicantPlay(interaction, item, client);
     }
 }

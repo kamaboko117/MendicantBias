@@ -22,14 +22,14 @@ function getQueueMessage(queue, index, client) {
 
     if (index === 0) {
         items[0] = new Object();
-        items[0].title = `**▶️ ${queue.elements[queue.head].metadata.title}**`;
-        items[0].length = `${toHHMMSS(queue.elements[queue.head].metadata.length)}`;
+        items[0].title = `**▶️ ${queue.elements[queue.head].title}**`;
+        items[0].length = `${toHHMMSS(queue.elements[queue.head].length)}`;
         j = 1;
     }
     for (let i = queue.head + (index * maxItems) + j; i < queue.tail; i++) {
         items[j] = new Object();
-        items[j].title = `**${i}:** ${queue.elements[i].metadata.title}`;
-        items[j++].length = `${toHHMMSS(queue.elements[i].metadata.length)}`;
+        items[j].title = `**${i}:** ${queue.elements[i].title}`;
+        items[j++].length = `${toHHMMSS(queue.elements[i].length)}`;
     }
     let i = 0;
     for (const item of items) {

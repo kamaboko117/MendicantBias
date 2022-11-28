@@ -55,10 +55,10 @@ function mendicantJoin(voice, guild, client) {
             });
         }
         connection.on(VoiceConnectionStatus.Signalling, () => {
-            console.log(`signalling...`);
+            console.log(`***Signalling...`);
         });
         connection.on(VoiceConnectionStatus.Ready, () => {
-            console.log(`Ready`);
+            console.log(`***Ready`);
         });
         connection.on(
             VoiceConnectionStatus.Disconnected,
@@ -98,7 +98,7 @@ function mendicantJoin(voice, guild, client) {
     return connection;
 }
 
-async function mendicantPlay(interaction, resource, client, silent) {
+async function mendicantPlay(interaction, item, client, silent) {
     if (interaction.inRawGuild) await interaction.guild.members.fetch();
     const { voice } = interaction.member;
     if (!voice.channelId) {
@@ -123,14 +123,14 @@ async function mendicantPlay(interaction, resource, client, silent) {
             );
         });
         let dispatcher = connection.subscribe(player);
-        queue.enqueue(resource);
-        player.play(resource);
+        queue.enqueue(item);
+        player.play(mendicantCreateResource(interaction, item));
         player.on(AudioPlayerStatus.Idle, () => {
             if (!queue.isEmpty) {
                 queue.dequeue();
                 if (!queue.isEmpty) {
                     console.log("play new resource");
-                    player.play(queue.peek());
+                    player.play(mendicantCreateResource(interaction, queue.peek()));
                 } else {
                     //30 min timer until a disconnection if still Idle
 
@@ -157,18 +157,42 @@ async function mendicantPlay(interaction, resource, client, silent) {
             clearTimeout(client.timeoutID);
         });
     } else {
-        queue.enqueue(resource);
+        queue.enqueue(item);
     }
 
     if (silent)
         return ;
     await interaction.reply({
-        content: `Queued **${resource.metadata.title}**`,
+        content: `Queued **${item.title}**`,
         ephemeral: false,
     });
 }
 
-async function mendicantCreateResource(interaction, videoID, details) {
+//creates a streamable resource
+function mendicantCreateResource(interaction, videoDetails){
+    let stream = ytdl(videoDetails.id, {
+        filter: "audioonly",
+        highWaterMark: 1 << 25,
+    }).on("error", (err) =>
+        interaction.channel.send(`ytdl module error: ${err}`)
+    );
+    let resource = createAudioResource(stream, {
+        inputType: StreamType.Arbitrary,
+        metadata: {
+            title: videoDetails.title,
+            length: videoDetails.length,
+            id: videoDetails.id
+        },
+    });
+    if (resource.playStream.readableEnded || resource.playStream.destroyed) {
+        interaction.channel.send("Error: Could not create resource (1)");
+        return null;
+    }
+    return (resource)
+}
+
+//creates a queue item without downloading the resource stream
+async function mendicantCreateItem(interaction, videoID, details) {
     let videoDetails = details ? details : null;
     if (!details){
         let videoDetailsRaw;
@@ -190,29 +214,12 @@ async function mendicantCreateResource(interaction, videoID, details) {
         if (!videoDetailsRaw) return null;
         videoDetails.title = videoDetailsRaw.title;
         videoDetails.length = videoDetailsRaw.lengthSeconds;
+        videoDetails.id = videoID;
     }
 
-    let resourceTitle = videoDetails.title;
     console.log(videoDetails.title);
-    let stream = ytdl(videoID, {
-        filter: "audioonly",
-        highWaterMark: 1 << 25,
-    }).on("error", (err) =>
-        interaction.channel.send(`ytdl module error: ${err}`)
-    );
-    let resource = createAudioResource(stream, {
-        inputType: StreamType.Arbitrary,
-        metadata: {
-            title: resourceTitle,
-            length: videoDetails.length,
-        },
-    });
-    if (resource.playStream.readableEnded || resource.playStream.destroyed) {
-        interaction.channel.send("Error: Could not create resource");
-        return null;
-    }
 
-    return resource;
+    return videoDetails;
 }
 
 async function mendicantSearch(option1, interaction, client) {
@@ -291,7 +298,7 @@ function findVideoIndex(url, playlist) {
 
 module.exports = {
     mendicantPlay: mendicantPlay,
-    mendicantCreateResource: mendicantCreateResource,
+    mendicantCreateItem: mendicantCreateItem,
 
     data: new SlashCommandBuilder()
         .setName("play")
@@ -331,13 +338,13 @@ module.exports = {
         }
         if (ytdl.validateURL(option1)) {
             let ID = ytdl.getURLVideoID(option1);
-            let resource = await mendicantCreateResource(interaction, ID);
-            if (!resource) {
-                interaction.reply("Error: Could not create resource");
+            let item = await mendicantCreateItem(interaction, ID);
+            if (!item) {
+                interaction.reply("Error: Could not create item");
                 return;
             }
 
-            await mendicantPlay(interaction, resource, client);
+            await mendicantPlay(interaction, item, client);
             return;
         }
 

@@ -29,11 +29,8 @@ module.exports = {
         if (queue) queue = queue.queue;
         if (queue && !queue.isEmpty) {
             queue.dequeue();
+            //player's event listener on idle will play next resource automatically 
             player.stop();
-            if (!queue.isEmpty) {
-                console.log("play new resource");
-                player.play(queue.peek());
-            }
         } else {
             player.stop();
             console.log("idling");
