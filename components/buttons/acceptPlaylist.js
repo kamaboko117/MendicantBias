@@ -1,6 +1,6 @@
 const {
     mendicantPlay,
-    mendicantCreateResource,
+    mendicantCreateItem,
 } = require("../../commands/music/play");
 const youtubesearchapi = require("youtube-search-api");
 
@@ -26,16 +26,16 @@ module.exports = {
                     videoDetails.id = video.id;
                     videoDetails.title = video.title;
                     videoDetails.length = toSeconds(video.length.simpleText);
-                    let resource = await mendicantCreateResource(
+                    let item = await mendicantCreateItem(
                         interaction,
                         video.id,
                         videoDetails
                     );
-                    if (!resource) {
-                        interaction.channel.send("Error: Could not create resource");
+                    if (!item) {
+                        interaction.channel.send("Error: Could not create item (2)");
                         continue;
                     }
-                    mendicantPlay(interaction, resource, client, true);
+                    mendicantPlay(interaction, item, client, true);
                 }
                 // if (i - index > 30)
                 //     break ;

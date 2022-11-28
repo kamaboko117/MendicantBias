@@ -3,11 +3,11 @@ const { getVoiceConnection } = require("@discordjs/voice");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("skip")
-        .setDescription("skip current song"),
+        .setName("clear")
+        .setDescription("Empty the current queue"),
 
     async execute(interaction, client) {
-        console.log(`${interaction.member.displayName} used /skip`);
+        console.log(`${interaction.member.displayName} used /clear`);
         const { voice } = interaction.member;
         if (!voice.channelId) {
             interaction.reply("Error: You are not in a voice channel");
@@ -16,7 +16,7 @@ module.exports = {
         const connection = getVoiceConnection(interaction.guild.id);
         if (!connection) {
             await interaction.reply({
-                content: "Nothing to skip",
+                content: "Nothing to clear",
             });
             return;
         }
@@ -27,16 +27,12 @@ module.exports = {
             (queue) => queue.id === interaction.guild.id
         );
         if (queue) queue = queue.queue;
-        if (queue && !queue.isEmpty) {
-            queue.dequeue();
-            //player's event listener on idle will play next resource automatically 
-            player.stop();
-        } else {
-            player.stop();
-        }
+        while (!queue.isEmpty) queue.dequeue();
+
+        player.stop();
 
         await interaction.reply({
-            content: "skipped",
+            content: "Cleared",
         });
     },
 
