@@ -26,16 +26,7 @@ module.exports = {
                     videoDetails.id = video.id;
                     videoDetails.title = video.title;
                     videoDetails.length = toSeconds(video.length.simpleText);
-                    let item = await mendicantCreateItem(
-                        interaction,
-                        video.id,
-                        videoDetails
-                    );
-                    if (!item) {
-                        interaction.channel.send("Error: Could not create item (2)");
-                        continue;
-                    }
-                    mendicantPlay(interaction, item, client, true);
+                    mendicantPlay(interaction, videoDetails, client, true);
                 }
                 // if (i - index > 30)
                 //     break ;
