@@ -23,20 +23,12 @@ module.exports = {
 
         let subscription = connection.state.subscription;
         let player = subscription.player;
-        let queue = client.queues.find(
-            (queue) => queue.id === interaction.guild.id
-        );
-        if (queue) queue = queue.queue;
-        if (queue && !queue.isEmpty) {
-            queue.dequeue();
-            //player's event listener on idle will play next resource automatically 
-            player.stop();
-        } else {
-            player.stop();
-        }
+
+        //player's event listener on idle will play next resource automatically
+        player.stop();
 
         await interaction.reply({
-            content: "skipped",
+            content: "Skipped",
         });
     },
 

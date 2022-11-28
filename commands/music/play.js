@@ -99,14 +99,13 @@ function mendicantJoin(voice, guild, client) {
 }
 
 async function mendicantPlay(interaction, item, client, silent) {
-    if (interaction.inRawGuild) await interaction.guild.members.fetch();
     const { voice } = interaction.member;
     if (!voice.channelId) {
         interaction.reply("Error: You are not in a voice channel");
         return;
     }
     let connection = mendicantJoin(voice, interaction.guild, client);
-    let queue = await client.queues.find(
+    let queue = client.queues.find(
         (queue) => queue.id === interaction.guild.id
     ).queue;
     if (queue.isEmpty) {
@@ -129,7 +128,7 @@ async function mendicantPlay(interaction, item, client, silent) {
             if (!queue.isEmpty) {
                 queue.dequeue();
                 if (!queue.isEmpty) {
-                    console.log("play new resource");
+                    console.log(queue.peek().title);
                     player.play(mendicantCreateResource(interaction, queue.peek()));
                 } else {
                     //30 min timer until a disconnection if still Idle
