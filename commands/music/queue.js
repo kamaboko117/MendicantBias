@@ -56,7 +56,7 @@ function getQueueMessage(queue, index, client) {
     const skip = new ButtonBuilder()
         .setCustomId(`skip ${index}`)
         .setStyle(ButtonStyle.Secondary)
-        .setEmoji("⏩");
+        .setEmoji("⏭️");
     if (totalPages !== 0) {
         const prev = new ButtonBuilder()
             .setCustomId(`Q ${index ? index - 1 : totalPages} P`)
