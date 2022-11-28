@@ -5,6 +5,8 @@ const toHHMMSS = (numSecs) => {
     let hours = Math.floor(secNum / 3600).toString().padStart(2, '0');
     let minutes = Math.floor((secNum - (hours * 3600)) / 60).toString().padStart(2, '0');
     let seconds = (secNum - (hours * 3600) - (minutes * 60)).toString().padStart(2, '0');
+    if (hours === '00')
+        return `${minutes}:${seconds}`;
     return `${hours}:${minutes}:${seconds}`;
 }
 
@@ -18,14 +20,13 @@ function getQueueMessage(queue, index, client) {
         index--;
     let j = 0;
 
-
     if (index === 0) {
         items[0] = new Object();
         items[0].title = `**▶️ ${queue.elements[queue.head].metadata.title}**`;
         items[0].length = `${toHHMMSS(queue.elements[queue.head].metadata.length)}`;
         j = 1;
     }
-    for (let i = queue.head + (index * maxItems); i < queue.tail; i++) {
+    for (let i = queue.head + (index * maxItems) + j; i < queue.tail; i++) {
         items[j] = new Object();
         items[j].title = `**${i}:** ${queue.elements[i].metadata.title}`;
         items[j++].length = `${toHHMMSS(queue.elements[i].metadata.length)}`;

@@ -171,6 +171,7 @@ async function mendicantPlay(interaction, resource, client, silent) {
 async function mendicantCreateResource(interaction, videoID, details) {
     let videoDetails = details ? details : null;
     if (!details){
+        let videoDetailsRaw;
         await ytdl
             .getInfo(`https://www.youtube.com/watch?v=${videoID}`, {
                 requestOptions: {
@@ -183,9 +184,12 @@ async function mendicantCreateResource(interaction, videoID, details) {
                 interaction.channel.send(`ytdl module error: ${error} [COULD NOT GET VIDEO DETAILS]`)
             )
             .then((value) => {
-                videoDetails = value.videoDetails;
+                videoDetails = new Object();
+                videoDetailsRaw = value.videoDetails;
             });
-        if (!videoDetails) return null;
+        if (!videoDetailsRaw) return null;
+        videoDetails.title = videoDetailsRaw.title;
+        videoDetails.length = videoDetailsRaw.lengthSeconds;
     }
 
     let resourceTitle = videoDetails.title;
