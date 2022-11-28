@@ -28,7 +28,7 @@ function getQueueMessage(queue, index, client) {
     }
     for (let i = queue.head + (index * maxItems) + j; i < queue.tail; i++) {
         items[j] = new Object();
-        items[j].title = `**${i}:** ${queue.elements[i].title}`;
+        items[j].title = `**${i - queue.head}:** ${queue.elements[i].title}`;
         items[j++].length = `${toHHMMSS(queue.elements[i].length)}`;
     }
     let i = 0;
@@ -45,11 +45,11 @@ function getQueueMessage(queue, index, client) {
         .setFooter({ text: `${index + 1}/${totalPages + 1}` })
     if (totalPages !== 0) {
         const prev = new ButtonBuilder()
-            .setCustomId(`Q ${index ? index - 1 : totalPages}`)
+            .setCustomId(`Q ${index ? index - 1 : totalPages} P`)
             .setStyle(ButtonStyle.Secondary)
             .setEmoji("⬅️");
         const next = new ButtonBuilder()
-            .setCustomId(`Q ${index === totalPages ? 0 : index + 1}`)
+            .setCustomId(`Q ${index === totalPages ? 0 : index + 1} N`)
             .setStyle(ButtonStyle.Secondary)
             .setEmoji("➡️");
         return ({
