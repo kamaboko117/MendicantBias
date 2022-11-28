@@ -36,6 +36,8 @@ module.exports = {
                     await buttons.get('acceptplaylist').execute(interaction, client);
                 }else if (type === 'Q'){
                     await buttons.get('queue').execute(interaction, client);
+                }else if (type === 'skip'){
+                    await buttons.get('skip').execute(interaction, client);
                 }else{
                     try {
                         await buttons.get('default').execute(interaction, client);

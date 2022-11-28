@@ -23,12 +23,12 @@ module.exports = {
 
         let subscription = connection.state.subscription;
         let player = subscription.player;
-        
-        //player's event listener on idle will play next resource automatically 
+
+        //player's event listener on idle will play next resource automatically
         player.stop();
 
         await interaction.reply({
-            content: "skipped",
+            content: "Skipped",
         });
     },
 
