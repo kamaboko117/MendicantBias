@@ -11,83 +11,70 @@ module.exports = {
         name: "tourney",
     },
     async execute(interaction, client) {
-        const matchId = interaction.component.customId.split(" ");
-        tourneyProfile = await Tournament.findOne({ _id: matchId[1] });
-        console.log(matchId);
-        if (matchId[2] === "1")
-            matchProfile =
-                tourneyProfile.loserRounds[matchId[3]].matches[matchId[4]];
-        else
-            matchProfile =
-                tourneyProfile.winnerRounds[matchId[3]].matches[matchId[4]];
-        if (!matchProfile) {
-            newMessage = "match does not exist in database: Probably deleted";
+        const idSplit = interaction.component.customId.split(" ");
+        let tourney = await Tournament.findOne({ _id: idSplit[1] });
+        let match;
+        let msg;
+        console.log(idSplit);
+        if (idSplit[2] === "1")
+            match = tourney.loserRounds[idSplit[3]].matches[idSplit[4]];
+        else match = tourney.winnerRounds[idSplit[3]].matches[idSplit[4]];
+        if (!match) {
+            msg = "match does not exist in database: Probably deleted";
 
             //if match is closed, button is used to see results
-        } else if (!matchProfile.open) {
-            newMessage = `votes for ${matchProfile.playerLeft}\n`;
-            newMessage += matchProfile.votesLeft
-                ? `${matchProfile.membersLeft}`
-                : "noone";
-            newMessage += `\nvotes for ${matchProfile.playerRight}\n`;
-            newMessage += matchProfile.votesRight
-                ? `${matchProfile.membersRight}`
-                : "noone";
+        } else if (!match.open) {
+            msg = `votes for ${match.playerLeft}\n`;
+            msg += match.votesLeft ? `${match.membersLeft}` : "noone";
+            msg += `\nvotes for ${match.playerRight}\n`;
+            msg += match.votesRight ? `${match.membersRight}` : "noone";
 
             //if match is still open, button is used to vote
         } else {
-            if (matchId[5] == "left") {
-                if (
-                    matchProfile.membersLeft.includes(
-                        interaction.member.toString()
-                    )
-                )
-                    newMessage = `${interaction.member}: you've already voted`;
+            if (idSplit[5] == "left") {
+                if (match.membersLeft.includes(interaction.member.toString()))
+                    msg = `${interaction.member}: You've already voted`;
                 else {
-                    matchProfile.votesLeft++;
-                    newMessage = `voted for: ${matchProfile.playerLeft}`;
-                    matchProfile.membersLeft.push(interaction.member);
+                    match.votesLeft++;
+                    msg = `voted for: ${match.playerLeft}`;
+                    match.membersLeft.push(interaction.member);
                     if (
-                        matchProfile.membersRight.includes(
+                        match.membersRight.includes(
                             interaction.member.toString()
                         )
                     ) {
-                        matchProfile.membersRight = arrayRemove(
-                            matchProfile.membersRight,
+                        match.membersRight = arrayRemove(
+                            match.membersRight,
                             interaction.member.toString()
                         );
-                        matchProfile.votesRight--;
+                        match.votesRight--;
                     }
                 }
-            } else if (matchId[5] == "right") {
-                if (
-                    matchProfile.membersRight.includes(
-                        interaction.member.toString()
-                    )
-                )
-                    newMessage = `${interaction.member}: you've already voted`;
+            } else if (idSplit[5] == "right") {
+                if (match.membersRight.includes(interaction.member.toString()))
+                    msg = `${interaction.member}: You've already voted`;
                 else {
-                    matchProfile.votesRight++;
-                    newMessage = `voted for: ${matchProfile.playerRight}`;
-                    matchProfile.membersRight.push(interaction.member);
+                    match.votesRight++;
+                    msg = `Voted for: ${match.playerRight}`;
+                    match.membersRight.push(interaction.member);
                     if (
-                        matchProfile.membersLeft.includes(
+                        match.membersLeft.includes(
                             interaction.member.toString()
                         )
                     ) {
-                        matchProfile.membersLeft = arrayRemove(
-                            matchProfile.membersLeft,
+                        match.membersLeft = arrayRemove(
+                            match.membersLeft,
                             interaction.member.toString()
                         );
-                        matchProfile.votesLeft--;
+                        match.votesLeft--;
                     }
                 }
-            } else newMessage = "what?";
-            await tourneyProfile.save().catch(console.error);
+            } else msg = "what?";
+            await tourney.save().catch(console.error);
         }
         console.log(interaction.member.displayName);
         await interaction.reply({
-            content: newMessage,
+            content: msg,
             ephemeral: true,
         });
     },
