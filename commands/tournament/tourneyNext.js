@@ -1,259 +1,306 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
-const { Round } = require('../../schemas/round');
-const { Match } = require ('../../schemas/match');
-const Tournament = require('../../schemas/tournament');
-const mongoose = require('mongoose');
+const {
+    SlashCommandBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    EmbedBuilder,
+} = require("discord.js");
+const { Round } = require("../../schemas/round");
+const { Match } = require("../../schemas/match");
+const Tournament = require("../../schemas/tournament");
+const mongoose = require("mongoose");
 
-maxMatches= 16
+const maxMatches = 16;
 
 // export const generateId = (size = 32) => {
 //     const bytesArray = new Uint8Array(size / 2)
-  
-//     window.crypto.getRandomValues(bytesArray) // search alternative to this 
+
+//     window.crypto.getRandomValues(bytesArray) // search alternative to this
 //     return [...bytesArray]
 //       .map((number) => number.toString(16).padStart(2, '0'))
 //       .join('')
 //   }
 
-async function showResults(tournamentProfile, roundProfile, interaction){
-    i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
-    count = roundProfile.matches.length;
+async function showResults(tournamentProfile, roundProfile, interaction) {
+    const i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
+    let count = roundProfile.matches.length;
     count = count > maxMatches + i ? maxMatches + i : count;
 
     tournamentProfile.currentMatch += count - i;
-    currentBracket = tournamentProfile.currentBracket
-    currentLoser = tournamentProfile.currentLoser
-    currentWinner = tournamentProfile.currentWinner
+    let currentBracket = tournamentProfile.currentBracket;
+    let currentLoser = tournamentProfile.currentLoser;
+    let currentWinner = tournamentProfile.currentWinner;
     await tournamentProfile.save().catch(console.error);
-    var j = 0;
-    componentArray = [];
-    for (; i < count; i++){
+    let j = 0;
+    let componentArray = [];
+    for (; i < count; i++) {
         j++;
-        matchProfile = roundProfile.matches[i];
+        let matchProfile = roundProfile.matches[i];
         matchProfile.open = false;
-        matchProfile.winner = !matchProfile.playerLeft || matchProfile.votesRight > matchProfile.votesLeft ?
-            matchProfile.playerRight : matchProfile.playerLeft;
-        matchProfile.loser = !matchProfile.playerLeft || matchProfile.votesRight > matchProfile.votesLeft ?
-            matchProfile.playerLeft : matchProfile.playerRight;
+        matchProfile.winner =
+            !matchProfile.playerLeft ||
+            matchProfile.votesRight > matchProfile.votesLeft
+                ? matchProfile.playerRight
+                : matchProfile.playerLeft;
+        matchProfile.loser =
+            !matchProfile.playerLeft ||
+            matchProfile.votesRight > matchProfile.votesLeft
+                ? matchProfile.playerLeft
+                : matchProfile.playerRight;
         roundProfile.matches[i] = matchProfile;
         if (roundProfile.winnerBracket)
-            tournamentProfile.winnerRounds[tournamentProfile.currentWinner] = roundProfile;
+            tournamentProfile.winnerRounds[tournamentProfile.currentWinner] =
+                roundProfile;
         else
-            tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+            tournamentProfile.loserRounds[tournamentProfile.currentLoser] =
+                roundProfile;
         await tournamentProfile.save().catch(console.error);
-        if (matchProfile.playerLeft && matchProfile.playerRight){
-            
-            emote1 = roundProfile.matches[i].playerLeft.split(':')[2].slice(0, -1);
-            emote2 = roundProfile.matches[i].playerRight.split(':')[2].slice(0, -1);
+        if (matchProfile.playerLeft && matchProfile.playerRight) {
+            const emote1 = roundProfile.matches[i].playerLeft
+                .split(":")[2]
+                .slice(0, -1);
+            const emote2 = roundProfile.matches[i].playerRight
+                .split(":")[2]
+                .slice(0, -1);
 
             const button1 = new ButtonBuilder()
-            .setCustomId(`T ${tournamentProfile._id} ${currentBracket} ${currentBracket ? currentLoser : currentWinner} ${i} left`)
-            .setStyle(ButtonStyle.Secondary)
-            .setLabel(`[${matchProfile.votesLeft}]`)
-            .setEmoji(emote1);
-            
+                .setCustomId(
+                    `T ${tournamentProfile._id} ${currentBracket} ${
+                        currentBracket ? currentLoser : currentWinner
+                    } ${i} left`
+                )
+                .setStyle(ButtonStyle.Secondary)
+                .setLabel(`[${matchProfile.votesLeft}]`)
+                .setEmoji(emote1);
+
             const button2 = new ButtonBuilder()
-            .setCustomId(`T ${tournamentProfile._id} ${currentBracket} ${currentBracket ? currentLoser : currentWinner} ${i} right`)
-            .setStyle(ButtonStyle.Secondary)
-            .setLabel(`[${matchProfile.votesRight}]`)
-            .setEmoji(emote2);
-            componentArray.push(new ActionRowBuilder().addComponents(button1, button2));
-        
-        }else{
-            interaction.channel.send(`${i + 1} bye`)
+                .setCustomId(
+                    `T ${tournamentProfile._id} ${currentBracket} ${
+                        currentBracket ? currentLoser : currentWinner
+                    } ${i} right`
+                )
+                .setStyle(ButtonStyle.Secondary)
+                .setLabel(`[${matchProfile.votesRight}]`)
+                .setEmoji(emote2);
+            componentArray.push(
+                new ActionRowBuilder().addComponents(button1, button2)
+            );
+        } else {
+            interaction.channel.send(`${i + 1} bye`);
         }
-        if ((j === 5 || i + 1 === count) && componentArray.length){
+        if ((j === 5 || i + 1 === count) && componentArray.length) {
             j = 0;
-            interaction.channel.send({components: componentArray})
+            interaction.channel.send({ components: componentArray });
             componentArray = [];
         }
     }
     await tournamentProfile.save().catch(console.error);
 }
 
-async function showTourneyWinner(tournamentProfile, roundProfile, interaction, client){
+async function showTourneyWinner(
+    tournamentProfile,
+    roundProfile,
+    interaction,
+    client
+) {
     const winner = roundProfile.matches[0].winner;
-    let emote = client.emojis.cache.find(emoji => emoji.id === winner.split(':')[2].slice(0, -1))
+    let emote = client.emojis.cache.find(
+        (emoji) => emoji.id === winner.split(":")[2].slice(0, -1)
+    );
     const embed = new EmbedBuilder()
         .setTitle(tournamentProfile.name)
-        .setDescription(`🎊🎉 ${winner} wins!!🎉🎊 🏆` )
+        .setDescription(`🎊🎉 ${winner} wins!!🎉🎊 🏆`)
         .setColor(client.color)
-        .setImage(emote.url)
+        .setImage(emote.url);
     await interaction.channel.send({
-        embeds: [embed]
-    })
+        embeds: [embed],
+    });
 }
 
-async function  createLB1(tournamentProfile){
-    for(i = 0; i < (roundProfile.numPlayers / 2); i++){
+async function createLB1(tournamentProfile) {
+    for (i = 0; i < roundProfile.numPlayers / 2; i++) {
         matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tournamentProfile.currentMatch,
             playerLeft:
-                tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].loser,
+                tournamentProfile.winnerRounds[tournamentProfile.currentWinner]
+                    .matches[i * 2].loser,
             playerRight:
                 tournamentProfile.winnerRounds[0].matches[i * 2 + 1].loser,
             votesLeft: 0,
             votesRight: 0,
             open: true,
-        })
+        });
         roundProfile.matches[i] = matchProfile;
     }
     tournamentProfile.currentBracket = 1;
     tournamentProfile.currentLoser++;
-    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] =
+        roundProfile;
     await tournamentProfile.save().catch(console.error);
 }
 
-async function  createLB2(tournamentProfile){
-    const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
-    const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
+async function createLB2(tournamentProfile) {
+    const prevWB =
+        tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+    const prevLB =
+        tournamentProfile.loserRounds[tournamentProfile.currentLoser];
     const j = prevWB.matches.length - 1;
-    
-    for(i = 0; i < (roundProfile.numPlayers / 2); i++){
-        matchProfile = new Match({
+
+    for (i = 0; i < roundProfile.numPlayers / 2; i++) {
+        let matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tournamentProfile.currentMatch,
-            playerLeft:
-                prevWB.matches[j - i].loser,
-            playerRight:
-                prevLB.matches[i].winner,
+            playerLeft: prevWB.matches[j - i].loser,
+            playerRight: prevLB.matches[i].winner,
             votesLeft: 0,
             votesRight: 0,
             open: true,
-        })
+        });
         roundProfile.matches[i] = matchProfile;
     }
     tournamentProfile.currentBracket = 1;
     tournamentProfile.currentLoser++;
-    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] =
+        roundProfile;
     await tournamentProfile.save().catch(console.error);
 }
 
-async function  createLB4(tournamentProfile){
-    const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
-    const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    let j = (prevWB.matches.length / 2) - 1;
-    
-    for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
-        matchProfile = new Match({
+async function createLB4(tournamentProfile) {
+    const prevWB =
+        tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+    const prevLB =
+        tournamentProfile.loserRounds[tournamentProfile.currentLoser];
+    let j = prevWB.matches.length / 2 - 1;
+
+    for (i = 0; i < roundProfile.numPlayers / 2 / 2; i++) {
+        let matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tournamentProfile.currentMatch,
-            playerLeft:
-                prevWB.matches[j - i].loser,
-            playerRight:
-                prevLB.matches[i].winner,
+            playerLeft: prevWB.matches[j - i].loser,
+            playerRight: prevLB.matches[i].winner,
             votesLeft: 0,
             votesRight: 0,
             open: true,
-        })
+        });
         roundProfile.matches[i] = matchProfile;
     }
     j = prevWB.matches.length - 1 + i;
-    for(i = (roundProfile.numPlayers / 2) / 2; i < roundProfile.numPlayers / 2; i++){
+    for (
+        i = roundProfile.numPlayers / 2 / 2;
+        i < roundProfile.numPlayers / 2;
+        i++
+    ) {
         matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tournamentProfile.currentMatch,
-            playerLeft:
-                prevWB.matches[j - i].loser,
-            playerRight:
-                prevLB.matches[i].winner,
+            playerLeft: prevWB.matches[j - i].loser,
+            playerRight: prevLB.matches[i].winner,
             votesLeft: 0,
             votesRight: 0,
             open: true,
-        })
+        });
         roundProfile.matches[i] = matchProfile;
     }
     tournamentProfile.currentBracket = 1;
     tournamentProfile.currentLoser++;
-    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] =
+        roundProfile;
     await tournamentProfile.save().catch(console.error);
 }
 
-async function  createLB6(tournamentProfile){
-    const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
-    const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    let j = (prevWB.matches.length / 2);
-    
-    for(i = 0; i < (roundProfile.numPlayers / 2) / 2; i++){
-        matchProfile = new Match({
-            _id: mongoose.Types.ObjectId(),
-            matchId: i + 1 + tournamentProfile.currentMatch,
-            playerLeft:
-                prevWB.matches[j + i].loser,
-            playerRight:
-                prevLB.matches[i].winner,
-            votesLeft: 0,
-            votesRight: 0,
-            open: true,
-        })
-        roundProfile.matches[i] = matchProfile;
-    }
-    for(i = (roundProfile.numPlayers / 2) / 2; i < (roundProfile.numPlayers / 2); i++){
-        matchProfile = new Match({
-            _id: mongoose.Types.ObjectId(),
-            matchId: i + 1 + tournamentProfile.currentMatch,
-            playerLeft:
-                prevWB.matches[i - j].loser,
-            playerRight:
-                prevLB.matches[i].winner,
-            votesLeft: 0,
-            votesRight: 0,
-            open: true,
-        })
-        roundProfile.matches[i] = matchProfile;
-    }
-    tournamentProfile.currentBracket = 1;
-    tournamentProfile.currentLoser++;
-    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
-    await tournamentProfile.save().catch(console.error);
-}
+async function createLB6(tournamentProfile) {
+    const prevWB =
+        tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+    const prevLB =
+        tournamentProfile.loserRounds[tournamentProfile.currentLoser];
+    let j = prevWB.matches.length / 2;
 
-async function  createLB8(tournamentProfile){
-    const prevWB = tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
-    const prevLB = tournamentProfile.loserRounds[tournamentProfile.currentLoser];
-    
-    for(i = 0; i < (roundProfile.numPlayers / 2); i++){
-        matchProfile = new Match({
+    for (i = 0; i < roundProfile.numPlayers / 2 / 2; i++) {
+        let matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tournamentProfile.currentMatch,
-            playerLeft:
-                prevWB.matches[i].loser,
-            playerRight:
-                prevLB.matches[i].winner,
+            playerLeft: prevWB.matches[j + i].loser,
+            playerRight: prevLB.matches[i].winner,
             votesLeft: 0,
             votesRight: 0,
             open: true,
-        })
+        });
+        roundProfile.matches[i] = matchProfile;
+    }
+    for (
+        i = roundProfile.numPlayers / 2 / 2;
+        i < roundProfile.numPlayers / 2;
+        i++
+    ) {
+        let matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft: prevWB.matches[i - j].loser,
+            playerRight: prevLB.matches[i].winner,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        });
         roundProfile.matches[i] = matchProfile;
     }
     tournamentProfile.currentBracket = 1;
     tournamentProfile.currentLoser++;
-    tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] =
+        roundProfile;
     await tournamentProfile.save().catch(console.error);
 }
 
-async function newRound(tournamentProfile, client){
+async function createLB8(tournamentProfile) {
+    const prevWB =
+        tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+    const prevLB =
+        tournamentProfile.loserRounds[tournamentProfile.currentLoser];
+
+    for (i = 0; i < roundProfile.numPlayers / 2; i++) {
+        let matchProfile = new Match({
+            _id: mongoose.Types.ObjectId(),
+            matchId: i + 1 + tournamentProfile.currentMatch,
+            playerLeft: prevWB.matches[i].loser,
+            playerRight: prevLB.matches[i].winner,
+            votesLeft: 0,
+            votesRight: 0,
+            open: true,
+        });
+        roundProfile.matches[i] = matchProfile;
+    }
+    tournamentProfile.currentBracket = 1;
+    tournamentProfile.currentLoser++;
+    tournamentProfile.loserRounds[tournamentProfile.currentLoser] =
+        roundProfile;
+    await tournamentProfile.save().catch(console.error);
+}
+
+async function newRound(tournamentProfile, client) {
     //if previous round was winner bracket, next one has to be a loser
-    if (roundProfile.winnerBracket){
-        console.log(1)
-        roundProfile = new Round({
+    if (roundProfile.winnerBracket) {
+        console.log(1);
+        let roundProfile = new Round({
             _id: mongoose.Types.ObjectId(),
-            name: `LB${tournamentProfile.currentLoser + 1}`,        
+            name: `LB${tournamentProfile.currentLoser + 1}`,
             winnerBracket: false,
             // if this is the first loser bracket round, it should be minor
             minor: tournamentProfile.currentLoser ? false : true,
-        })
-        roundProfile.numPlayers = roundProfile.minor ?
-            (tournamentProfile.currentLoser == 0 ?
-                    tournamentProfile.winnerRounds[tournamentProfile.currentWinner].numPlayers / 2 :
-                    tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers) :
-            tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers;
-        if (tournamentProfile.currentLoser + 1 == 1){
+        });
+        roundProfile.numPlayers = roundProfile.minor
+            ? tournamentProfile.currentLoser == 0
+                ? tournamentProfile.winnerRounds[
+                      tournamentProfile.currentWinner
+                  ].numPlayers / 2
+                : tournamentProfile.loserRounds[tournamentProfile.currentLoser]
+                      .numPlayers
+            : tournamentProfile.loserRounds[tournamentProfile.currentLoser]
+                  .numPlayers;
+        if (tournamentProfile.currentLoser + 1 == 1) {
             await createLB1(tournamentProfile);
             return;
         }
-        switch ((tournamentProfile.currentLoser + 1) % 8){
+        switch ((tournamentProfile.currentLoser + 1) % 8) {
             case 0:
                 await createLB8(tournamentProfile);
                 break;
@@ -266,243 +313,309 @@ async function newRound(tournamentProfile, client){
             case 6:
                 await createLB6(tournamentProfile);
                 break;
-            
+
             default:
                 await createLB2(tournamentProfile);
         }
     }
-    
+
     //if previous round was a minor loser bracket, next one has to be a winner
-    else if (roundProfile.minor){
-        console.log(2)
-        var RO = tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches.length;
-        roundProfile = new Round({
+    else if (roundProfile.minor) {
+        console.log(2);
+        let RO =
+            tournamentProfile.winnerRounds[tournamentProfile.currentWinner]
+                .matches.length;
+        let roundProfile = new Round({
             _id: mongoose.Types.ObjectId(),
             name: `RO${RO}`,
             numPlayers: RO,
             winnerBracket: true,
-        })
+        });
 
-        for(i = 0; i < (roundProfile.numPlayers / 2); i++){
-            matchProfile = new Match({
+        for (i = 0; i < roundProfile.numPlayers / 2; i++) {
+            let matchProfile = new Match({
                 _id: mongoose.Types.ObjectId(),
                 matchId: i + 1 + tournamentProfile.currentMatch,
-                playerLeft: tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2].winner,
-                playerRight: tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[i * 2 + 1].winner,
+                playerLeft:
+                    tournamentProfile.winnerRounds[
+                        tournamentProfile.currentWinner
+                    ].matches[i * 2].winner,
+                playerRight:
+                    tournamentProfile.winnerRounds[
+                        tournamentProfile.currentWinner
+                    ].matches[i * 2 + 1].winner,
                 votesLeft: 0,
                 votesRight: 0,
                 open: true,
-           })
-           roundProfile.matches[i] = matchProfile;
+            });
+            roundProfile.matches[i] = matchProfile;
         }
         tournamentProfile.currentBracket = 0;
         tournamentProfile.currentWinner++;
-        tournamentProfile.winnerRounds[tournamentProfile.currentWinner] = roundProfile;
+        tournamentProfile.winnerRounds[tournamentProfile.currentWinner] =
+            roundProfile;
         await tournamentProfile.save().catch(console.error);
     }
 
     //if previous round was a major loser bracket, next one is a minor LB except if
     // its the LB finals
-    else if (roundProfile.numPlayers != 2){
-        console.log(3)
-        roundProfile = new Round({
+    else if (roundProfile.numPlayers != 2) {
+        console.log(3);
+        let roundProfile = new Round({
             _id: mongoose.Types.ObjectId(),
             name: `LB${tournamentProfile.currentLoser + 1}`,
-            numPlayers: tournamentProfile.loserRounds[tournamentProfile.currentLoser].numPlayers / 2,
+            numPlayers:
+                tournamentProfile.loserRounds[tournamentProfile.currentLoser]
+                    .numPlayers / 2,
             winnerBracket: false,
             minor: true,
-        })
-        for(i = 0; i < (roundProfile.numPlayers / 2); i++){
+        });
+        for (i = 0; i < roundProfile.numPlayers / 2; i++) {
             matchProfile = new Match({
                 _id: mongoose.Types.ObjectId(),
                 matchId: i + 1 + tournamentProfile.currentMatch,
-                playerLeft: tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i * 2].winner,
-                playerRight: tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[i * 2 + 1].winner,
+                playerLeft:
+                    tournamentProfile.loserRounds[
+                        tournamentProfile.currentLoser
+                    ].matches[i * 2].winner,
+                playerRight:
+                    tournamentProfile.loserRounds[
+                        tournamentProfile.currentLoser
+                    ].matches[i * 2 + 1].winner,
                 votesLeft: 0,
                 votesRight: 0,
                 open: true,
-           })
-           roundProfile.matches[i] = matchProfile;
+            });
+            roundProfile.matches[i] = matchProfile;
         }
         tournamentProfile.currentBracket = 1;
         tournamentProfile.currentLoser++;
-        tournamentProfile.loserRounds[tournamentProfile.currentLoser] = roundProfile;
+        tournamentProfile.loserRounds[tournamentProfile.currentLoser] =
+            roundProfile;
         await tournamentProfile.save().catch(console.error);
     }
 
     //grandFinals
-    else{
-        roundProfile = new Round({
+    else {
+        let roundProfile = new Round({
             _id: mongoose.Types.ObjectId(),
             name: `GRAND FINALS`,
             numPlayers: 2,
             winnerBracket: true,
-        })
-        
-        matchProfile = new Match({
+        });
+
+        let matchProfile = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: 1 + tournamentProfile.currentMatch,
-            playerLeft: tournamentProfile.winnerRounds[tournamentProfile.currentWinner].matches[0].winner,
-            playerRight: tournamentProfile.loserRounds[tournamentProfile.currentLoser].matches[0].winner,
+            playerLeft:
+                tournamentProfile.winnerRounds[tournamentProfile.currentWinner]
+                    .matches[0].winner,
+            playerRight:
+                tournamentProfile.loserRounds[tournamentProfile.currentLoser]
+                    .matches[0].winner,
             votesLeft: 0,
             votesRight: 0,
             open: true,
-        })
+        });
         roundProfile.matches[0] = matchProfile;
         tournamentProfile.currentBracket = 0;
         tournamentProfile.currentWinner++;
-        tournamentProfile.winnerRounds[tournamentProfile.currentWinner] = roundProfile;
+        tournamentProfile.winnerRounds[tournamentProfile.currentWinner] =
+            roundProfile;
         await tournamentProfile.save().catch(console.error);
     }
 }
 
-function printNextMatchesCompact(tournamentProfile, roundProfile, interaction){
-    i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
+function printNextMatchesCompact(tournamentProfile, roundProfile, interaction) {
+    let i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
     count = roundProfile.matches.length;
     count = count > maxMatches + i ? maxMatches + i : count;
     console.log(`i: ${i}, count: ${count}`);
-    var j = 0;
+    let j = 0;
     componentArray = [];
-    for (; i < count; i++)
-    {   
+    for (; i < count; i++) {
         j++;
-        matchProfile = roundProfile.matches[i];
+        let matchProfile = roundProfile.matches[i];
         console.log(matchProfile.playerLeft);
         console.log(matchProfile.playerRight);
-        if (matchProfile.playerLeft && matchProfile.playerRight){
-            
-            emote1 = roundProfile.matches[i].playerLeft.split(':')[2].slice(0, -1);
-            emote2 = roundProfile.matches[i].playerRight.split(':')[2].slice(0, -1);
+        if (matchProfile.playerLeft && matchProfile.playerRight) {
+            const emote1 = roundProfile.matches[i].playerLeft
+                .split(":")[2]
+                .slice(0, -1);
+            const emote2 = roundProfile.matches[i].playerRight
+                .split(":")[2]
+                .slice(0, -1);
 
-            console.log(emote1);
             const button1 = new ButtonBuilder()
-            .setCustomId(`T ${tournamentProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} left`)
-            .setStyle(ButtonStyle.Secondary)
-            .setEmoji(emote1);
-            
+                .setCustomId(
+                    `T ${tournamentProfile._id} ${
+                        tournamentProfile.currentBracket
+                    } ${
+                        tournamentProfile.currentBracket
+                            ? tournamentProfile.currentLoser
+                            : tournamentProfile.currentWinner
+                    } ${i} left`
+                )
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji(emote1);
+
             const button2 = new ButtonBuilder()
-            
-            .setCustomId(`T ${tournamentProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} right`)
-            .setStyle(ButtonStyle.Secondary)
-            .setEmoji(emote2);
-            componentArray.push(new ActionRowBuilder().addComponents(button1, button2));
-            
-        }else{
-            interaction.channel.send(`${i + 1} bye`)
+
+                .setCustomId(
+                    `T ${tournamentProfile._id} ${
+                        tournamentProfile.currentBracket
+                    } ${
+                        tournamentProfile.currentBracket
+                            ? tournamentProfile.currentLoser
+                            : tournamentProfile.currentWinner
+                    } ${i} right`
+                )
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji(emote2);
+            componentArray.push(
+                new ActionRowBuilder().addComponents(button1, button2)
+            );
+        } else {
+            interaction.channel.send(`${i + 1} bye`);
         }
         console.log(`i: ${i}`);
-        if ((j === 5 || i + 1 === count) && componentArray.length){
+        if ((j === 5 || i + 1 === count) && componentArray.length) {
             j = 0;
-            interaction.channel.send({components: componentArray})
+            interaction.channel.send({ components: componentArray });
             componentArray = [];
         }
     }
 }
 
-function printNextMatchesFull(tournamentProfile, roundProfile, interaction){
-    i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
-    count = roundProfile.matches.length;
+function printNextMatchesFull(tournamentProfile, roundProfile, interaction) {
+    let i = tournamentProfile.currentMatch - roundProfile.matches[0].matchId + 1;
+    let count = roundProfile.matches.length;
     count = count > maxMatches + i ? maxMatches + i : count;
     console.log(`i: ${i}, count: ${count}`);
-    var j = 0;
-    componentArray = [];
-    for (; i < count; i++)
-    {   
+    let j = 0;
+    let componentArray = [];
+    for (; i < count; i++) {
         j++;
-        matchProfile = roundProfile.matches[i];
+        let matchProfile = roundProfile.matches[i];
         console.log(matchProfile.playerLeft);
         console.log(matchProfile.playerRight);
-        if (matchProfile.playerLeft && matchProfile.playerRight){
-            
-            emote1 = roundProfile.matches[i].playerLeft//.split(':')[2].slice(0, -1);
-            emote2 = roundProfile.matches[i].playerRight//.split(':')[2].slice(0, -1);
+        if (matchProfile.playerLeft && matchProfile.playerRight) {
+            const emote1 = roundProfile.matches[i].playerLeft; //.split(':')[2].slice(0, -1);
+            const emote2 = roundProfile.matches[i].playerRight; //.split(':')[2].slice(0, -1);
 
-            console.log(emote1);
             const button1 = new ButtonBuilder()
-            .setCustomId(`T ${tournamentProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} left`)
-            .setStyle(ButtonStyle.Secondary)
-            .setEmoji('1️⃣');
-            
+                .setCustomId(
+                    `T ${tournamentProfile._id} ${
+                        tournamentProfile.currentBracket
+                    } ${
+                        tournamentProfile.currentBracket
+                            ? tournamentProfile.currentLoser
+                            : tournamentProfile.currentWinner
+                    } ${i} left`
+                )
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji("1️⃣");
+
             const button2 = new ButtonBuilder()
-            
-            .setCustomId(`T ${tournamentProfile._id} ${tournamentProfile.currentBracket} ${tournamentProfile.currentBracket ? tournamentProfile.currentLoser : tournamentProfile.currentWinner} ${i} right`)
-            .setStyle(ButtonStyle.Secondary)
-            .setEmoji('2️⃣');
-            componentArray.push(new ActionRowBuilder().addComponents(button1, button2));
-            
+
+                .setCustomId(
+                    `T ${tournamentProfile._id} ${
+                        tournamentProfile.currentBracket
+                    } ${
+                        tournamentProfile.currentBracket
+                            ? tournamentProfile.currentLoser
+                            : tournamentProfile.currentWinner
+                    } ${i} right`
+                )
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji("2️⃣");
+            componentArray.push(
+                new ActionRowBuilder().addComponents(button1, button2)
+            );
+
             interaction.channel.send({
                 content: `${emote1} :crossed_swords: ${emote2}`,
-                components: componentArray
-            })
+                components: componentArray,
+            });
             componentArray = [];
-        }else{
-            interaction.channel.send(`${i + 1} bye`)
+        } else {
+            interaction.channel.send(`${i + 1} bye`);
         }
         console.log(`i: ${i}`);
-        
-            
     }
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('tourney-next')
-        .setDescription('post next matches for the tournament')
-        .addStringOption(option =>
-            option.setName('name')
-                .setDescription('tournament name')
+        .setName("tourney-next")
+        .setDescription("post next matches for the tournament")
+        .addStringOption((option) =>
+            option
+                .setName("name")
+                .setDescription("tournament name")
                 .setRequired(true)
-            ),
+        ),
     async execute(interaction, client) {
-        const option1 = interaction.options.getString('name');
-        
+        const option1 = interaction.options.getString("name");
+
         await interaction.deferReply();
-        tournamentProfile = await Tournament.findOne({name: option1, host: interaction.member.toString()});
-        if (!tournamentProfile){
+        let tournamentProfile = await Tournament.findOne({
+            name: option1,
+            host: interaction.member.toString(),
+        });
+        if (!tournamentProfile) {
             await interaction.reply({
-                content: `Error: You are not this tournament's host. Did you type the name correctly?`
+                content: `Error: You are not this tournament's host. Did you type the name correctly?`,
             });
             return;
         }
-        
-        roundProfile = tournamentProfile.currentBracket ?
-            tournamentProfile.loserRounds[tournamentProfile.currentLoser] :
-            tournamentProfile.winnerRounds[tournamentProfile.currentWinner]
 
-        if (!tournamentProfile.open){
+        let roundProfile = tournamentProfile.currentBracket
+            ? tournamentProfile.loserRounds[tournamentProfile.currentLoser]
+            : tournamentProfile.winnerRounds[tournamentProfile.currentWinner];
+
+        if (!tournamentProfile.open) {
             tournamentProfile.open = true;
             await tournamentProfile.save().catch(console.error);
             await interaction.channel.send({
-                content: `${roundProfile.name}: `
+                content: `${roundProfile.name}: `,
             });
-        }else{
+        } else {
             //show previous day's results and close matches
             await interaction.channel.send({
-                content: "Last day's results:"
+                content: "Last day's results:",
             });
             await showResults(tournamentProfile, roundProfile, interaction);
         }
 
         //if grandfinals
-        if (roundProfile.name == 'GRAND FINALS'){
+        if (roundProfile.name == "GRAND FINALS") {
             await interaction.editReply("GRAND FINALS RESULT");
-            await showTourneyWinner(tournamentProfile, roundProfile, interaction, client)
-            return ;
+            await showTourneyWinner(
+                tournamentProfile,
+                roundProfile,
+                interaction,
+                client
+            );
+            return;
         }
         //if round is over and its not grandfinals
-        else if (tournamentProfile.currentMatch == roundProfile.matches.length + roundProfile.matches[0].matchId - 1){
+        else if (
+            tournamentProfile.currentMatch ==
+            roundProfile.matches.length + roundProfile.matches[0].matchId - 1
+        ) {
             await newRound(tournamentProfile, client);
             interaction.channel.send(`${roundProfile.name}: `);
         }
-        
+
         //print next Matches
         // tournamentProfile.fullTheme ?
         //     printNextMatchesFull(tournamentProfile, roundProfile, interaction) :
         //     printNextMatchesCompact(tournamentProfile, roundProfile, interaction);
-        interaction.channel.send(`Next matches:`)
+        interaction.channel.send(`Next matches:`);
         printNextMatchesFull(tournamentProfile, roundProfile, interaction);
         await interaction.editReply("NEW DAY");
     },
 
-    usage: "You can only use this command on tournaments YOU created. Use the name you gave your tournament when you used `/create-tourney`. Once this command is used the revealed matches are closed: give some time to your members to vote."
-}
+    usage: "You can only use this command on tournaments YOU created. Use the name you gave your tournament when you used `/create-tourney`. Once this command is used the revealed matches are closed: give some time to your members to vote.",
+};
