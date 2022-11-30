@@ -26,6 +26,7 @@ function getQueueMessage(queue, index, client) {
     let fields = [];
     let items = [];
     let totalPages = Math.floor(queue.length / maxItems);
+    if (!(queue.length % maxItems)) totalPages--;
     //if button is pressed after queue has lost elements, index might become higher than totalPages
     while (index > totalPages) index--;
     let j = 0;
@@ -65,6 +66,10 @@ function getQueueMessage(queue, index, client) {
         .setCustomId(`stop ${index}`)
         .setStyle(ButtonStyle.Secondary)
         .setEmoji("⏹️");
+    const refresh = new ButtonBuilder()
+        .setCustomId(`Q ${index}`)
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("🔄");
     if (totalPages !== 0) {
         const prev = new ButtonBuilder()
             .setCustomId(`Q ${index ? index - 1 : totalPages} P`)
@@ -77,13 +82,17 @@ function getQueueMessage(queue, index, client) {
         return {
             embeds: [embed],
             components: [
-                new ActionRowBuilder().addComponents(prev, next, shuffle, skip, stop),
+                new ActionRowBuilder().addComponents(shuffle, skip, stop),
+                new ActionRowBuilder().addComponents(prev, refresh, next),
             ],
         };
     }
     return {
         embeds: [embed],
-        components: [new ActionRowBuilder().addComponents(shuffle, skip, stop)],
+        components: [
+            new ActionRowBuilder().addComponents(shuffle, skip, stop),
+            new ActionRowBuilder().addComponents(refresh),
+        ],
     };
 }
 
