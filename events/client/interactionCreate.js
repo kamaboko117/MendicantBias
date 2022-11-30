@@ -41,6 +41,10 @@ module.exports = {
                     await buttons.get("queue").execute(interaction, client);
                 } else if (type === "skip") {
                     await buttons.get("skip").execute(interaction, client);
+                } else if (type === "shuffle") {
+                    await buttons.get("shuffle").execute(interaction, client);
+                } else if (type === "stop") {
+                    await buttons.get("stop").execute(interaction, client);
                 } else {
                     try {
                         await buttons
