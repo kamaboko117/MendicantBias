@@ -26,11 +26,12 @@ function getQueueMessage(queue, index, client) {
     let fields = [];
     let items = [];
     let totalPages = Math.floor(queue.length / maxItems);
+    if (!(queue.length % maxItems)) totalPages--;
     //if button is pressed after queue has lost elements, index might become higher than totalPages
     while (index > totalPages) index--;
     let j = 0;
 
-    if (index === 0) {
+    if (index === 0 && !queue.isEmpty) {
         items[0] = new Object();
         items[0].title = `**▶️ ${queue.elements[queue.head].title}**`;
         items[0].length = `${toHHMMSS(queue.elements[queue.head].length)}`;
@@ -57,6 +58,18 @@ function getQueueMessage(queue, index, client) {
         .setCustomId(`skip ${index}`)
         .setStyle(ButtonStyle.Secondary)
         .setEmoji("⏭️");
+    const shuffle = new ButtonBuilder()
+        .setCustomId(`shuffle ${index}`)
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("🔀");
+    const stop = new ButtonBuilder()
+        .setCustomId(`stop ${index}`)
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("⏹️");
+    const refresh = new ButtonBuilder()
+        .setCustomId(`Q ${index}`)
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("🔄");
     if (totalPages !== 0) {
         const prev = new ButtonBuilder()
             .setCustomId(`Q ${index ? index - 1 : totalPages} P`)
@@ -69,13 +82,17 @@ function getQueueMessage(queue, index, client) {
         return {
             embeds: [embed],
             components: [
-                new ActionRowBuilder().addComponents(prev, next, skip),
+                new ActionRowBuilder().addComponents(shuffle, skip, stop),
+                new ActionRowBuilder().addComponents(prev, refresh, next),
             ],
         };
     }
     return {
         embeds: [embed],
-        components: [new ActionRowBuilder().addComponents(skip)],
+        components: [
+            new ActionRowBuilder().addComponents(shuffle, skip, stop),
+            new ActionRowBuilder().addComponents(refresh),
+        ],
     };
 }
 
