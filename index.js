@@ -6,7 +6,7 @@ const { connect } = require("mongoose");
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
 const fs = require("fs");
 const { Match } = require("./schemas/match");
-
+const { Queue } = require("./classes/Queue");
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -26,6 +26,7 @@ client.invite2 =
     "https://discord.com/api/oauth2/authorize?client_id=1026870487885815870&permissions=347136&scope=bot";
 client.queues = [];
 client.timeoutId = [];
+client.voteQueue = new Queue();
 
 const functionFolders = fs.readdirSync("./functions");
 for (const folder of functionFolders) {
@@ -44,3 +45,4 @@ client.login(token);
     await connect(databaseToken).catch(console.error);
     client.matchCount = await Match.estimatedDocumentCount();
 })();
+client.voteRoutine();
