@@ -30,6 +30,7 @@ module.exports = {
         if (!queue || queue.isEmpty) {
             await interaction.update({
                 content: "Queue is empty",
+                embeds: [],
                 ephemeral: false,
             });
             return;
@@ -40,9 +41,7 @@ module.exports = {
         while (!queue.isEmpty) queue.dequeue();
         player.stop();
 
-        setTimeout(() => {
-            let message = getQueueMessage(queue, index, client);
-            interaction.update(message);
-        }, 1_000);
+        let message = { content: "Queue cleared", embeds: [] };
+        interaction.update(message);
     },
 };
