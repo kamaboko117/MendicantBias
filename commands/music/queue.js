@@ -40,7 +40,7 @@ function getQueueMessage(queue, index, client) {
         items[0].title = `**▶️ ${queue.elements[queue.head].title}**`;
         items[0].length = `${toHHMMSS(queue.elements[queue.head].length)}`;
     }
-    if (index === 0){
+    if (index === 0) {
         j = 1;
     }
     for (let i = queue.head + index * maxItems + j; i < queue.tail; i++) {

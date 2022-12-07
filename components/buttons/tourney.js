@@ -74,10 +74,10 @@ module.exports = {
         name: "tourney",
     },
     async execute(interaction, client) {
-        let sem = require('semaphore')(1);
-        sem.take(async function(){
+        let sem = require("semaphore")(1);
+        sem.take(async function () {
             await executeButton(interaction);
-            sem.leave()
-        })
+            sem.leave();
+        });
     },
 };

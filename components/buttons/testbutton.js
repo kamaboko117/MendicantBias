@@ -1,10 +1,10 @@
 module.exports = {
     data: {
-        name: 'test'
+        name: "test",
     },
     async execute(interaction, client) {
         await interaction.reply({
-            content: 'https://www.twitch.tv/kamaboko117'
-        })
-    }
-}
+            content: "https://www.twitch.tv/kamaboko117",
+        });
+    },
+};

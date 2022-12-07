@@ -1,8 +1,8 @@
-const { getQueueMessage } = require('../../commands/music/queue')
+const { getQueueMessage } = require("../../commands/music/queue");
 
 module.exports = {
     data: {
-        name: 'queue'
+        name: "queue",
     },
     async execute(interaction, client) {
         let idsplit = interaction.component.customId.split(" ");
@@ -10,8 +10,9 @@ module.exports = {
         let queue = client.queues.find(
             (queue) => queue.id === interaction.guild.id
         );
-        if (queue)
+        if (queue) {
             queue = queue.queue;
+        }
         if (!queue || queue.isEmpty) {
             await interaction.update({
                 content: "Queue is empty",
@@ -22,8 +23,6 @@ module.exports = {
         }
         let message = getQueueMessage(queue, index, client);
 
-        await interaction.update(
-            message
-        );
-    }
-}
+        await interaction.update(message);
+    },
+};

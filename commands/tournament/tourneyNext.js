@@ -95,7 +95,7 @@ async function showResults(tourney, round, interaction) {
         }
     }
     await tourney.save().catch(console.error);
-    return (tourney);
+    return tourney;
 }
 
 async function showTourneyWinner(tourney, round, interaction, client) {
@@ -540,7 +540,7 @@ module.exports = {
             });
             tourney = await showResults(tourney, round, interaction);
         }
-        console.log(round.matches.length)
+        console.log(round.matches.length);
         //if grandfinals
         if (round.name == "GRAND FINALS") {
             await interaction.editReply("GRAND FINALS RESULT");
