@@ -36,6 +36,7 @@ module.exports = {
         if (!queue || queue.isEmpty) {
             await interaction.update({
                 content: "Queue is empty",
+                embeds: [],
                 ephemeral: false,
             });
             return;

@@ -26,15 +26,21 @@ function getQueueMessage(queue, index, client) {
     let fields = [];
     let items = [];
     let totalPages = Math.floor(queue.length / maxItems);
-    if (!(queue.length % maxItems)) totalPages--;
+    if (!(queue.length % maxItems)) {
+        totalPages--;
+    }
     //if button is pressed after queue has lost elements, index might become higher than totalPages
-    while (index > totalPages) index--;
+    while (index > totalPages && index > 0) {
+        index--;
+    }
     let j = 0;
 
     if (index === 0 && !queue.isEmpty) {
         items[0] = new Object();
         items[0].title = `**▶️ ${queue.elements[queue.head].title}**`;
         items[0].length = `${toHHMMSS(queue.elements[queue.head].length)}`;
+    }
+    if (index === 0){
         j = 1;
     }
     for (let i = queue.head + index * maxItems + j; i < queue.tail; i++) {
@@ -112,6 +118,7 @@ module.exports = {
         if (!queue || queue.isEmpty) {
             await interaction.reply({
                 content: "Queue is empty",
+                embeds: [],
                 ephemeral: false,
             });
             return;
