@@ -19,12 +19,15 @@ module.exports = {
         ),
 
     async execute(interaction, client) {
-        const option1 = interaction.options.getInteger('from');
-        let option2 = interaction.options.getInteger('to');
+        const option1 = interaction.options.getInteger("from");
+        let option2 = interaction.options.getInteger("to");
 
-        if (!option2 || option2 < 1)
+        if (!option2 || option2 < 1) {
             option2 = 1;
-        console.log(`${interaction.member.displayName} used /move ${option1} ${option2}`);
+        }
+        console.log(
+            `${interaction.member.displayName} used /move ${option1} ${option2}`
+        );
 
         const { voice } = interaction.member;
         if (!voice.channelId) {
@@ -42,28 +45,35 @@ module.exports = {
         let queue = client.queues.find(
             (queue) => queue.id === interaction.guild.id
         );
-        if (queue) queue = queue.queue;
-        if (option2 > queue.length)
+        if (queue) {
+            queue = queue.queue;
+        }
+        if (option2 > queue.length) {
             option2 = queue.length;
+        }
 
         let tmpArray = [];
         tmpArray.push(queue.peek());
-        for (let i = queue.head + 1; i < queue.tail; i++){
-            if (i === option2 + queue.head){
+        for (let i = queue.head + 1; i < queue.tail; i++) {
+            if (i === option2 + queue.head) {
                 let element = queue.elements[option1 + queue.head];
-                if (!element)
-                    continue ;
-                tmpArray.push(element)
+                if (!element) {
+                    continue;
+                }
+                tmpArray.push(element);
+            } else if (i === option1 + queue.head) {
+                continue;
+            } else {
+                tmpArray.push(queue.elements[i]);
             }
-            else if (i === option1 + queue.head)
-                continue ;
-            else
-                tmpArray.push(queue.elements[i])
         }
 
-        while (!queue.isEmpty) queue.dequeue();
-        for (const item of tmpArray)
+        while (!queue.isEmpty) {
+            queue.dequeue();
+        }
+        for (const item of tmpArray) {
             queue.enqueue(item);
+        }
         await interaction.reply({
             content: "Done",
         });

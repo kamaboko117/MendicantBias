@@ -26,8 +26,12 @@ module.exports = {
         let queue = client.queues.find(
             (queue) => queue.id === interaction.guild.id
         );
-        if (queue) queue = queue.queue;
-        while (!queue.isEmpty) queue.dequeue();
+        if (queue) {
+            queue = queue.queue;
+        }
+        while (!queue.isEmpty) {
+            queue.dequeue();
+        }
 
         player.stop();
 

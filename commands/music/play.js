@@ -94,7 +94,7 @@ function mendicantJoin(voice, guild, client) {
             }
         );
     }
-    
+
     return connection;
 }
 
@@ -129,7 +129,9 @@ async function mendicantPlay(interaction, item, client, silent) {
                 queue.dequeue();
                 if (!queue.isEmpty) {
                     console.log(queue.peek().title);
-                    player.play(mendicantCreateResource(interaction, queue.peek()));
+                    player.play(
+                        mendicantCreateResource(interaction, queue.peek())
+                    );
                 } else {
                     //30 min timer until a disconnection if still Idle
 
@@ -159,8 +161,9 @@ async function mendicantPlay(interaction, item, client, silent) {
         queue.enqueue(item);
     }
 
-    if (silent)
-        return ;
+    if (silent) {
+        return;
+    }
     await interaction.reply({
         content: `Queued **${item.title}**`,
         ephemeral: false,
@@ -168,7 +171,7 @@ async function mendicantPlay(interaction, item, client, silent) {
 }
 
 //creates a streamable resource
-function mendicantCreateResource(interaction, videoDetails){
+function mendicantCreateResource(interaction, videoDetails) {
     let stream = ytdl(videoDetails.id, {
         filter: "audioonly",
         highWaterMark: 1 << 25,
@@ -180,20 +183,20 @@ function mendicantCreateResource(interaction, videoDetails){
         metadata: {
             title: videoDetails.title,
             length: videoDetails.length,
-            id: videoDetails.id
+            id: videoDetails.id,
         },
     });
     if (resource.playStream.readableEnded || resource.playStream.destroyed) {
         interaction.channel.send("Error: Could not create resource (1)");
         return null;
     }
-    return (resource)
+    return resource;
 }
 
 //creates a queue item without downloading the resource stream
 async function mendicantCreateItem(interaction, videoID, details) {
     let videoDetails = details ? details : null;
-    if (!details){
+    if (!details) {
         let videoDetailsRaw;
         await ytdl
             .getInfo(`https://www.youtube.com/watch?v=${videoID}`, {
@@ -204,13 +207,17 @@ async function mendicantCreateItem(interaction, videoID, details) {
                 },
             })
             .catch((error) =>
-                interaction.channel.send(`ytdl module error: ${error} [COULD NOT GET VIDEO DETAILS]`)
+                interaction.channel.send(
+                    `ytdl module error: ${error} [COULD NOT GET VIDEO DETAILS]`
+                )
             )
             .then((value) => {
                 videoDetails = new Object();
                 videoDetailsRaw = value.videoDetails;
             });
-        if (!videoDetailsRaw) return null;
+        if (!videoDetailsRaw) {
+            return null;
+        }
         videoDetails.title = videoDetailsRaw.title;
         videoDetails.length = videoDetailsRaw.lengthSeconds;
         videoDetails.id = videoID;
@@ -253,7 +260,9 @@ async function mendicantSearch(option1, interaction, client) {
             .setCustomId(customID)
             .setStyle(ButtonStyle.Secondary)
             .setLabel(`${i}`);
-        if (i === 5) break;
+        if (i === 5) {
+            break;
+        }
     }
 
     await interaction.reply({
@@ -265,19 +274,27 @@ async function mendicantSearch(option1, interaction, client) {
 }
 
 function isPlaylist(url) {
-    if (!isValidHttpUrl(url)) return false;
+    if (!isValidHttpUrl(url)) {
+        return false;
+    }
     return url.includes("&list=") || url.includes("?list=");
 }
 
 function getPlaylistId(url) {
     let keyword;
-    if (url.includes("&list=")) keyword = "&list=";
-    else if (url.includes("?list=")) keyword = "?list=";
+    if (url.includes("&list=")) {
+        keyword = "&list=";
+    } else if (url.includes("?list=")) {
+        keyword = "?list=";
+    }
     let index = url.indexOf(keyword);
     let end = url.indexOf("&", index + 1);
     console.log(`index: ${index}`);
-    if (end === -1) return url.substring(index + keyword.length);
-    else return url.substring(index + keyword.length, end);
+    if (end === -1) {
+        return url.substring(index + keyword.length);
+    } else {
+        return url.substring(index + keyword.length, end);
+    }
 }
 
 function findVideoIndex(url, playlist) {
@@ -289,7 +306,9 @@ function findVideoIndex(url, playlist) {
     }
     let i = 0;
     for (const video of playlist.items) {
-        if (videoID === video.id) return i + 1;
+        if (videoID === video.id) {
+            return i + 1;
+        }
         i++;
     }
     return 0;
@@ -347,8 +366,9 @@ module.exports = {
             return;
         }
 
-        if (!playlistFlag) await mendicantSearch(option1, interaction, client);
-        else interaction.reply("Playlist detected");
+        if (!playlistFlag) {
+            await mendicantSearch(option1, interaction, client);
+        } else interaction.reply("Playlist detected");
     },
 
     usage: "play a video from youtube. you can either use the video's URL or search for an input",
