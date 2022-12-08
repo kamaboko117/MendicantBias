@@ -6,7 +6,7 @@ function arrayRemove(arr, value) {
     });
 }
 
-async function executeButton(interaction) {
+async function executeVote(interaction) {
     const idSplit = interaction.component.customId.split(" ");
     let tourney = await Tournament.findOne({ _id: idSplit[1] });
     let match;
@@ -63,21 +63,18 @@ async function executeButton(interaction) {
         await tourney.save().catch(console.error);
     }
     console.log(interaction.member.displayName);
-    await interaction.reply({
+    await interaction.editReply({
         content: msg,
-        ephemeral: true,
     });
 }
 
 module.exports = {
+    executeVote: executeVote,
     data: {
         name: "tourney",
     },
     async execute(interaction, client) {
-        let sem = require("semaphore")(1);
-        sem.take(async function () {
-            await executeButton(interaction);
-            sem.leave();
-        });
+        await interaction.deferReply({ ephemeral: true });
+        client.voteQueue.enqueue(interaction);
     },
 };

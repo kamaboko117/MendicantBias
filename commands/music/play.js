@@ -127,22 +127,12 @@ async function mendicantPlay(interaction, item, client, silent) {
         player.on(AudioPlayerStatus.Idle, () => {
             if (!queue.isEmpty) {
                 queue.dequeue();
-                if (!queue.isEmpty) {
-                    console.log(queue.peek().title);
-                    player.play(
-                        mendicantCreateResource(interaction, queue.peek())
-                    );
-                } else {
-                    //30 min timer until a disconnection if still Idle
-
-                    client.timeoutID = setTimeout(() => {
-                        dispatcher.unsubscribe();
-                        player.stop();
-                        console.log("unsubscribed");
-                        connection.disconnect();
-                        console.log("connection disconnected");
-                    }, 800_000);
-                }
+            }
+            if (!queue.isEmpty) {
+                console.log(queue.peek().title);
+                player.play(
+                    mendicantCreateResource(interaction, queue.peek())
+                );
             } else {
                 //30 min timer until a disconnection if still Idle
                 client.timeoutID = setTimeout(() => {
@@ -287,8 +277,8 @@ function getPlaylistId(url) {
     } else if (url.includes("?list=")) {
         keyword = "?list=";
     }
-    let index = url.indexOf(keyword);
-    let end = url.indexOf("&", index + 1);
+    const index = url.indexOf(keyword);
+    const end = url.indexOf("&", index + 1);
     console.log(`index: ${index}`);
     if (end === -1) {
         return url.substring(index + keyword.length);
@@ -298,12 +288,10 @@ function getPlaylistId(url) {
 }
 
 function findVideoIndex(url, playlist) {
-    let videoID;
-    if (ytdl.validateURL(url)) {
-        videoID = ytdl.getURLVideoID(url);
-    } else {
-        return 0;
+    if (!ytdl.validateURL(url)) {
+        return 0
     }
+    const videoID = ytdl.getURLVideoID(url);
     let i = 0;
     for (const video of playlist.items) {
         if (videoID === video.id) {
@@ -317,6 +305,7 @@ function findVideoIndex(url, playlist) {
 module.exports = {
     mendicantPlay: mendicantPlay,
     mendicantCreateItem: mendicantCreateItem,
+    mendicantSearch: mendicantSearch,
 
     data: new SlashCommandBuilder()
         .setName("play")
