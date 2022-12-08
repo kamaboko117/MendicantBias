@@ -1,7 +1,35 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { getVoiceConnection } = require("@discordjs/voice");
 
+const mendicantMove = (queue, src, dst) => {
+    if (src === dst){
+        return;
+    }
+    let tmpArray = [];
+    tmpArray.push(queue.peek());
+    for (let i = queue.head + 1; i < queue.tail; i++) {
+        if (i === dst + queue.head) {
+            let element = queue.elements[src + queue.head];
+            if (element) {
+                tmpArray.push(element);
+            }
+        } else if (i === src + queue.head) {
+            continue;
+        }
+        tmpArray.push(queue.elements[i]);
+    }
+
+    while (!queue.isEmpty) {
+        queue.dequeue();
+    }
+    for (const item of tmpArray) {
+        queue.enqueue(item);
+    }
+};
+
 module.exports = {
+    mendicantMove: mendicantMove,
+
     data: new SlashCommandBuilder()
         .setName("move")
         .setDescription("Change an item's position in the queue")
@@ -52,28 +80,8 @@ module.exports = {
             option2 = queue.length;
         }
 
-        let tmpArray = [];
-        tmpArray.push(queue.peek());
-        for (let i = queue.head + 1; i < queue.tail; i++) {
-            if (i === option2 + queue.head) {
-                let element = queue.elements[option1 + queue.head];
-                if (!element) {
-                    continue;
-                }
-                tmpArray.push(element);
-            } else if (i === option1 + queue.head) {
-                continue;
-            } else {
-                tmpArray.push(queue.elements[i]);
-            }
-        }
+        mendicantMove(queue, option1, option2);
 
-        while (!queue.isEmpty) {
-            queue.dequeue();
-        }
-        for (const item of tmpArray) {
-            queue.enqueue(item);
-        }
         await interaction.reply({
             content: "Done",
         });
