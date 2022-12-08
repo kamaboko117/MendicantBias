@@ -1,9 +1,12 @@
 const ytdl = require("ytdl-core");
-const { mendicantCreateItem, mendicantPlay, mendicantSearch } = require("./play")
-const { SlashCommandBuilder } = require("discord.js")
+const {
+    mendicantCreateItem,
+    mendicantPlay,
+    mendicantSearch,
+} = require("./play");
+const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
-
     data: new SlashCommandBuilder()
         .setName("ptop")
         .setDescription("plays a video from youtube in voice chat")
@@ -16,7 +19,7 @@ module.exports = {
     async execute(interaction, client) {
         const option1 = interaction.options.getString("url-or-search");
         console.log(`${interaction.member.displayName} used /play ${option1}`);
-       
+
         if (ytdl.validateURL(option1)) {
             let ID = ytdl.getURLVideoID(option1);
             let item = await mendicantCreateItem(interaction, ID);
@@ -25,11 +28,11 @@ module.exports = {
                 return;
             }
 
-            await mendicantPlay(interaction, item, client);
+            await mendicantPlay(interaction, item, client, false, 1);
 
             return;
         }
-        await mendicantSearch(option1, interaction, client);
+        await mendicantSearch(option1, interaction, client, 1);
     },
 
     usage: "play a video from youtube. you can either use the video's URL or search for an input",

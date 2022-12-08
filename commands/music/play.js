@@ -27,6 +27,7 @@ const YTopts = {
     type: "video",
 };
 const youtubesearchapi = require("youtube-search-api");
+const { mendicantMove } = require("./move");
 const ytCookie = process.env.YTCOOKIE;
 
 function isValidHttpUrl(string) {
@@ -98,7 +99,7 @@ function mendicantJoin(voice, guild, client) {
     return connection;
 }
 
-async function mendicantPlay(interaction, item, client, silent) {
+async function mendicantPlay(interaction, item, client, silent, index) {
     const { voice } = interaction.member;
     if (!voice.channelId) {
         interaction.reply("Error: You are not in a voice channel");
@@ -130,9 +131,7 @@ async function mendicantPlay(interaction, item, client, silent) {
             }
             if (!queue.isEmpty) {
                 console.log(queue.peek().title);
-                player.play(
-                    mendicantCreateResource(interaction, queue.peek())
-                );
+                player.play(mendicantCreateResource(interaction, queue.peek()));
             } else {
                 //30 min timer until a disconnection if still Idle
                 client.timeoutID = setTimeout(() => {
@@ -149,6 +148,9 @@ async function mendicantPlay(interaction, item, client, silent) {
         });
     } else {
         queue.enqueue(item);
+        if (index) {
+            mendicantMove(queue, queue.length - 1, index);
+        }
     }
 
     if (silent) {
@@ -218,7 +220,7 @@ async function mendicantCreateItem(interaction, videoID, details) {
     return videoDetails;
 }
 
-async function mendicantSearch(option1, interaction, client) {
+async function mendicantSearch(option1, interaction, client, index) {
     let results = await search(option1, YTopts);
     if (!results.results.length) {
         interaction.reply(`No results for "${option1}"`);
@@ -245,7 +247,7 @@ async function mendicantSearch(option1, interaction, client) {
     i = 0;
     let buttons = [];
     for (const result of results.results) {
-        let customID = `P ${result.id} ${fields[i].value}`.substring(0, 99);
+        let customID = `P ${result.id} ${index ? index : "0"}`.substring(0, 99);
         buttons[i++] = new ButtonBuilder()
             .setCustomId(customID)
             .setStyle(ButtonStyle.Secondary)
@@ -289,7 +291,7 @@ function getPlaylistId(url) {
 
 function findVideoIndex(url, playlist) {
     if (!ytdl.validateURL(url)) {
-        return 0
+        return 0;
     }
     const videoID = ytdl.getURLVideoID(url);
     let i = 0;

@@ -8,13 +8,14 @@ module.exports = {
         name: "play",
     },
     async execute(interaction, client) {
-        let idsplit = interaction.component.customId.split(" ");
-        let option1 = idsplit[1];
+        const idsplit = interaction.component.customId.split(" ");
+        const option1 = idsplit[1];
+        const option2 = Number(idsplit[2]);
         let item = await mendicantCreateItem(interaction, option1);
         if (!item) {
             interaction.channel.send("Error: Could not create item (3)");
             return;
         }
-        return mendicantPlay(interaction, item, client);
+        return mendicantPlay(interaction, item, client, false, option2);
     },
 };
