@@ -199,9 +199,9 @@ async function createLB4(tourney, round) {
 async function createLB6(tourney, round) {
     const prevWB = tourney.winnerRounds[tourney.currentWinner];
     const prevLB = tourney.loserRounds[tourney.currentLoser];
-    let j = prevWB.matches.length / 2;
+    let j = Math.floor(prevWB.matches.length / 2);
 
-    for (i = 0; i < round.numPlayers / 2 / 2; i++) {
+    for (i = 0; i < Math.floor(round.numPlayers / 2 / 2); i++) {
         let match = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tourney.currentMatch,
@@ -213,7 +213,7 @@ async function createLB6(tourney, round) {
         });
         round.matches[i] = match;
     }
-    for (i = round.numPlayers / 2 / 2; i < round.numPlayers / 2; i++) {
+    for (i = Math.floor(round.numPlayers / 2 / 2); i < Math.floor(round.numPlayers / 2); i++) {
         let match = new Match({
             _id: mongoose.Types.ObjectId(),
             matchId: i + 1 + tourney.currentMatch,

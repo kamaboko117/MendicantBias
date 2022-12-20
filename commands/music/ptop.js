@@ -35,5 +35,5 @@ module.exports = {
         await mendicantSearch(option1, interaction, client, 1);
     },
 
-    usage: "play a video from youtube. you can either use the video's URL or search for an input",
+    usage: "play a video from youtube. you can either use the video's URL or search for an input. Unlike /play, /ptop will always queue the song at the top of the list",
 };
