@@ -33,6 +33,6 @@
     "semaphore": "^1.1.0",
     "youtube-search": "^1.1.6",
     "youtube-search-api": "^1.1.1",
-    "ytdl-core": "^4.11.3"
+    "ytdl-core": "^4.9.1"
   }
 }
