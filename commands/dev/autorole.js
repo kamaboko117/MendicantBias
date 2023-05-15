@@ -1,25 +1,26 @@
-const {
-    SlashCommandBuilder,
-    ButtonBuilder,
-    ActionRowBuilder,
-    ButtonStyle,
-} = require("discord.js");
+import {
+  SlashCommandBuilder,
+  ButtonBuilder,
+  ActionRowBuilder,
+  ButtonStyle,
+} from "discord.js";
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("autorole")
-        .setDescription("create autorole button"),
+export default {
+  data: new SlashCommandBuilder()
+    .setName("autorole")
+    .setDescription("create autorole button"),
 
-    async execute(interaction, client) {
-        const button1 = new ButtonBuilder()
-            .setCustomId("autorole")
-            .setStyle(ButtonStyle.Secondary)
-            .setEmoji("✅");
+  async execute(interaction, client) {
+    const button1 = new ButtonBuilder()
+      .setCustomId("autorole")
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji("✅");
 
-        await interaction.reply({
-            components: [new ActionRowBuilder().addComponents(button1)],
-        });
-    },
+    await interaction.reply({
+      components: [new ActionRowBuilder().addComponents(button1)],
+    });
+  },
 
-    usage: "Use carefully: Yellow Members might endure the consequences of this action",
+  usage:
+    "",
 };

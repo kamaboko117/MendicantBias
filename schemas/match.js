@@ -1,18 +1,17 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from "mongoose";
 
-const matchSchema = new Schema({
-    _id: Schema.Types.ObjectId,
-    matchId: Number,
-    playerLeft: String,
-    playerRight: String,
-    votesLeft: Number,
-    votesRight: Number,
-    membersLeft: [String],
-    membersRight: [String],
-    open: Boolean,
-    winner: String,
-    loser: String
+export const matchSchema = new Schema({
+  _id: Schema.Types.ObjectId,
+  matchId: Number,
+  playerLeft: String,
+  playerRight: String,
+  votesLeft: Number,
+  votesRight: Number,
+  membersLeft: [String],
+  membersRight: [String],
+  open: Boolean,
+  winner: String,
+  loser: String,
 });
 
-module.exports.Match = model("Match", matchSchema, "matches");
-module.exports.matchSchema = matchSchema;
+export default model("Match", matchSchema, "matches");

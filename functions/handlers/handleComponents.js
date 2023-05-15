@@ -1,33 +1,28 @@
-const { readdirSync } = require('fs');
+import components from "../../components/index.js";
 
-module.exports = (client) => {
-    client.handleComponents = async () => {
-        const componentFolders = readdirSync(`./components`);
-        for (const folder of componentFolders) {
-            const componentFiles = readdirSync(`./components/${folder}`).filter(file => file.endsWith(".js"));
-            const { buttons, selectMenus, modals } = client;
-            switch (folder) {
-                case "buttons":
-                    for (const file of componentFiles){
-                        const button = require(`../../components/${folder}/${file}`);
-                        buttons.set(button.data.name, button);
-                    }
-                    break;
-                case "selectMenus":
-                    for (const file of componentFiles) {
-                        const menu = require(`../../components/${folder}/${file}`);
-                        selectMenus.set(menu.data.name, menu);
-                    }
-                    break;
-                case "modals":
-                    for (const file of componentFiles){
-                        const modal = require(`../../components/${folder}/${file}`);
-                        modals.set(modal.data.name, modal);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-}
+export default (client) => {
+  client.handleComponents = async () => {
+    const { buttons, selectMenus, modals } = client;
+
+    //set buttons
+    const buttonsList = components.buttons;
+    Object.keys(buttonsList).forEach((key) => {
+      const button = buttonsList[key];
+      buttons.set(button.data.name, button);
+    });
+
+    //set selectMenus
+    const selectMenusList = components.selectMenus;
+    Object.keys(selectMenusList).forEach((key) => {
+      const menu = selectMenusList[key];
+      selectMenus.set(menu.data.name, menu);
+    });
+
+    //set modals
+    const modalsList = components.modals;
+    Object.keys(modalsList).forEach((key) => {
+      const modal = modalsList[key];
+      modals.set(modal.data.name, modal);
+    });
+  };
+};

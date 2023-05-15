@@ -1,19 +1,23 @@
-const { Match } = require ('../../schemas/match');
+import Match from "../../schemas/match.js";
 
-module.exports = {
-    data: {
-        name: `deleteMenu`
-    },
-    async execute (interaction, client) {
-        await Match.deleteOne({matchId: interaction.values[0]});
-        for (i = Number(interaction.values[0]) + 1; i < client.matchCount + 1; i++){
-            matchProfile = await Match.findOne({matchId: i});
-            matchProfile.matchId--;
-            await matchProfile.save().catch(console.error);
-        }
-        client.matchCount--;
-        await interaction.reply({
-            content: `match deleted: ${interaction.values[0]}`,
-        });
-    },
+export default {
+  data: {
+    name: `deleteMenu`,
+  },
+  async execute(interaction, client) {
+    await Match.deleteOne({ matchId: interaction.values[0] });
+    for (
+      i = Number(interaction.values[0]) + 1;
+      i < client.matchCount + 1;
+      i++
+    ) {
+      matchProfile = await Match.findOne({ matchId: i });
+      matchProfile.matchId--;
+      await matchProfile.save().catch(console.error);
+    }
+    client.matchCount--;
+    await interaction.reply({
+      content: `match deleted: ${interaction.values[0]}`,
+    });
+  },
 };

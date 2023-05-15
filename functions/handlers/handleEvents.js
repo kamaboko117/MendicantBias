@@ -1,35 +1,26 @@
-const fs = require('fs');
-const { connection } = require('mongoose');
+import mongoose from "mongoose";
+import events from "../../events/index.js";
+const connection = mongoose.connection;
 
-module.exports = (client) => {
-    client.handleEvents = async () => {
-        const eventFolders = fs.readdirSync(`./events`);
-        for (const folder of eventFolders) {
-            const eventFiles = fs.readdirSync(`./events/${folder}`).filter(file => file.endsWith('.js'));
-            switch (folder) {
-                case "client":
-                    for (const file of eventFiles){
-                        const event = require(`../../events/${folder}/${file}`);
-                        if (event.once)
-                            client.once(event.name, (...args) => event.execute(...args, client));
-                        else
-                            client.on(event.name, (...args) => event.execute(...args, client));
-                    }
-                    break;
+export default (client) => {
+  client.handleEvents = async () => {
+    const clientEvents = events.client;
+    Object.keys(clientEvents).forEach((key) => {
+      const event = clientEvents[key];
+      if (event.once)
+        client.once(event.name, (...args) => event.execute(...args, client));
+      else client.on(event.name, (...args) => event.execute(...args, client));
+    });
 
-                    case "mongo":
-                        for (const file of eventFiles){
-                            const event = require(`../../events/${folder}/${file}`)
-                            if (event.once)
-                                connection.once(event.name, (...args) => event.execute(...args, client));
-                            else
-                                connection.on(event.name, (...args) => event.execute(...args, client));
-                        }
-                        break;
-
-                default:
-                    break;
-            }
-        }
-    }
-}
+    const mongoEvents = events.mongo;
+    Object.keys(mongoEvents).forEach((key) => {
+      const event = mongoEvents[key];
+      if (event.once)
+        connection.once(event.name, (...args) =>
+          event.execute(...args, client)
+        );
+      else
+        connection.on(event.name, (...args) => event.execute(...args, client));
+    });
+  };
+};
