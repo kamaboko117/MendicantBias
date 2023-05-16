@@ -1,6 +1,5 @@
-const { Match } = require(`./match`);
-const { Schema, model } = require('mongoose');
-const { roundSchema } = require('./round');
+import { Schema, model } from "mongoose";
+import { roundSchema } from "./round.js";
 
 const tournamentSchema = new Schema({
     id: Schema.Types.ObjectId,
@@ -18,4 +17,4 @@ const tournamentSchema = new Schema({
     open: Boolean 
 });
 
-module.exports = model("Tournament", tournamentSchema, "tournaments");
+export default model("Tournament", tournamentSchema, "tournaments");

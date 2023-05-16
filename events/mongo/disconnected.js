@@ -1,8 +1,8 @@
-const chalk = require("chalk");
+import chalk from "chalk";
 
-module.exports = {
-    name: "disconnected",
-    execute(client) {
-        console.log(chalk.red("[Database Status]: Disconnected."));
-    },
+export default {
+  name: "disconnected",
+  execute(client) {
+    console.log(chalk.red("[Database Status]: Disconnected."));
+  },
 };

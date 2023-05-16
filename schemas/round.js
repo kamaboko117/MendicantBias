@@ -1,14 +1,13 @@
-const { Schema, model } = require('mongoose');
-const { matchSchema } = require('./match');
+import { Schema, model } from "mongoose";
+import { matchSchema } from "./match.js";
 
-const roundSchema = new Schema({
-    _id: Schema.Types.ObjectId,
-    name: String,
-    numPlayers: Number,
-    matches: [matchSchema],
-    winnerBracket: Boolean,
-    minor: Boolean
+export const roundSchema = new Schema({
+  _id: Schema.Types.ObjectId,
+  name: String,
+  numPlayers: Number,
+  matches: [matchSchema],
+  winnerBracket: Boolean,
+  minor: Boolean,
 });
 
-module.exports.Round = model("Round", roundSchema, "rounds");
-module.exports.roundSchema = roundSchema;
+export default model("Round", roundSchema, "rounds");
