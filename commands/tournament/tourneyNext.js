@@ -135,7 +135,7 @@ async function createLB2(tourney, round) {
   const prevLB = tourney.loserRounds[tourney.currentLoser];
   const j = prevWB.matches.length - 1;
 
-  for (i = 0; i < round.numPlayers / 2; i++) {
+  for (let i = 0; i < round.numPlayers / 2; i++) {
     let match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1 + tourney.currentMatch,
@@ -158,7 +158,7 @@ async function createLB4(tourney, round) {
   const prevWB = tourney.winnerRounds[tourney.currentWinner];
   const prevLB = tourney.loserRounds[tourney.currentLoser];
   let j = prevWB.matches.length / 2 - 1;
-
+  let i = 0;
   for (i = 0; i < round.numPlayers / 2 / 2; i++) {
     let match = new Match({
       _id: new mongoose.Types.ObjectId(),
@@ -196,7 +196,7 @@ async function createLB6(tourney, round) {
   const prevLB = tourney.loserRounds[tourney.currentLoser];
   let j = Math.floor(prevWB.matches.length / 2);
 
-  for (i = 0; i < Math.floor(round.numPlayers / 2 / 2); i++) {
+  for (let i = 0; i < Math.floor(round.numPlayers / 2 / 2); i++) {
     let match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1 + tourney.currentMatch,
@@ -209,7 +209,7 @@ async function createLB6(tourney, round) {
     round.matches[i] = match;
   }
   for (
-    i = Math.floor(round.numPlayers / 2 / 2);
+    let i = Math.floor(round.numPlayers / 2 / 2);
     i < Math.floor(round.numPlayers / 2);
     i++
   ) {
@@ -235,7 +235,7 @@ async function createLB8(tourney, round) {
   const prevWB = tourney.winnerRounds[tourney.currentWinner];
   const prevLB = tourney.loserRounds[tourney.currentLoser];
 
-  for (i = 0; i < round.numPlayers / 2; i++) {
+  for (let i = 0; i < round.numPlayers / 2; i++) {
     let match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1 + tourney.currentMatch,
@@ -332,7 +332,7 @@ async function newRound(tourney, prevRound) {
       winnerBracket: false,
       minor: true,
     });
-    for (i = 0; i < round.numPlayers / 2; i++) {
+    for (let i = 0; i < round.numPlayers / 2; i++) {
       let match = new Match({
         _id: new mongoose.Types.ObjectId(),
         matchId: i + 1 + tourney.currentMatch,
