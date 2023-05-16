@@ -18,13 +18,20 @@ export default {
     const connection = getVoiceConnection(interaction.guild.id);
     if (!connection) {
       await interaction.reply({
-        content: "Nothing to skip",
+        content: "Nothing to skip(1)",
       });
       return;
     }
 
     let subscription = connection.state.subscription;
     let player = subscription.player;
+
+    if (!player) {
+      await interaction.reply({
+        content: "Nothing to skip(2)",
+      });
+      return;
+    }
 
     //player's event listener on idle will play next resource automatically
     player.stop();

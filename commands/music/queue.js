@@ -42,18 +42,18 @@ export function getQueueMessage(queue, index, client) {
   }
   let j = 0;
 
-  if (index === 0 && !queue.isEmpty) {
+  if (index === 0 && queue.length) {
     items[0] = new Object();
-    items[0].title = `**▶️ ${queue.elements[queue.head].title}**`;
-    items[0].length = `${toHHMMSS(queue.elements[queue.head].length)}`;
+    items[0].title = `**▶️ ${queue[0].title}**`;
+    items[0].length = `${toHHMMSS(queue[0].length)}`;
   }
   if (index === 0) {
     j = 1;
   }
-  for (let i = queue.head + index * maxItems + j; i < queue.tail; i++) {
+  for (let i = index * maxItems + j; i < queue.length; i++) {
     items[j] = new Object();
-    items[j].title = `**${i - queue.head}:** ${queue.elements[i].title}`;
-    items[j++].length = `${toHHMMSS(queue.elements[i].length)}`;
+    items[j].title = `**${i}:** ${queue[i].title}`;
+    items[j++].length = `${toHHMMSS(queue[i].length)}`;
   }
   let i = 0;
   for (const item of items) {
@@ -121,7 +121,7 @@ export default {
       (queue) => queue.id === interaction.guild.id
     );
     if (queue) queue = queue.queue;
-    if (!queue || queue.isEmpty) {
+    if (!queue || !queue.length) {
       await interaction.reply({
         content: "Queue is empty",
         embeds: [],

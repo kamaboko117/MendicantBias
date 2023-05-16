@@ -3,15 +3,15 @@ import { getVoiceConnection } from "@discordjs/voice";
 
 export function mendicantShuffle(queue) {
   let tmpArray = [];
-
-  for (let i = queue.head + 1; i < queue.tail; i++) {
-    tmpArray.push(queue.elements[i]);
+  for (let i = 1; i < queue.length; i++) {
+    tmpArray.push(queue[i]);
   }
   tmpArray.sort(() => Math.random() - 0.5);
-  tmpArray.push(queue.elements[queue.head]);
-  while (!queue.isEmpty) queue.dequeue();
+
+  tmpArray.push(queue[0]);
+  queue.length = 0;
   let size = tmpArray.length;
-  for (let i = 0; i < size; i++) queue.enqueue(tmpArray.pop());
+  for (let i = 0; i < size; i++) queue.push(tmpArray.pop());
 }
 
 export default {

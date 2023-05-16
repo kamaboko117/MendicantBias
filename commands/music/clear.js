@@ -29,9 +29,7 @@ export default {
     if (queue) {
       queue = queue.queue;
     }
-    while (!queue.isEmpty) {
-      queue.dequeue();
-    }
+    queue.length = 0;
 
     player.stop();
 

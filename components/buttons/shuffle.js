@@ -28,7 +28,7 @@ export default {
       (queue) => queue.id === interaction.guild.id
     );
     if (queue) queue = queue.queue;
-    if (!queue || queue.isEmpty) {
+    if (!queue || !queue.length) {
       await interaction.update({
         content: "Queue is empty",
         embeds: [],

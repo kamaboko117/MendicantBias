@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "../../.env" });
+dotenv.config({ path: "./.env" });
+const ytCookie = process.env.ytCookie;
 import {
   SlashCommandBuilder,
   ButtonBuilder,
@@ -21,13 +22,12 @@ import {
 // import search from "youtube-search";
 import { Queue } from "../../classes/Queue.js";
 import youtubesearchapi from "youtube-search-api";
-import mendicantMove from "./move.js";
-const ytCookie = process.env.YTCOOKIE;
+import { mendicantMove } from "./move.js";
 const YTopts = {
-    maxResults: 5,
-    key: process.env.GOOGLE,
-    type: "video",
-  };
+  maxResults: 5,
+  key: process.env.GOOGLE,
+  type: "video",
+};
 
 function isValidHttpUrl(string) {
   let url;
@@ -51,7 +51,7 @@ function mendicantJoin(voice, guild, client) {
     if (!client.queues.find((queue) => queue.id === guild.id)) {
       client.queues.push({
         id: guild.id,
-        queue: new Queue(),
+        queue: [],
       });
     }
     connection.on(VoiceConnectionStatus.Signalling, () => {
@@ -80,7 +80,7 @@ function mendicantJoin(voice, guild, client) {
           let queue = client.queues.find(
             (queue) => queue.id === guild.id
           ).queue;
-          while (!queue.isEmpty) queue.dequeue();
+          queue.length = 0;
           console.log(logMsg);
         }
       }
@@ -100,7 +100,7 @@ export async function mendicantPlay(interaction, item, client, silent, index) {
   let queue = client.queues.find(
     (queue) => queue.id === interaction.guild.id
   ).queue;
-  if (queue.isEmpty) {
+  if (!queue.length) {
     console.log("creating new player");
 
     const player = createAudioPlayer();
@@ -109,15 +109,15 @@ export async function mendicantPlay(interaction, item, client, silent, index) {
       console.error("Error:", error.message, "with track", error.resource);
     });
     let dispatcher = connection.subscribe(player);
-    queue.enqueue(item);
+    queue.push(item);
     player.play(mendicantCreateResource(interaction, item));
     player.on(AudioPlayerStatus.Idle, () => {
-      if (!queue.isEmpty) {
-        queue.dequeue();
+      if (queue.length) {
+        queue.shift();
       }
-      if (!queue.isEmpty) {
-        console.log(queue.peek().title);
-        player.play(mendicantCreateResource(interaction, queue.peek()));
+      if (queue.length) {
+        console.log(queue[0].title);
+        player.play(mendicantCreateResource(interaction, queue[0]));
       } else {
         //30 min timer until a disconnection if still Idle
         client.timeoutID = setTimeout(() => {
@@ -133,7 +133,7 @@ export async function mendicantPlay(interaction, item, client, silent, index) {
       clearTimeout(client.timeoutID);
     });
   } else {
-    queue.enqueue(item);
+    queue.push(item);
     if (index) {
       mendicantMove(queue, queue.length - 1, index);
     }
@@ -207,13 +207,15 @@ export async function mendicantCreateItem(interaction, videoID, details) {
 }
 
 export async function mendicantSearch(option1, interaction, client, index) {
-  let results = await search(option1, YTopts);
-  if (!results.results.length) {
+  // let results = await search(option1, YTopts).results;
+  let results = (await youtubesearchapi.GetListByKeyword(option1, false, 5))
+    .items;
+  if (!results.length) {
     interaction.reply(`No results for "${option1}"`);
     return;
   }
   let i = 0;
-  let titles = results.results.map((result) => {
+  let titles = results.map((result) => {
     i++;
     return `**${i}:** ${result.title}`;
   });
@@ -232,7 +234,7 @@ export async function mendicantSearch(option1, interaction, client, index) {
     .addFields(fields);
   i = 0;
   let buttons = [];
-  for (const result of results.results) {
+  for (const result of results) {
     let customID = `P ${result.id} ${index ? index : "0"}`.substring(0, 99);
     buttons[i++] = new ButtonBuilder()
       .setCustomId(customID)

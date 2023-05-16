@@ -26,7 +26,7 @@ export default {
       (queue) => queue.id === interaction.guild.id
     );
     if (queue) queue = queue.queue;
-    if (!queue || queue.isEmpty) {
+    if (!queue || !queue.length) {
       await interaction.update({
         content: "Queue is empty",
         embeds: [],
@@ -37,7 +37,7 @@ export default {
     let subscription = connection.state.subscription;
     let player = subscription.player;
 
-    while (!queue.isEmpty) queue.dequeue();
+    queue.length = 0;
     player.stop();
 
     let message = { content: "Queue cleared", embeds: [] };

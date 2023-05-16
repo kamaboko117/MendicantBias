@@ -1,35 +1,21 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getVoiceConnection } from "@discordjs/voice";
 
-const mendicantMove = (queue, src, dst) => {
+export const mendicantMove = (queue, src, dst) => {
   if (src === dst) {
     return;
   }
-  let tmpArray = [];
-  tmpArray.push(queue.peek());
-  for (let i = queue.head + 1; i < queue.tail; i++) {
-    if (i === dst + queue.head) {
-      let element = queue.elements[src + queue.head];
-      if (element) {
-        tmpArray.push(element);
-      }
-    } else if (i === src + queue.head) {
-      continue;
-    }
-    tmpArray.push(queue.elements[i]);
+  if (src < 1 || src > queue.length) {
+    return;
   }
-
-  while (!queue.isEmpty) {
-    queue.dequeue();
+  if (dst < 1 || dst > queue.length) {
+    return;
   }
-  for (const item of tmpArray) {
-    queue.enqueue(item);
-  }
+  const item = queue.splice(src - 1, 1)[0];
+  queue.splice(dst - 1, 0, item);
 };
 
 export default {
-  mendicantMove: mendicantMove,
-
   data: new SlashCommandBuilder()
     .setName("move")
     .setDescription("Change an item's position in the queue")
