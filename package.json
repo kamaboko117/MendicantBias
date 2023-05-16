@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "node ."
   },
@@ -17,22 +18,15 @@
   },
   "homepage": "https://github.com/kamaboko117/MendicantBias#readme",
   "dependencies": {
-    "@discordjs/opus": "github:discordjs/opus",
-    "@discordjs/rest": "^1.1.0",
-    "@discordjs/voice": "^0.15.0",
-    "chalk": "^4.1.2",
-    "discord-api-types": "^0.37.5",
-    "discord.js": "^14.8.0",
-    "dotenv": "^16.0.1",
+    "@discordjs/voice": "^0.16.0",
+    "chalk": "^5.2.0",
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.0.3",
     "emoji-regex": "^10.2.1",
-    "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^5.1.0",
-    "libsodium-wrappers": "^0.7.10",
-    "mongoose": "^6.5.3",
-    "play-dl": "^1.9.5",
-    "semaphore": "^1.1.0",
-    "youtube-search": "^1.1.6",
+    "libsodium-wrappers": "^0.7.11",
+    "mongoose": "^7.1.1",
     "youtube-search-api": "^1.1.1",
-    "ytdl-core": "^4.9.1"
+    "ytdl-core": "^4.11.4"
   }
 }
