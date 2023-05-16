@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
-const ytCookie = process.env.ytCookie;
+const ytCookie = process.env.YTCOOKIE;
 import {
   SlashCommandBuilder,
   ButtonBuilder,
