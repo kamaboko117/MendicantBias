@@ -27,6 +27,7 @@
     "libsodium-wrappers": "^0.7.11",
     "mongoose": "^7.1.1",
     "youtube-search-api": "^1.1.1",
+    "youtubei": "^1.1.2",
     "ytdl-core": "^4.11.4"
   }
 }

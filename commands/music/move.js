@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { getVoiceConnection } from "@discordjs/voice";
 
 export const mendicantMove = (queue, src, dst) => {
+  console.log(`mendicantMove(${src}, ${dst})`);
   if (src === dst) {
     return;
   }
@@ -11,8 +12,9 @@ export const mendicantMove = (queue, src, dst) => {
   if (dst < 1 || dst > queue.length) {
     return;
   }
-  const item = queue.splice(src - 1, 1)[0];
-  queue.splice(dst - 1, 0, item);
+  const item = queue[src];
+  queue.splice(src, 1);
+  queue.splice(dst, 0, item);
 };
 
 export default {

@@ -20,7 +20,7 @@ import {
   entersState,
 } from "@discordjs/voice";
 // import search from "youtube-search";
-import { Queue } from "../../classes/Queue.js";
+import youtubei from "youtubei";
 import youtubesearchapi from "youtube-search-api";
 import { mendicantMove } from "./move.js";
 const YTopts = {
@@ -277,19 +277,22 @@ function getPlaylistId(url) {
   }
 }
 
-function findVideoIndex(url, playlist) {
+function findVideoIndex(url/*, playlist*/) {
   if (!ytdl.validateURL(url)) {
     return 0;
   }
-  const videoID = ytdl.getURLVideoID(url);
-  let i = 0;
-  for (const video of playlist.items) {
-    if (videoID === video.id) {
-      return i + 1;
-    }
-    i++;
-  }
-  return 0;
+  // const videoID = ytdl.getURLVideoID(url);
+  // let i = 0;
+  // for (const video of playlist.items) {
+  //   if (videoID === video.id) {
+  //     return i + 1;
+  //   }
+  //   i++;
+  // }
+
+  //youtube playlist url can be used to find the index of a video in the playlist
+  let index = url.substr(url.indexOf("&index=") + 7);
+  return parseInt(index);
 }
 
 export default {
@@ -310,22 +313,39 @@ export default {
       let playlistID = getPlaylistId(option1);
       console.log("playlist");
       console.log(`URL: ${option1} ID: ${playlistID}`);
-      youtubesearchapi
-        .GetPlaylistData(playlistID)
-        .then(async (playlist) => {
-          let index = findVideoIndex(option1, playlist);
-          const button1 = new ButtonBuilder()
-            .setCustomId(`A ${playlistID} ${index}`)
-            .setStyle(ButtonStyle.Secondary)
-            .setEmoji("✅");
-          await interaction.channel.send({
-            content: `Add this playlist to the queue? (${
-              playlist.items.length - index
-            } videos)`,
-            components: [new ActionRowBuilder().addComponents(button1)],
-          });
-        })
-        .catch(console.error);
+      //with youtubesearchapi
+      // youtubesearchapi
+      //   .GetPlaylistData(playlistID, 1000)
+      //   .then(async (playlist) => {
+      //     let index = findVideoIndex(option1, playlist);
+      //     const button1 = new ButtonBuilder()
+      //       .setCustomId(`A ${playlistID} ${index}`)
+      //       .setStyle(ButtonStyle.Secondary)
+      //       .setEmoji("✅");
+      //     await interaction.channel.send({
+      //       content: `Add this playlist to the queue? (${
+      //         playlist.items.length - index
+      //       } videos)`,
+      //       components: [new ActionRowBuilder().addComponents(button1)],
+      //     });
+      //   })
+      //   .catch(console.error);
+
+      //with youtubei
+      const youtube = new youtubei.Client();
+      const playlist = await youtube.getPlaylist(playlistID);
+      console.log(playlist);
+      let index = findVideoIndex(option1, playlist);
+      const button1 = new ButtonBuilder()
+        .setCustomId(`A ${playlistID} ${index}`)
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("✅");
+      await interaction.channel.send({
+        content: `Add this playlist to the queue? (${
+          playlist.videoCount - index
+        } videos)`,
+        components: [new ActionRowBuilder().addComponents(button1)],
+      });
     }
     if (ytdl.validateURL(option1)) {
       let ID = ytdl.getURLVideoID(option1);
