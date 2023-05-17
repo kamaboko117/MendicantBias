@@ -5,7 +5,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 export default {
   data: new SlashCommandBuilder()
     .setName("ptop")
-    .setDescription("plays a video from youtube in voice chat")
+    .setDescription("plays a video from youtube in voice chat at the top of the queue")
     .addStringOption((option) =>
       option
         .setName("url-or-search")
@@ -32,5 +32,5 @@ export default {
   },
 
   usage:
-    "play a video from youtube. you can either use the video's URL or search for an input. Unlike /play, /ptop will always queue the song at the top of the list",
+    "play a video from youtube and place it at the top of the queue. you can either use the video's URL or search for an input. Unlike /play, /ptop will always queue the song at the top of the list",
 };
