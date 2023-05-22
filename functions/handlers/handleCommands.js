@@ -12,9 +12,8 @@ export default (client) => {
         client.commandArray.push(command.data.toJSON());
       })
     });
-    const clientId = "688035147559337994";
-    const guildId = "242387331787522048";
-    const rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
+    const clientId = client.user.id;
+    const rest = new REST({ version: "9" }).setToken(process.env.TOKEN2);
     try {
       console.log("Started refreshing apllication (/) commands.");
       await rest.put(Routes.applicationCommands(clientId), {

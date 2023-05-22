@@ -28,19 +28,10 @@ client.queues = [];
 client.timeoutId = [];
 client.voteQueue = new Queue();
 
-// const functionFolders = fs.readdirSync("./functions");
-// for (const folder of functionFolders) {
-//   const functionFiles = fs
-//     .readdirSync(`./functions/${folder}`)
-//     .filter((file) => file.endsWith(".js"));
-//   for (const file of functionFiles)
-//     require(`./functions/${folder}/${file}`)(client);
-// }
 Object.keys(functions).forEach((key) => {
   functions[key](client);
 })
 client.handleEvents();
-client.handleCommands();
 client.handleComponents();
 client.login(token);
 (async () => {

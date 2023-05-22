@@ -23,11 +23,11 @@ import {
 import youtubei from "youtubei";
 import youtubesearchapi from "youtube-search-api";
 import { mendicantMove } from "./move.js";
-const YTopts = {
-  maxResults: 5,
-  key: process.env.GOOGLE,
-  type: "video",
-};
+// const YTopts = {
+//   maxResults: 5,
+//   key: process.env.GOOGLE,
+//   type: "video",
+// };
 
 function isValidHttpUrl(string) {
   let url;
@@ -334,7 +334,6 @@ export default {
       //with youtubei
       const youtube = new youtubei.Client();
       const playlist = await youtube.getPlaylist(playlistID);
-      console.log(playlist);
       let index = findVideoIndex(option1, playlist);
       const button1 = new ButtonBuilder()
         .setCustomId(`A ${playlistID} ${index}`)
