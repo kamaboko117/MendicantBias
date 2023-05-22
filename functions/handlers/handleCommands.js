@@ -12,8 +12,7 @@ export default (client) => {
         client.commandArray.push(command.data.toJSON());
       })
     });
-    const clientId = "1026870487885815870";
-    const guildId = "708111231789301891";
+    const clientId = client.user.id;
     const rest = new REST({ version: "9" }).setToken(process.env.TOKEN2);
     try {
       console.log("Started refreshing apllication (/) commands.");
