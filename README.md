@@ -1,16 +1,20 @@
-# MendicantBias
-A Discord Bot to create voting tournaments on server emojis.
+<h1 align="center">
+  <img src="https://cdn.discordapp.com/avatars/688035147559337994/2ffc22bf8b43490894d39f1096719e44.png?size=1024" alt="Logo" width="256" height="256">
+
+  
+  Mendicant Bias
+</h1>
+A Discord Bot to create election tournaments on server emojis.
 
 ## Running this code
-nodejs is required. Currently using version 16.18.0, other versions might have incompatibilities.
-
 This bot uses mongoDB with the mongoose package. A .env file is required at the root of the repository. Use it to set the required variables:
 Key | Value
 :---: | :---:
 `TOKEN=`| **\<your bot token>**
 `DATABASE=` | (optional) **\<your mongoose connection String>** needed for conducting tournaments and matches
-`GOOGLE=` | (optional) **\<a valid google API key with access to youtube search>** needed if you try to use the `/play` command without a URL
 `YTCOOKIE=` | (optional) **\<a valid youtube cookie for a logged in account>** needed for any use of the `/play` command
+`WEATHER=` | (optional) **\<an openweathermap api key>** needed for any use of the `/weather` command
+`GEOCODE=` | (optional)  **\<a mapbox api key>** needed for any use of the `weather` command
 
 Once your .env file is set up, use `node .` at the root of the repository to run the bot
 
