@@ -39,7 +39,7 @@ function isValidHttpUrl(string) {
   return url.protocol === "http:" || url.protocol === "https:";
 }
 
-function mendicantJoin(voice, guild, client) {
+export function mendicantJoin(voice, guild, client) {
   let connection;
 
   if (!(connection = getVoiceConnection(guild.id))) {
