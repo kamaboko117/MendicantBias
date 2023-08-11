@@ -208,8 +208,10 @@ export async function mendicantCreateItem(interaction, videoID, details) {
 
 export async function mendicantSearch(option1, interaction, client, index) {
   // let results = await search(option1, YTopts).results;
-  let results = (await youtubesearchapi.GetListByKeyword(option1, false, 5))
-    .items;
+  const options = [{ type: "video" }];
+  let results = (
+    await youtubesearchapi.GetListByKeyword(option1, false, 5, options)
+  ).items;
   if (!results.length) {
     interaction.reply(`No results for "${option1}"`);
     return;
@@ -277,7 +279,7 @@ function getPlaylistId(url) {
   }
 }
 
-function findVideoIndex(url/*, playlist*/) {
+function findVideoIndex(url /*, playlist*/) {
   if (!ytdl.validateURL(url)) {
     return 0;
   }
