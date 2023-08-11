@@ -13,7 +13,7 @@ export default (client) => {
       })
     });
     const clientId = client.user.id;
-    const rest = new REST({ version: "9" }).setToken(process.env.TOKEN2);
+    const rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
     try {
       console.log("Started refreshing apllication (/) commands.");
       await rest.put(Routes.applicationCommands(clientId), {
