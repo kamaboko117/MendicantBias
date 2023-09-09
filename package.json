@@ -30,6 +30,6 @@
     "node-tunein-api": "^0.1.0",
     "youtube-search-api": "^1.1.1",
     "youtubei": "^1.1.2",
-    "ytdl-core": "^4.11.4"
+    "ytdl-core": "git+ssh://git@github.com:khlevon/node-ytdl-core.git#v4.11.4-patch.2"
   }
 }
