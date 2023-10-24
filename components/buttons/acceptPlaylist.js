@@ -13,9 +13,11 @@ export default {
     name: "acceptplaylist",
   },
   async execute(interaction, client) {
+    await interaction.deferReply();
     let idsplit = interaction.component.customId.split(" ");
     let index = idsplit[2];
     // with youtubesearchapi
+    // DOESN'T HANDLE MORE THAN 100 VIDEOS
     // youtubesearchapi.GetPlaylistData(idsplit[1], 1000).then(async (playlist) => {
     //   let i = 0;
     //   for (const video of playlist.items) {
@@ -50,7 +52,7 @@ export default {
       }
     }
 
-    await interaction.reply({
+    await interaction.editReply({
       content: "Done",
       ephemeral: true,
     });
