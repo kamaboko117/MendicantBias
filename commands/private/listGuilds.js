@@ -8,7 +8,7 @@ export default {
   async execute(interaction, client) {
     const guilds = client.guilds.cache.map((guild) => guild.name);
     await interaction.reply({
-      content: `Guilds:\n${guilds.join("\n")}`,
+      content: `**Number of Guilds:** ${guilds.length}\n**Guilds:**\n${guilds.join("\n")}`,
       ephemeral: false,
     });
   },
