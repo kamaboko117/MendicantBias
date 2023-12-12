@@ -120,6 +120,8 @@ export async function mendicantPlay(interaction, item, client, silent, index) {
         player.play(mendicantCreateResource(interaction, queue[0]));
       } else {
         //30 min timer until a disconnection if still Idle
+        //btw this is trash. this is a global timer, not a per-guild timer
+        //i should probably fix this
         client.timeoutID = setTimeout(() => {
           dispatcher.unsubscribe();
           player.stop();
@@ -346,17 +348,24 @@ export default {
 
       //with youtubei
       const youtube = new youtubei.Client();
-      const playlist = await youtube.getPlaylist(playlistID);
-      let index = findVideoIndex(option1, playlist);
-      const button1 = new ButtonBuilder()
-        .setCustomId(`A ${playlistID} ${index}`)
-        .setStyle(ButtonStyle.Secondary)
-        .setEmoji("✅");
-      await interaction.channel.send({
-        content: `Add this playlist to the queue? (${
-          playlist.videoCount - index
-        } videos)`,
-        components: [new ActionRowBuilder().addComponents(button1)],
+      youtube.getPlaylist(playlistID).then(async (playlist) => {
+        if (!playlist) {
+          interaction.channel.send(
+            "Could not get playlist, make sure it is public"
+          );
+          return;
+        }
+        let index = findVideoIndex(option1, playlist);
+        const button1 = new ButtonBuilder()
+          .setCustomId(`A ${playlistID} ${index}`)
+          .setStyle(ButtonStyle.Secondary)
+          .setEmoji("✅");
+        await interaction.channel.send({
+          content: `Add this playlist to the queue? (${
+            playlist.videoCount - index
+          } videos)`,
+          components: [new ActionRowBuilder().addComponents(button1)],
+        });
       });
     }
     if (ytdl.validateURL(option1)) {
