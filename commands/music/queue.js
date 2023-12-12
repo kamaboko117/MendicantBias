@@ -45,6 +45,7 @@ export function getQueueMessage(queue, index, client) {
   if (index === 0 && queue.length) {
     items[0] = new Object();
     items[0].title = `**▶️ ${queue[0].title}**`;
+    items[0].link = `https://www.youtube.com/watch?v=${queue[0].id}`;
     items[0].length = `${toHHMMSS(queue[0].length)}`;
   }
   if (index === 0) {
@@ -53,13 +54,14 @@ export function getQueueMessage(queue, index, client) {
   for (let i = index * maxItems + j; i < queue.length; i++) {
     items[j] = new Object();
     items[j].title = `**${i}:** ${queue[i].title}`;
+    items[j].link = `https://www.youtube.com/watch?v=${queue[i].id}`;
     items[j++].length = `${toHHMMSS(queue[i].length)}`;
   }
   let i = 0;
   for (const item of items) {
     fields[i] = new Object();
     fields[i].name = item.title;
-    fields[i++].value = item.length;
+    fields[i++].value = `${item.length} | [Link](${item.link})`;
     if (i === maxItems) break;
   }
   const embed = new EmbedBuilder()
