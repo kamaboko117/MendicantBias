@@ -2,10 +2,10 @@
   "name": "mendicant-bias",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "index.ts",
   "scripts": {
-    "test": "node ."
+    "test": "ts-node index.ts",
+    "start": "ts-node-dev index.ts"
   },
   "repository": {
     "type": "git",
@@ -19,17 +19,24 @@
   "homepage": "https://github.com/kamaboko117/MendicantBias#readme",
   "dependencies": {
     "@discordjs/voice": "^0.16.0",
+    "@types/got": "^9.6.12",
     "chalk": "^5.2.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
     "emoji-regex": "^10.2.1",
     "ffmpeg-static": "^5.1.0",
-    "got": "^13.0.0",
+    "got": "^11.8.6",
     "libsodium-wrappers": "^0.7.11",
     "mongoose": "^7.1.1",
     "node-tunein-api": "^0.1.0",
+    "ts-node-dev": "^2.0.0",
     "youtube-search-api": "^1.1.1",
     "youtubei": "^1.1.2",
     "ytdl-core": "git+ssh://git@github.com:khlevon/node-ytdl-core.git#v4.11.4-patch.2"
+  },
+  "devDependencies": {
+    "discord-api-types": "^0.37.66",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }
