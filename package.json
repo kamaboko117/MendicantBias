@@ -32,10 +32,10 @@
     "ts-node-dev": "^2.0.0",
     "youtube-search-api": "^1.1.1",
     "youtubei": "^1.1.2",
+    "discord-api-types": "^0.37.66",
     "ytdl-core": "git+ssh://git@github.com:khlevon/node-ytdl-core.git#v4.11.4-patch.2"
   },
   "devDependencies": {
-    "discord-api-types": "^0.37.66",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
