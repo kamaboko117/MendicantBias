@@ -9,7 +9,7 @@ export default {
   },
   async execute(interaction: GuildButtonInteraction, mendicant: Mendicant) {
     console.log(`${interaction.member.displayName} used skip button`);
-    const idsplit = interaction.customId.split(" "); //TODO: check this (used to be interaction.customId.split(" ")
+    const idsplit = interaction.customId.split(" ");
     const index = Number(idsplit[1]);
 
     const { voice } = interaction.member;
@@ -25,8 +25,8 @@ export default {
       return;
     }
 
-    let subscription = connection.state.subscription;
-    let player = subscription?.player;
+    const subscription = connection.state.subscription;
+    const player = subscription?.player;
 
     if (!player) {
       await interaction.reply({
@@ -40,8 +40,8 @@ export default {
 
     let queue = mendicant.queues.find(
       (queue) => queue.id === interaction.guild.id
-    );
-    if (queue) queue = queue.queue;
+    )?.queue;
+
     if (!queue || !queue.length) {
       await interaction.update({
         content: "Queue is empty",
@@ -51,7 +51,7 @@ export default {
     }
 
     setTimeout(() => {
-      let message = getQueueMessage(queue, index, mendicant);
+      const message = getQueueMessage(queue!, index, mendicant);
       interaction.update(message);
     }, 1_000);
   },

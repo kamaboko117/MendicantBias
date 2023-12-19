@@ -3,7 +3,6 @@ dotenv.config({ path: "./.env" });
 import { SlashCommandBuilder, EmbedBuilder } from "@discordjs/builders";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
 import { Mendicant } from "../../classes/Mendicant";
-// const fetch = require("node-fetch");
 const key = process.env.WEATHER;
 const MAPBOX_BASE = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 const WEATHER_BASE = "https://api.openweathermap.org/data/2.5/weather";

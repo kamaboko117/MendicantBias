@@ -18,6 +18,7 @@ export default {
       interaction.reply("Error: You are not in a voice channel");
       return;
     }
+
     const connection = getVoiceConnection(interaction.guild.id);
     if (!connection) {
       await interaction.reply({
@@ -26,10 +27,9 @@ export default {
       return;
     }
 
-    let queue = mendicant.queues.find(
+    const queue = mendicant.queues.find(
       (queue) => queue.id === interaction.guild.id
-    );
-    if (queue) queue = queue.queue;
+    )?.queue;
     if (!queue || !queue.length) {
       await interaction.update({
         content: "Queue is empty",
@@ -37,10 +37,11 @@ export default {
       });
       return;
     }
+
     mendicantShuffle(queue);
 
     setTimeout(() => {
-      let message = getQueueMessage(queue, index, mendicant);
+      const message = getQueueMessage(queue, index, mendicant);
       interaction.update(message);
     }, 1_000);
   },

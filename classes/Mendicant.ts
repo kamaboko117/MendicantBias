@@ -11,7 +11,7 @@ export class Mendicant extends Client {
   public color: number;
   public queues: any[];
   public voteQueue: Queue;
-  public timeoutId: any; //TODO: Fix this: any[]
+  public timeoutIds: any[];
   public matchCount: number;
   public handleCommands: () => void;
   public handleComponents: () => void;
@@ -27,7 +27,7 @@ export class Mendicant extends Client {
     this.color = 0x18e1ee;
     this.queues = [];
     this.voteQueue = new Queue();
-    this.timeoutId = [];
+    this.timeoutIds = [];
     this.matchCount = 0;
     this.handleCommands = () => {};
     this.handleComponents = () => {};

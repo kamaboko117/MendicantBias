@@ -14,7 +14,8 @@ import { Mendicant } from "../../classes/Mendicant.js";
 
 const maxMatches = 16;
 
-type Tournament = mongoose.Document<unknown, {}, ITournament> & ITournament & { _id: mongoose.Types.ObjectId; };
+type Tournament = mongoose.Document<unknown, {}, ITournament> &
+  ITournament & { _id: mongoose.Types.ObjectId };
 
 // export const generateId = (size = 32) => {
 //     const bytesArray = new Uint8Array(size / 2)
@@ -25,15 +26,18 @@ type Tournament = mongoose.Document<unknown, {}, ITournament> & ITournament & { 
 //       .join('')
 //   }
 
-async function showResults(tourney: Tournament, round: IRound, interaction: GuildCommandInteraction) {
+async function showResults(
+  tourney: Tournament,
+  round: IRound,
+  interaction: GuildCommandInteraction
+) {
   let i = tourney.currentMatch - round.matches[0].matchId + 1;
-  let count = round.matches.length;
-  count = count > maxMatches + i ? maxMatches + i : count;
+  const count = Math.min(round.matches.length, maxMatches + i);
 
   tourney.currentMatch += count - i;
-  let currentBracket = tourney.currentBracket;
-  let currentLoser = tourney.currentLoser;
-  let currentWinner = tourney.currentWinner;
+  const currentBracket = tourney.currentBracket;
+  const currentLoser = tourney.currentLoser;
+  const currentWinner = tourney.currentWinner;
   await tourney.save().catch(console.error);
   let j = 0;
   let componentArray = [];
@@ -98,9 +102,14 @@ async function showResults(tourney: Tournament, round: IRound, interaction: Guil
   return tourney;
 }
 
-async function showTourneyWinner(tourney: Tournament, round: IRound, interaction: GuildCommandInteraction, mendicant: Mendicant) {
+async function showTourneyWinner(
+  tourney: Tournament,
+  round: IRound,
+  interaction: GuildCommandInteraction,
+  mendicant: Mendicant
+) {
   const winner = round.matches[0].winner;
-  let emote = mendicant.emojis.cache.find(
+  const emote = mendicant.emojis.cache.find(
     (emoji) => emoji.id === winner.split(":")[2].slice(0, -1)
   );
   const embed = new EmbedBuilder()
@@ -108,19 +117,20 @@ async function showTourneyWinner(tourney: Tournament, round: IRound, interaction
     .setDescription(`🎊🎉 ${winner} wins!!🎉🎊 🏆`)
     .setColor(mendicant.color)
     .setImage(emote!.url);
-  await interaction.channel!.send({
-    embeds: [embed],
-  });
+  await interaction.channel!.send({ embeds: [embed] });
 }
 
 async function createLB1(tourney: Tournament, round: IRound) {
   for (let i = 0; i < round.numPlayers / 2; i++) {
-    let match = new Match({
+    const matchId = i + 1 + tourney.currentMatch;
+    const playerLeft =
+      tourney.winnerRounds[tourney.currentWinner].matches[i * 2].loser;
+    const playerRight = tourney.winnerRounds[0].matches[i * 2 + 1].loser;
+    const match = new Match({
       _id: new mongoose.Types.ObjectId(),
-      matchId: i + 1 + tourney.currentMatch,
-      playerLeft:
-        tourney.winnerRounds[tourney.currentWinner].matches[i * 2].loser,
-      playerRight: tourney.winnerRounds[0].matches[i * 2 + 1].loser,
+      matchId,
+      playerLeft,
+      playerRight,
       votesLeft: 0,
       votesRight: 0,
       open: true,
@@ -140,20 +150,25 @@ async function createLB2(tourney: Tournament, round: IRound) {
   const j = prevWB.matches.length - 1;
 
   for (let i = 0; i < round.numPlayers / 2; i++) {
-    let match = new Match({
+    const matchId = i + 1 + tourney.currentMatch;
+    const playerLeft = prevWB.matches[j - i].loser;
+    const playerRight = prevLB.matches[i].winner;
+    const match = new Match({
       _id: new mongoose.Types.ObjectId(),
-      matchId: i + 1 + tourney.currentMatch,
-      playerLeft: prevWB.matches[j - i].loser,
-      playerRight: prevLB.matches[i].winner,
+      matchId,
+      playerLeft,
+      playerRight,
       votesLeft: 0,
       votesRight: 0,
       open: true,
     });
     round.matches[i] = match;
   }
+
   tourney.currentBracket = 1;
   tourney.currentLoser++;
   tourney.loserRounds[tourney.currentLoser] = round;
+
   await tourney.save().catch(console.error);
   return [round, tourney];
 }
@@ -163,6 +178,7 @@ async function createLB4(tourney: Tournament, round: IRound) {
   const prevLB = tourney.loserRounds[tourney.currentLoser];
   let j = prevWB.matches.length / 2 - 1;
   let i = 0;
+
   for (i = 0; i < round.numPlayers / 2 / 2; i++) {
     let match = new Match({
       _id: new mongoose.Types.ObjectId(),
@@ -384,7 +400,11 @@ async function newRound(tourney: Tournament, prevRound: IRound) {
   }
 }
 
-function printNextMatchesCompact(tourney: Tournament, round: IRound, interaction: GuildCommandInteraction) {
+function printNextMatchesCompact(
+  tourney: Tournament,
+  round: IRound,
+  interaction: GuildCommandInteraction
+) {
   let i = tourney.currentMatch - round.matches[0].matchId + 1;
   let count = round.matches.length;
   count = count > maxMatches + i ? maxMatches + i : count;
@@ -437,7 +457,11 @@ function printNextMatchesCompact(tourney: Tournament, round: IRound, interaction
   }
 }
 
-function printNextMatchesFull(tourney: Tournament, round: IRound, interaction: GuildCommandInteraction) {
+function printNextMatchesFull(
+  tourney: Tournament,
+  round: IRound,
+  interaction: GuildCommandInteraction
+) {
   let i = tourney.currentMatch - round.matches[0].matchId + 1;
   let count = round.matches.length;
   count = count > maxMatches + i ? maxMatches + i : count;
@@ -540,7 +564,10 @@ export default {
       tourney?.currentMatch ==
       round.matches.length + round.matches[0].matchId - 1
     ) {
-      [round, tourney] = await newRound(tourney, round) as [IRound, Tournament]; //TODO: CHECK THIS
+      [round, tourney] = (await newRound(tourney, round)) as [
+        IRound,
+        Tournament
+      ];
       interaction.channel!.send(`${round.name}: `);
     }
 

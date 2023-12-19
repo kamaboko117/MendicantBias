@@ -4,28 +4,25 @@ import { Mendicant } from "../../classes/Mendicant";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
 
 export function mendicantShuffle(queue: any[]) {
-  let tmpArray = [];
-  for (let i = 1; i < queue.length; i++) {
-    tmpArray.push(queue[i]);
-  }
+  const tmpArray = [...queue.slice(1)];
   tmpArray.sort(() => Math.random() - 0.5);
-
   tmpArray.push(queue[0]);
   queue.length = 0;
-  let size = tmpArray.length;
-  for (let i = 0; i < size; i++) queue.push(tmpArray.pop());
+  while (tmpArray.length) {
+    queue.push(tmpArray.pop());
+  }
 }
 
 export default {
   data: new SlashCommandBuilder()
     .setName("shuffle")
-    .setDescription("shuffles the current playlist"),
+    .setDescription("Shuffles the current playlist"),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     console.log(`${interaction.member.displayName} used /shuffle`);
     const { voice } = interaction.member;
     if (!voice.channelId) {
-      interaction.reply("Error: You are not in a voice channel");
+      await interaction.reply("Error: You are not in a voice channel");
       return;
     }
     const connection = getVoiceConnection(interaction.guild.id);
@@ -36,10 +33,9 @@ export default {
       return;
     }
 
-    let queue = mendicant.queues.find(
-      (queue) => queue.id === interaction.guild.id
-    );
-    if (queue) queue = queue.queue;
+    const queue = mendicant.queues.find(
+      (q) => q.id === interaction.guild.id
+    )?.queue;
     mendicantShuffle(queue);
 
     await interaction.reply({

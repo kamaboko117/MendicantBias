@@ -4,8 +4,6 @@ import {
   ActionRowBuilder,
   ButtonStyle,
   CommandInteraction,
-  ActionRowData,
-  MessageActionRowComponentData,
 } from "discord.js";
 import { Mendicant } from "../../classes/Mendicant";
 
@@ -21,7 +19,7 @@ export default {
       .setEmoji("✅");
 
     await interaction.reply({
-      components: [new ActionRowBuilder().addComponents(button1) as unknown as ActionRowData<MessageActionRowComponentData>],
+      components: [new ActionRowBuilder<ButtonBuilder>().addComponents(button1)],
     });
   },
 

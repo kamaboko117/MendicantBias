@@ -8,9 +8,6 @@ export default {
   },
   async execute(interaction: GuildButtonInteraction, mendicant: Mendicant) {
     console.log(`${interaction.member.displayName} used stop button`);
-    const idsplit = interaction.customId.split(" ");
-    const index = Number(idsplit[1]);
-
     const { voice } = interaction.member;
     if (!voice.channelId) {
       interaction.reply("Error: You are not in a voice channel");
@@ -24,10 +21,9 @@ export default {
       return;
     }
 
-    let queue = mendicant.queues.find(
+    const queue = mendicant.queues.find(
       (queue) => queue.id === interaction.guild.id
-    );
-    if (queue) queue = queue.queue;
+    )?.queue;
     if (!queue || !queue.length || connection.state.status === "destroyed") {
       await interaction.update({
         content: "Queue is empty",
@@ -35,13 +31,14 @@ export default {
       });
       return;
     }
-    let subscription = connection.state.subscription;
-    let player = subscription?.player;
+
+    const subscription = connection.state.subscription;
+    const player = subscription?.player;
 
     queue.length = 0;
     player?.stop();
 
-    let message = { content: "Queue cleared", embeds: [] };
+    const message = { content: "Queue cleared", embeds: [] };
     interaction.update(message);
   },
 };

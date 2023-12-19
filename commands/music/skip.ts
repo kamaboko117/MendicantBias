@@ -6,37 +6,25 @@ import { Mendicant } from "../../classes/Mendicant";
 export default {
   data: new SlashCommandBuilder()
     .setName("skip")
-    .setDescription("skip current song"),
+    .setDescription("Skip the current song"),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     console.log(`${interaction.member.displayName} used /skip`);
     const { voice } = interaction.member;
     if (!voice.channelId) {
-      interaction.reply("Error: You are not in a voice channel");
-      return;
+      return interaction.reply("Error: You are not in a voice channel");
     }
     const connection = getVoiceConnection(interaction.guild.id);
-    if (!connection) {
-      await interaction.reply({
-        content: "Nothing to skip",
-      });
-      return;
+    if (!connection || connection.state.status === "destroyed") {
+      return interaction.reply("Nothing to skip");
     }
-    if (connection.state.status === "destroyed") {
-      await interaction.reply({
-        content: "Nothing to skip",
-      });
-      return;
-    }
-    let subscription = connection.state.subscription;
-    let player = subscription?.player;
+    const subscription = connection.state.subscription;
+    const player = subscription?.player;
 
-    //player's event listener on idle will play next resource automatically
+    // Player's event listener on idle will play the next resource automatically
     player?.stop();
 
-    await interaction.reply({
-      content: "Skipped",
-    });
+    return interaction.reply("Skipped");
   },
 
   usage: "",

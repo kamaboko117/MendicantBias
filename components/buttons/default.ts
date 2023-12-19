@@ -1,11 +1,9 @@
-import { APIButtonComponentWithCustomId, ButtonInteraction } from "discord.js";
+import { ButtonInteraction } from "discord.js";
 import Match from "../../schemas/match";
 import { Mendicant } from "../../classes/Mendicant";
 
 function arrayRemove(arr: any[], value: any) {
-  return arr.filter(function (ele) {
-    return ele != value;
-  });
+  return arr.filter((ele) => ele !== value);
 }
 
 export default {
@@ -21,7 +19,6 @@ export default {
     }
     if (!matchProfile) {
       newMessage = "Match does not exist in database: Probably deleted";
-
       //if match is closed, button is used to see results
     } else if (!matchProfile.open) {
       newMessage = `Votes for ${matchProfile.playerLeft}\n`;
@@ -33,13 +30,12 @@ export default {
       newMessage += matchProfile.votesRight
         ? `${matchProfile.membersRight}`
         : "noone";
-
       //if match is still open, button is used to vote
     } else {
-      if (matchId[1] == "left") {
-        if (matchProfile.membersLeft.includes(interaction.member.toString()))
+      if (matchId[1] === "left") {
+        if (matchProfile.membersLeft.includes(interaction.member.toString())) {
           newMessage = `${interaction.member}: you've already voted`;
-        else {
+        } else {
           matchProfile.votesLeft++;
           newMessage = `voted for: ${matchProfile.playerLeft}`;
           matchProfile.membersLeft.push(interaction.member.toString());
@@ -53,10 +49,10 @@ export default {
             matchProfile.votesRight--;
           }
         }
-      } else if (matchId[1] == "right") {
-        if (matchProfile.membersRight.includes(interaction.member.toString()))
+      } else if (matchId[1] === "right") {
+        if (matchProfile.membersRight.includes(interaction.member.toString())) {
           newMessage = `${interaction.member}: you've already voted`;
-        else {
+        } else {
           matchProfile.votesRight++;
           newMessage = `voted for: ${matchProfile.playerRight}`;
           matchProfile.membersRight.push(interaction.member.toString());
@@ -70,10 +66,14 @@ export default {
             matchProfile.votesLeft--;
           }
         }
-      } else newMessage = "what?";
+      } else {
+        newMessage = "what?";
+      }
       await matchProfile.save().catch(console.error);
     }
-    if (matchProfile) console.log(matchProfile.matchId);
+    if (matchProfile) {
+      console.log(matchProfile.matchId);
+    }
     console.log(interaction.member.toString());
     await interaction.reply({
       content: newMessage,

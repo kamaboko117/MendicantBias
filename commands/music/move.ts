@@ -6,13 +6,13 @@ import { Mendicant } from "../../classes/Mendicant";
 
 export const mendicantMove = (queue: any[], src: number, dst: number) => {
   console.log(`mendicantMove(${src}, ${dst})`);
-  if (src === dst) {
-    return;
-  }
-  if (src < 1 || src > queue.length) {
-    return;
-  }
-  if (dst < 1 || dst > queue.length) {
+  if (
+    src === dst ||
+    src < 1 ||
+    src > queue.length ||
+    dst < 1 ||
+    dst > queue.length
+  ) {
     return;
   }
   const item = queue[src];
@@ -63,9 +63,9 @@ export default {
 
     let queue = mendicant.queues.find(
       (queue) => queue.id === interaction.guild.id
-    );
-    if (queue) {
-      queue = queue.queue;
+    )?.queue;
+    if (!queue) {
+      return;
     }
     if (option2 > queue.length) {
       option2 = queue.length;

@@ -7,14 +7,12 @@ export default {
     name: "queue",
   },
   async execute(interaction: ButtonInteraction, mendicant: Mendicant) {
-    let idsplit = interaction.customId.split(" ");
-    let index = Number(idsplit[1]);
-    let queue = mendicant.queues.find(
-      (queue) => queue.id === interaction.guild?.id
-    );
-    if (queue) {
-      queue = queue.queue;
-    }
+    const idsplit = interaction.customId.split(" ");
+    const index = Number(idsplit[1]);
+    const queue = mendicant.queues.find(
+      (q) => q.id === interaction.guild?.id
+    )?.queue;
+
     if (!queue || !queue.length) {
       await interaction.update({
         content: "Queue is empty",
@@ -23,8 +21,8 @@ export default {
       });
       return;
     }
-    let message = getQueueMessage(queue, index, mendicant);
 
+    const message = getQueueMessage(queue, index, mendicant);
     await interaction.update(message);
   },
 };

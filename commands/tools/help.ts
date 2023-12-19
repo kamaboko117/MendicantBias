@@ -8,20 +8,15 @@ import { APIEmbedField } from "discord.js";
 function listCommands(interaction: GuildCommandInteraction, mendicant: Mendicant) {
   console.log(`${interaction.member.displayName} used /help`);
 
-  let i = 0;
-  let fields : APIEmbedField[] = [];
-  Object.keys(commands).forEach((key) => {
+  const fields: APIEmbedField[] = Object.keys(commands).map((key) => {
     const group = commands[key as keyof typeof commands];
-    fields[i] = new Object() as APIEmbedField;
-    fields[i].name = `${key}`;
-    fields[i].value = "";
-    let j = 0;
-    Object.keys(group).forEach((key) => {
-      const command = group[key as keyof typeof group] as Command;
-      fields[i].value += `${j ? ", " : " "}\`${command.data.name}\``;
-      j = 1;
-    });
-    i++;
+    const field: APIEmbedField = {
+      name: `${key}`,
+      value: Object.keys(group)
+        .map((key) => `\`${(group[key as keyof typeof group] as Command).data.name}\``)
+        .join(", "),
+    };
+    return field;
   });
 
   const embed = new EmbedBuilder()
@@ -31,12 +26,13 @@ function listCommands(interaction: GuildCommandInteraction, mendicant: Mendicant
     )
     .setColor(mendicant.color)
     .addFields(fields);
+
   return interaction.reply({
     embeds: [embed],
   });
 }
 
-function searchCommand(cmd: string) : Command | null {
+function searchCommand(cmd: string): Command | null {
   let found: Command | null = null;
   Object.keys(commands).forEach((key) => {
     const group = commands[key as keyof typeof commands];
@@ -68,27 +64,24 @@ export default {
     if (!option1) {
       return listCommands(interaction, mendicant);
     }
+
     const command = searchCommand(option1);
     if (!command) {
       interaction.reply(`command ${option1} does not exist`);
       return;
     }
 
-    let embed;
+    const embed = new EmbedBuilder()
+      .setTitle(option1)
+      .setColor(mendicant.color)
+      .setDescription(command.data.description);
+
     if (command.usage) {
-      let field = new Object() as APIEmbedField;
-      field.name = "Usage";
-      field.value = command.usage;
-      embed = new EmbedBuilder()
-        .setTitle(option1)
-        .setColor(mendicant.color)
-        .setDescription(command.data.description)
-        .addFields(field);
-    } else {
-      embed = new EmbedBuilder()
-        .setTitle(option1)
-        .setColor(mendicant.color)
-        .setDescription(command.data.description);
+      const field: APIEmbedField = {
+        name: "Usage",
+        value: command.usage,
+      };
+      embed.addFields(field);
     }
 
     return interaction.reply({
@@ -96,5 +89,5 @@ export default {
     });
   },
 
-  usage: "? my brother in christ you litterally just used the command",
+  usage: "? my brother in christ you literally just used the command",
 };

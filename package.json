@@ -19,8 +19,8 @@
   "homepage": "https://github.com/kamaboko117/MendicantBias#readme",
   "dependencies": {
     "@discordjs/voice": "^0.16.0",
-    "@types/got": "^9.6.12",
-    "chalk": "^5.2.0",
+    "@types/got": "9.6.12",
+    "chalk": "4.1.2",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
     "emoji-regex": "^10.2.1",

@@ -21,8 +21,8 @@ const mendicant = new Mendicant({
 mendicant.handleEvents();
 mendicant.handleComponents();
 mendicant.login(token);
-// (async () => {
-//   await connect(databaseToken || "").catch(console.error);
-//   mendicant.matchCount = await Match.estimatedDocumentCount();
-// })();
-// client.voteRoutine();
+(async () => {
+  await connect(databaseToken || "").catch(console.error);
+  mendicant.matchCount = await Match.estimatedDocumentCount();
+})();
+mendicant.voteRoutine();
