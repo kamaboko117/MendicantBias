@@ -2,7 +2,7 @@ import { APIButtonComponentWithCustomId, ButtonInteraction } from "discord.js";
 import { Mendicant } from "../../classes/Mendicant.js";
 import { mendicantPlay } from "../../commands/music/play";
 // import youtubesearchapi from "youtube-search-api";
-import youtubei from "youtubei";
+import * as youtubei from "youtubei";
 import VideoDetails from "../../classes/VideoDetails";
 import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
 
