@@ -61,10 +61,14 @@ export function getQueueMessage(
     };
     j++;
   }
-  const fields: Array<any> = items.map((item) => ({
-    name: item.title,
-    value: `${item.length} | [Link](${item.link})`,
-  }));
+  const fields: Array<any> = [];
+  for (const item of items){
+    fields.push({
+      name: item.title,
+      value: `${item.length} | [Link](${item.link})`,
+    });
+    if (fields.length === maxItems) break;
+  }
 
   const embed = new EmbedBuilder()
     .setDescription(`Track List`)
