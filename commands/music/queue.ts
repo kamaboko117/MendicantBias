@@ -86,6 +86,11 @@ export function getQueueMessage(
     .setStyle(ButtonStyle.Secondary)
     .setEmoji("🔀");
 
+  const pause = new ButtonBuilder()
+    .setCustomId(`pause`)
+    .setStyle(ButtonStyle.Secondary)
+    .setEmoji("⏸️");
+
   const stop = new ButtonBuilder()
     .setCustomId(`stop ${index}`)
     .setStyle(ButtonStyle.Secondary)
@@ -108,6 +113,7 @@ export function getQueueMessage(
 
   const actionRow1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
     shuffle,
+    pause,
     skip,
     stop
   );
@@ -117,7 +123,7 @@ export function getQueueMessage(
     next
   );
 
-  const components = totalPages !== 0 ? [actionRow1, actionRow2] : [actionRow1];
+  const components = [actionRow1, actionRow2];
 
   return {
     embeds: [embed],
