@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import {
-  getVoiceConnection,
   createAudioPlayer,
   createAudioResource,
   AudioPlayerStatus,
@@ -10,19 +9,19 @@ import { mendicantJoin } from "./play";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
 
-const mendicantRadioSearch = async (option1: string, interaction: GuildCommandInteraction, mendicant: Mendicant) => {
-  const gotModule = await import('got');
+const mendicantRadioSearch = async (
+  option1: string,
+  interaction: GuildCommandInteraction,
+  mendicant: Mendicant
+) => {
+  const gotModule = await import("got");
   const got = gotModule.default || gotModule;
   const radio = new TuneIn();
   const result = await radio.search(option1);
   const stations = result.stations;
   const station = stations[0];
-  const connection = getVoiceConnection(interaction.guildId!);
-  if (connection) {
-    connection.destroy();
-  }
   const { voice } = interaction.member;
-  const connection2 = mendicantJoin(voice, interaction.guild, mendicant);
+  const connection = mendicantJoin(voice, interaction.guild, mendicant);
   const stationObject = await station.getRadioURL();
   const streamURL = stationObject.body[0].url;
   const readableStream = got.stream(streamURL);
@@ -45,7 +44,7 @@ const mendicantRadioSearch = async (option1: string, interaction: GuildCommandIn
   player.on("error", (error) => {
     console.error(`Error: ${error.message}`);
   });
-  connection2.subscribe(player);
+  connection.subscribe(player);
   const resource = createAudioResource(readableStream);
   player.play(resource);
   interaction.reply(`Now playing: ${station.title}`);
