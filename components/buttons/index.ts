@@ -8,6 +8,7 @@ import skip from "./skip";
 import stop from "./stop";
 import testbutton from "./testbutton";
 import tourney from "./tourney";
+import pause from "./pause";
 
 export default {
   acceptPlaylist,
@@ -20,4 +21,5 @@ export default {
   stop,
   testbutton,
   tourney,
+  pause,
 };
