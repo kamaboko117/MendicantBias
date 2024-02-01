@@ -235,7 +235,12 @@ export async function mendicantCreateItem(
   let videoDetails = details ? details : null;
   if (!details) {
     const youtube = new youtubei.Client();
-    let videoDetailsRaw = await youtube.getVideo(videoID);
+    console.log(`getting video details for ${videoID}`);
+    let videoDetailsRaw = await youtube.getVideo(videoID).catch((err) => {
+      console.log(err);
+      return null;
+    });
+    console.log(`got video details for ${videoID}`);
     videoDetails = new VideoDetails(
       videoID,
       videoDetailsRaw?.title || "",
