@@ -360,12 +360,18 @@ export default {
           .setCustomId(`A ${playlistID} ${index}`)
           .setStyle(ButtonStyle.Secondary)
           .setEmoji("✅");
+        const button2 = new ButtonBuilder()
+          .setCustomId(`S ${playlistID} ${index}`)
+          .setStyle(ButtonStyle.Secondary)
+          .setEmoji("🔀");
         await interaction.channel?.send({
           content: `Add this playlist to the queue? (${
             playlist.videoCount - index
           } videos)`,
           components: [
-            new ActionRowBuilder<ButtonBuilder>().addComponents(button1),
+            new ActionRowBuilder<ButtonBuilder>()
+              .addComponents(button1)
+              .addComponents(button2),
           ],
         });
       });

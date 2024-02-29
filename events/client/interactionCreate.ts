@@ -36,6 +36,10 @@ export default {
           await buttons.get("acceptplaylist").execute(interaction, mendicant);
         } else if (type === "Q") {
           await buttons.get("queue").execute(interaction, mendicant);
+        } else if (type === "S") {
+          await buttons
+            .get("acceptplaylistshuffle")
+            .execute(interaction, mendicant);
         } else if (type === "skip") {
           await buttons.get("skip").execute(interaction, mendicant);
         } else if (type === "shuffle") {
@@ -66,9 +70,7 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    } else if (
-      interaction.isAutocomplete()
-    ) {
+    } else if (interaction.isAutocomplete()) {
       const { commands } = mendicant;
       const { commandName } = interaction;
       const command = commands.get(commandName);

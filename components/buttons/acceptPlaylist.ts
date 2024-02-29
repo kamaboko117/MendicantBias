@@ -12,6 +12,37 @@ function toSeconds(str: string) {
   }, 0);
 }
 
+export const youtubeiGetPlaylist = async (idsplit: string[]) => {
+  const youtube = new youtubei.Client();
+  const playlist = (await youtube.getPlaylist(idsplit[1])) as youtubei.Playlist;
+  let newVideos = await playlist.videos.next();
+  while (newVideos.length) {
+    newVideos = await playlist.videos.next();
+  }
+  console.log(playlist.videos.items.length);
+  return playlist;
+};
+
+export const mendicantPlayPlaylist = async (
+  playlist: youtubei.Playlist,
+  index: number,
+  interaction: GuildButtonInteraction,
+  mendicant: Mendicant
+) => {
+  let i = 0;
+  for (const video of playlist.videos.items) {
+    if (i < index) i++;
+    else {
+      let videoDetails = new VideoDetails(
+        video.id,
+        video.title,
+        video.duration || 0
+      );
+      mendicantPlay(interaction, videoDetails, mendicant, true, 0);
+    }
+  }
+};
+
 export default {
   data: {
     name: "acceptplaylist",
@@ -36,28 +67,8 @@ export default {
     //   }
     // });
 
-    // with youtubei
-    const youtube = new youtubei.Client();
-    const playlist = (await youtube.getPlaylist(
-      idsplit[1]
-    )) as youtubei.Playlist;
-    let newVideos = await playlist.videos.next();
-    while (newVideos.length) {
-      newVideos = await playlist.videos.next();
-    }
-    console.log(playlist.videos.items.length);
-    let i = 0;
-    for (const video of playlist.videos.items) {
-      if (i < index) i++;
-      else {
-        let videoDetails = new VideoDetails(
-          video.id,
-          video.title,
-          video.duration || 0
-        );
-        mendicantPlay(interaction, videoDetails, mendicant, true, 0);
-      }
-    }
+    const playlist = await youtubeiGetPlaylist(idsplit);
+    mendicantPlayPlaylist(playlist, index, interaction, mendicant);
 
     await interaction.editReply({
       content: "Done",

@@ -1,4 +1,5 @@
 import acceptPlaylist from "./acceptPlaylist";
+import acceptPlaylistShuffle from "./acceptPlaylistShuffle";
 import autorole from "./autorole";
 import dflt from "./default";
 import play from "./play";
@@ -12,6 +13,7 @@ import pause from "./pause";
 
 export default {
   acceptPlaylist,
+  acceptPlaylistShuffle,
   autorole,
   dflt,
   play,
