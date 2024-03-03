@@ -30,6 +30,8 @@ export default {
         let type = customId.split(" ")[0];
         if (type === "T") {
           await buttons.get("tourney").execute(interaction, mendicant);
+        } else if (type === "C") {
+          await buttons.get("challongeTourney").execute(interaction, mendicant);
         } else if (type === "P") {
           await buttons.get("play").execute(interaction, mendicant);
         } else if (type === "A") {

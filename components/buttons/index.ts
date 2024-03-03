@@ -10,6 +10,7 @@ import stop from "./stop";
 import testbutton from "./testbutton";
 import tourney from "./tourney";
 import pause from "./pause";
+import challongeTourney from "./challongeTourney";
 
 export default {
   acceptPlaylist,
@@ -24,4 +25,5 @@ export default {
   testbutton,
   tourney,
   pause,
+  challongeTourney,
 };

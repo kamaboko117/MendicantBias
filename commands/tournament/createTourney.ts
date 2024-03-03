@@ -17,6 +17,15 @@ export default {
       .setCustomId("tournament-form")
       .setTitle("New Tournament");
 
+    const challonge = new TextInputBuilder()
+      .setCustomId("challonge")
+      .setLabel("auto link to challonge? (optional)")
+      .setPlaceholder("y or n")
+      .setRequired(true)
+      .setMaxLength(1)
+      .setMinLength(1)
+      .setStyle(TextInputStyle.Short);
+
     const name = new TextInputBuilder()
       .setCustomId("tournamentName")
       .setLabel("Tournament Name:")
@@ -34,9 +43,14 @@ export default {
       .setRequired(true)
       .setStyle(TextInputStyle.Short);
 
-    const firstActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(name);
-    const secondActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(guilds);
-    modal.addComponents(firstActionRow, secondActionRow);
+    const firstActionRow =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(name);
+    const secondActionRow =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(guilds);
+    const thirdActionRow =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(challonge);
+
+    modal.addComponents(firstActionRow, secondActionRow, thirdActionRow);
 
     await interaction.showModal(modal);
   },

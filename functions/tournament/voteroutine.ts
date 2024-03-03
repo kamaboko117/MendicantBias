@@ -1,5 +1,6 @@
 import { Mendicant } from "../../classes/Mendicant.js";
 import { executeVote } from "../../components/buttons/tourney";
+import { executeVote as executeChallongeVote } from "../../components/buttons/challongeTourney";
 
 export default (mendicant: Mendicant) => {
   mendicant.voteRoutine = async function () {
@@ -9,6 +10,11 @@ export default (mendicant: Mendicant) => {
       if (!this.voteQueue.isEmpty) {
         while (!this.voteQueue.isEmpty) {
           await executeVote(this.voteQueue.dequeue());
+        }
+      }
+      if (!this.challongeVoteQueue.isEmpty) {
+        while (!this.challongeVoteQueue.isEmpty) {
+          await executeChallongeVote(this.challongeVoteQueue.dequeue());
         }
       }
     }
