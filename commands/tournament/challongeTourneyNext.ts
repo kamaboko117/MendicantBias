@@ -101,7 +101,7 @@ const showFinalResults = async (
     .setTitle(tourney.name)
     .setDescription(`🎊🎉 ${winnerName.split(" | ")[0]} wins!!🎉🎊 🏆`)
     .setColor(mendicant.color)
-    .setImage(emote!.imageURL()!);
+    .setImage(emote!.url!);
   await interaction.channel!.send({ embeds: [embed] });
   return matches.length;
 };
