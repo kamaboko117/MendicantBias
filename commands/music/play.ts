@@ -9,7 +9,7 @@ import {
   Guild,
   VoiceState,
 } from "discord.js";
-import ytdl from "ytdl-core";
+import ytdl from "@distube/ytdl-core";
 import {
   joinVoiceChannel,
   getVoiceConnection,
