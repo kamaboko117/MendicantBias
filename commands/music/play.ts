@@ -207,7 +207,12 @@ function mendicantCreateResource(
   interaction: GuildCommandInteraction | GuildButtonInteraction,
   videoDetails: VideoDetails
 ) {
+  const cookiesBase64 = process.env.YTCOOKIE || "";
+  const cookiesJson = Buffer.from(cookiesBase64, "base64").toString("utf-8");
+  const cookies = JSON.parse(cookiesJson);
+  const agent = ytdl.createAgent(cookies);
   let stream = ytdl(videoDetails.id, {
+    agent: agent,
     filter: "audioonly",
     highWaterMark: 1 << 25,
   }).on("error", (err) =>
