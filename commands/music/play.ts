@@ -237,36 +237,30 @@ function mendicantCreateResource(
 export async function mendicantCreateItem(
   videoID: string,
   details: VideoDetails | null,
-  module = "youtubei"
+  module = "ytdl"
 ) {
   let videoDetails = details || new VideoDetails(videoID, "", 0);
 
   if (!details) {
-    try {
-      if (module === "youtubei") {
-        const youtube = new youtubei.Client();
-        console.log(`getting video details for ${videoID}`);
-        const videoDetailsRaw = await youtube.getVideo(videoID);
-        console.log(`got video details for ${videoID}`);
-        videoDetails = new VideoDetails(
-          videoID,
-          videoDetailsRaw?.title ?? "",
-          videoDetailsRaw instanceof youtubei.Video
-            ? videoDetailsRaw.duration
-            : 0
-        );
-      } else {
-        // default to using ytdl-core to get video details
-        const agent = ytdl.createAgent(cookies);
-        const videoInfo = await ytdl.getBasicInfo(videoID, { agent: agent });
-        videoDetails = new VideoDetails(
-          videoID,
-          videoInfo.videoDetails.title,
-          parseInt(videoInfo.videoDetails.lengthSeconds, 10)
-        );
-      }
-    } catch (err) {
-      console.log(`Error fetching video details for ${videoID}:`, err);
+    if (module === "youtubei") {
+      const youtube = new youtubei.Client();
+      console.log(`getting video details for ${videoID}`);
+      const videoDetailsRaw = await youtube.getVideo(videoID);
+      console.log(`got video details for ${videoID}`);
+      videoDetails = new VideoDetails(
+        videoID,
+        videoDetailsRaw?.title ?? "",
+        videoDetailsRaw instanceof youtubei.Video ? videoDetailsRaw.duration : 0
+      );
+    } else {
+      // default to using ytdl-core to get video details
+      const agent = ytdl.createAgent(cookies);
+      const videoInfo = await ytdl.getBasicInfo(videoID, { agent: agent });
+      videoDetails = new VideoDetails(
+        videoID,
+        videoInfo.videoDetails.title,
+        parseInt(videoInfo.videoDetails.lengthSeconds, 10)
+      );
     }
   }
 

@@ -1,3 +1,5 @@
 .env
 node_modules/
 package-lock.json
+cookies.json
+cookies_base64.txt
