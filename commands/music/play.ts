@@ -30,6 +30,10 @@ import VideoDetails from "../../classes/VideoDetails";
 import { APIEmbedField } from "discord-api-types/v9";
 import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
 
+const cookiesBase64 = process.env.YTCOOKIE || "";
+const cookiesJson = Buffer.from(cookiesBase64, "base64").toString("utf-8");
+const cookies = JSON.parse(cookiesJson);
+
 function isValidHttpUrl(string: string) {
   let url;
   try {
@@ -207,9 +211,6 @@ function mendicantCreateResource(
   interaction: GuildCommandInteraction | GuildButtonInteraction,
   videoDetails: VideoDetails
 ) {
-  const cookiesBase64 = process.env.YTCOOKIE || "";
-  const cookiesJson = Buffer.from(cookiesBase64, "base64").toString("utf-8");
-  const cookies = JSON.parse(cookiesJson);
   const agent = ytdl.createAgent(cookies);
   let stream = ytdl(videoDetails.id, {
     agent: agent,
@@ -235,27 +236,47 @@ function mendicantCreateResource(
 //creates a queue item without downloading the resource stream
 export async function mendicantCreateItem(
   videoID: string,
-  details: VideoDetails | null
+  details: VideoDetails | null,
+  module = "ytdl"
 ) {
-  let videoDetails = details ? details : null;
   if (!details) {
-    const youtube = new youtubei.Client();
-    console.log(`getting video details for ${videoID}`);
-    let videoDetailsRaw = await youtube.getVideo(videoID).catch((err) => {
-      console.log(err);
-      return null;
-    });
-    console.log(`got video details for ${videoID}`);
-    videoDetails = new VideoDetails(
-      videoID,
-      videoDetailsRaw?.title || "",
-      videoDetailsRaw instanceof youtubei.Video ? videoDetailsRaw.duration : 0
-    );
+    if (module === "youtubei") {
+      const youtube = new youtubei.Client();
+      console.log(`getting video details for ${videoID}`);
+      try {
+        const videoDetailsRaw = await youtube.getVideo(videoID);
+        console.log(`got video details for ${videoID}`);
+        details = new VideoDetails(
+          videoID,
+          videoDetailsRaw?.title ?? "",
+          videoDetailsRaw instanceof youtubei.Video
+            ? videoDetailsRaw.duration
+            : 0
+        );
+      } catch (err) {
+        console.log(err);
+        return null;
+      }
+    } else {
+      // default to using ytdl-core to get video details
+      try {
+        const agent = ytdl.createAgent(cookies);
+        const videoInfo = await ytdl.getBasicInfo(videoID, { agent: agent });
+        details = new VideoDetails(
+          videoID,
+          videoInfo.videoDetails.title,
+          parseInt(videoInfo.videoDetails.lengthSeconds)
+        );
+      } catch (err) {
+        console.log(err);
+        return null;
+      }
+    }
   }
 
-  console.log(videoDetails?.title);
+  console.log(details?.title);
 
-  return videoDetails;
+  return details;
 }
 
 export async function mendicantSearch(
