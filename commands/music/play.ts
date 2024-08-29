@@ -239,44 +239,40 @@ export async function mendicantCreateItem(
   details: VideoDetails | null,
   module = "youtubei"
 ) {
+  let videoDetails = details || new VideoDetails(videoID, "", 0);
+
   if (!details) {
-    if (module === "youtubei") {
-      const youtube = new youtubei.Client();
-      console.log(`getting video details for ${videoID}`);
-      try {
+    try {
+      if (module === "youtubei") {
+        const youtube = new youtubei.Client();
+        console.log(`getting video details for ${videoID}`);
         const videoDetailsRaw = await youtube.getVideo(videoID);
         console.log(`got video details for ${videoID}`);
-        details = new VideoDetails(
+        videoDetails = new VideoDetails(
           videoID,
           videoDetailsRaw?.title ?? "",
           videoDetailsRaw instanceof youtubei.Video
             ? videoDetailsRaw.duration
             : 0
         );
-      } catch (err) {
-        console.log(err);
-        return null;
-      }
-    } else {
-      // default to using ytdl-core to get video details
-      try {
+      } else {
+        // default to using ytdl-core to get video details
         const agent = ytdl.createAgent(cookies);
         const videoInfo = await ytdl.getBasicInfo(videoID, { agent: agent });
-        details = new VideoDetails(
+        videoDetails = new VideoDetails(
           videoID,
           videoInfo.videoDetails.title,
-          parseInt(videoInfo.videoDetails.lengthSeconds)
+          parseInt(videoInfo.videoDetails.lengthSeconds, 10)
         );
-      } catch (err) {
-        console.log(err);
-        return null;
       }
+    } catch (err) {
+      console.log(`Error fetching video details for ${videoID}:`, err);
     }
   }
 
-  console.log(details?.title);
+  console.log(videoDetails.title);
 
-  return details;
+  return videoDetails;
 }
 
 export async function mendicantSearch(
