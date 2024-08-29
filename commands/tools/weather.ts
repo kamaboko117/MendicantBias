@@ -12,6 +12,8 @@ interface IWeather {
   description: string;
   feelsLike: number;
   humidity: number;
+  windSpeed: number;
+  windDirection: string;
 }
 
 interface IPlace {
@@ -42,6 +44,22 @@ const getGeocode = async (location: string) => {
   return { coordinates, placeName, state, country };
 };
 
+const getWindDirection = (degrees: number) => {
+  if (degrees >= 337.5 || degrees < 22.5) return "N⬆️";
+  if (degrees >= 22.5 && degrees < 67.5) return "NE↗️";
+  if (degrees >= 67.5 && degrees < 112.5) return "E➡️";
+  if (degrees >= 112.5 && degrees < 157.5) return "SE↘️";
+  if (degrees >= 157.5 && degrees < 202.5) return "S⬇️";
+  if (degrees >= 202.5 && degrees < 247.5) return "SW↙️";
+  if (degrees >= 247.5 && degrees < 292.5) return "W⬅️";
+  if (degrees >= 292.5 && degrees < 337.5) return "NW↖️";
+  return "ERROR";
+};
+
+const MPStoKPH = (mps: number) => {
+  return mps * 3.6;
+};
+
 const getWeather = async (location: string) => {
   const geocodeResult = await getGeocode(location);
   const [lon, lat] = geocodeResult.coordinates;
@@ -61,8 +79,13 @@ const getWeather = async (location: string) => {
   const feelsLike = weatherResult.main.feels_like;
   const description = weatherResult.weather[0].description;
   const humidity = weatherResult.main.humidity;
+  const windSpeed = MPStoKPH(weatherResult.wind.speed);
+  const windDirection = getWindDirection(weatherResult.wind.deg);
 
-  return [{ currentTemp, description, feelsLike, humidity }, placeName];
+  return [
+    { currentTemp, description, feelsLike, humidity, windSpeed, windDirection },
+    placeName,
+  ];
 };
 
 export default {
@@ -100,6 +123,10 @@ export default {
         {
           name: "Humidity:",
           value: `${weatherResult.humidity}%`,
+        },
+        {
+          name: "Wind:",
+          value: `${weatherResult.windSpeed}km/h ${weatherResult.windDirection}`,
         },
       ]);
 
