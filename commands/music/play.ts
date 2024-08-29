@@ -237,7 +237,7 @@ function mendicantCreateResource(
 export async function mendicantCreateItem(
   videoID: string,
   details: VideoDetails | null,
-  module = "ytdl"
+  module = "youtubei"
 ) {
   if (!details) {
     if (module === "youtubei") {
