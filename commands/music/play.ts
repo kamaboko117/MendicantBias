@@ -259,13 +259,18 @@ export async function mendicantCreateItem(
       }
     } else {
       // default to using ytdl-core to get video details
-      const agent = ytdl.createAgent(cookies);
-      const videoInfo = await ytdl.getBasicInfo(videoID, { agent: agent });
-      details = new VideoDetails(
-        videoID,
-        videoInfo.videoDetails.title,
-        parseInt(videoInfo.videoDetails.lengthSeconds)
-      );
+      try {
+        const agent = ytdl.createAgent(cookies);
+        const videoInfo = await ytdl.getBasicInfo(videoID, { agent: agent });
+        details = new VideoDetails(
+          videoID,
+          videoInfo.videoDetails.title,
+          parseInt(videoInfo.videoDetails.lengthSeconds)
+        );
+      } catch (err) {
+        console.log(err);
+        return null;
+      }
     }
   }
 
