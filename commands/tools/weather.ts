@@ -12,7 +12,7 @@ interface IWeather {
   description: string;
   feelsLike: number;
   humidity: number;
-  windSpeed: number;
+  windSpeed: string;
   windDirection: string;
 }
 
@@ -79,7 +79,7 @@ const getWeather = async (location: string) => {
   const feelsLike = weatherResult.main.feels_like;
   const description = weatherResult.weather[0].description;
   const humidity = weatherResult.main.humidity;
-  const windSpeed = MPStoKPH(weatherResult.wind.speed);
+  const windSpeed = MPStoKPH(weatherResult.wind.speed).toFixed(2);
   const windDirection = getWindDirection(weatherResult.wind.deg);
 
   return [
