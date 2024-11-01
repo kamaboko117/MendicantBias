@@ -1,14 +1,15 @@
 import {
-  SlashCommandBuilder,
+  ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
-  ActionRowBuilder,
-  InteractionUpdateOptions,
+  InteractionContextType,
   InteractionReplyOptions,
+  InteractionUpdateOptions,
+  SlashCommandBuilder,
 } from "discord.js";
-import { Mendicant } from "../../classes/Mendicant";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import { Mendicant } from "../../classes/Mendicant";
 
 const toHHMMSS = (numSecs: string) => {
   const secNum = parseInt(numSecs, 10);
@@ -134,7 +135,8 @@ export function getQueueMessage(
 export default {
   data: new SlashCommandBuilder()
     .setName("queue")
-    .setDescription("get the music queue"),
+    .setDescription("get the music queue")
+    .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     console.log(`${interaction.member.displayName} used /queue`);

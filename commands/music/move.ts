@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getVoiceConnection } from "@discordjs/voice";
-import { Queue } from "../../classes/Queue";
+import { InteractionContextType } from "discord.js";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
 import { Mendicant } from "../../classes/Mendicant";
 
@@ -35,7 +35,8 @@ export default {
         .setName("to")
         .setDescription("the item's destination index")
         .setRequired(false)
-    ),
+    )
+    .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getInteger("from")!;

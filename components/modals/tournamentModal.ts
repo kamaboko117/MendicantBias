@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
-import Tournament from "../../schemas/tournament";
-import ChallongeTournament from "../../schemas/challongeTournament";
-import Round from "../../schemas/round";
-import Match from "../../schemas/match";
 import { Guild, ModalSubmitInteraction } from "discord.js";
+import mongoose from "mongoose";
 import { Mendicant } from "../../classes/Mendicant.js";
+import ChallongeTournament from "../../schemas/challongeTournament";
+import Match from "../../schemas/match";
+import Round from "../../schemas/round";
+import Tournament from "../../schemas/tournament";
 const challongeAPI = `https://api.challonge.com/v1/`;
 const challongeAPIKey = process.env.CHALLONGE_KEY;
 
@@ -152,9 +152,10 @@ const createTourneyChallonge = async (
   //add participants
   const emojiArray = await getEmojiArrayFromGuilds(guilds);
   if (emojiArray.length > 256) {
-    interaction.channel?.send({
-      content: `Warning: Challonge only supports 256 participants. Only the first 256 will be added.`,
-    });
+    if (interaction.channel?.isSendable())
+      interaction.channel?.send({
+        content: `Warning: Challonge only supports 256 participants. Only the first 256 will be added.`,
+      });
     emojiArray.splice(256);
   }
   console.log(data1);

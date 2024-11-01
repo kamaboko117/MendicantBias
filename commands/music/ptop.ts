@@ -1,8 +1,9 @@
-import ytdl from "ytdl-core";
-import { mendicantCreateItem, mendicantPlay, mendicantSearch } from "./play";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import ytdl from "@distube/ytdl-core";
+import { InteractionContextType } from "discord.js";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
+import { mendicantCreateItem, mendicantPlay, mendicantSearch } from "./play";
 
 export default {
   data: new SlashCommandBuilder()
@@ -13,7 +14,9 @@ export default {
         .setName("url-or-search")
         .setDescription("youtube video link or search")
         .setRequired(true)
-    ),
+    )
+    .setContexts([InteractionContextType.Guild]),
+    
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("url-or-search")!;
     console.log(`${interaction.member.displayName} used /play ${option1}`);

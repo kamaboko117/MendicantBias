@@ -1,13 +1,14 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import {
+  AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
-  AudioPlayerStatus,
 } from "@discordjs/voice";
+import { InteractionContextType } from "discord.js";
 import TuneIn from "node-tunein-api";
-import { mendicantJoin } from "./play";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
+import { mendicantJoin } from "./play";
 
 const mendicantRadioSearch = async (
   option1: string,
@@ -59,7 +60,8 @@ const radioCommand = {
         .setName("radio-name")
         .setDescription("radio name")
         .setRequired(true)
-    ),
+    )
+    .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("radio-name")!;

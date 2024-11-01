@@ -1,16 +1,17 @@
-import Match from "../../schemas/match";
 import {
-  SlashCommandBuilder,
-  EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  EmbedBuilder,
   GuildEmoji,
+  InteractionContextType,
+  SlashCommandBuilder,
 } from "discord.js";
-import mongoose from "mongoose";
 import emojiRegex from "emoji-regex";
+import mongoose from "mongoose";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
+import Match from "../../schemas/match";
 
 function isUnicode(emoji: GuildEmoji | string): emoji is string {
   return typeof emoji === "string";
@@ -31,7 +32,8 @@ export default {
         .setName("emote2")
         .setDescription("the second emote")
         .setRequired(true)
-    ),
+    )
+    .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("emote1")!;
