@@ -1,10 +1,9 @@
-import { APIButtonComponentWithCustomId, ButtonInteraction } from "discord.js";
 import { Mendicant } from "../../classes/Mendicant.js";
 import { mendicantPlay } from "../../commands/music/play";
 // import youtubesearchapi from "youtube-search-api";
 import * as youtubei from "youtubei";
-import VideoDetails from "../../classes/VideoDetails";
 import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
+import VideoDetails from "../../classes/VideoDetails";
 
 function toSeconds(str: string) {
   return str.split(":").reduce(function (seconds, v) {
@@ -15,12 +14,23 @@ function toSeconds(str: string) {
 export const youtubeiGetPlaylist = async (idsplit: string[]) => {
   const youtube = new youtubei.Client();
   const playlist = (await youtube.getPlaylist(idsplit[1])) as youtubei.Playlist;
-  let newVideos = await playlist.videos.next();
-  while (newVideos.length) {
-    newVideos = await playlist.videos.next();
+
+  // in case the playlist is a youtube mix, .next() doesnt exist
+  if (playlist.videos.next) {
+    let newVideos = await playlist.videos.next();
+    while (newVideos.length) {
+      newVideos = await playlist.videos.next();
+    }
+    return playlist;
+  } else {
+    const mix = playlist as unknown as youtubei.MixPlaylist;
+    const newPlaylist = {
+      videos: {
+        items: mix.videos,
+      },
+    }
+    return newPlaylist as youtubei.Playlist;
   }
-  console.log(playlist.videos.items.length);
-  return playlist;
 };
 
 export const mendicantPlayPlaylist = async (
