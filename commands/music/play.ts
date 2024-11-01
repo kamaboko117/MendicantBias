@@ -1,34 +1,34 @@
-import dotenv from "dotenv";
-dotenv.config({ path: "./.env" });
 import {
-  SlashCommandBuilder,
+  AudioPlayerStatus,
+  createAudioPlayer,
+  createAudioResource,
+  entersState,
+  getVoiceConnection,
+  joinVoiceChannel,
+  StreamType,
+  VoiceConnection,
+  VoiceConnectionStatus,
+} from "@discordjs/voice";
+import ytdl from "@distube/ytdl-core";
+import { APIEmbedField } from "discord-api-types/v9";
+import {
+  ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
-  ActionRowBuilder,
   Guild,
+  SlashCommandBuilder,
   VoiceState,
 } from "discord.js";
-import ytdl from "@distube/ytdl-core";
-import {
-  joinVoiceChannel,
-  getVoiceConnection,
-  VoiceConnectionStatus,
-  createAudioPlayer,
-  createAudioResource,
-  StreamType,
-  AudioPlayerStatus,
-  entersState,
-  VoiceConnection,
-} from "@discordjs/voice";
-import * as youtubei from "youtubei";
+import dotenv from "dotenv";
 import youtubesearchapi from "youtube-search-api";
-import { mendicantMove } from "./move";
-import { Mendicant } from "../../classes/Mendicant.js";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import VideoDetails from "../../classes/VideoDetails";
-import { APIEmbedField } from "discord-api-types/v9";
+import * as youtubei from "youtubei";
 import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
+import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import { Mendicant } from "../../classes/Mendicant.js";
+import VideoDetails from "../../classes/VideoDetails";
+import { mendicantMove } from "./move";
+dotenv.config({ path: "./.env" });
 
 const cookiesBase64 = process.env.YTCOOKIE || "";
 const cookiesJson = Buffer.from(cookiesBase64, "base64").toString("utf-8");
@@ -58,7 +58,7 @@ export function mendicantJoin(
   connection = joinVoiceChannel({
     channelId: voice.channelId as string,
     guildId: guild.id,
-    adapterCreator: guild.voiceAdapterCreator,
+    adapterCreator: guild.voiceAdapterCreator as any,
   });
 
   if (!mendicant.queues.find((queue) => queue.id === guild.id)) {
@@ -154,7 +154,8 @@ export async function mendicantPlay(
 
     const resource = mendicantCreateResource(interaction, item);
     if (!resource) {
-      interaction.channel?.send("Error: Could not create resource");
+      if (interaction.channel?.isSendable())
+        interaction.channel?.send("Error: Could not create resource");
       return;
     }
 
@@ -169,7 +170,8 @@ export async function mendicantPlay(
         console.log(queue[0].title);
         const nextResource = mendicantCreateResource(interaction, queue[0]);
         if (!nextResource) {
-          interaction.channel?.send("Error: Could not create resource");
+          if (interaction.channel?.isSendable())
+            interaction.channel?.send("Error: Could not create resource");
           return;
         }
         player.play(nextResource);
@@ -216,9 +218,10 @@ function mendicantCreateResource(
     agent: agent,
     filter: "audioonly",
     highWaterMark: 1 << 25,
-  }).on("error", (err) =>
-    interaction.channel?.send(`ytdl module error: ${err}`)
-  );
+  }).on("error", (err) => {
+    if (interaction.channel?.isSendable())
+      interaction.channel?.send(`ytdl module error: ${err}`);
+  });
   let resource = createAudioResource(stream, {
     inputType: StreamType.Arbitrary,
     metadata: {
@@ -366,9 +369,10 @@ export default {
       const youtube = new youtubei.Client();
       youtube.getPlaylist(playlistID).then(async (playlist) => {
         if (!playlist) {
-          interaction.channel?.send(
-            "Could not get playlist, make sure it is public"
-          );
+          if (interaction.channel?.isSendable())
+            interaction.channel?.send(
+              "Could not get playlist, make sure it is public"
+            );
           return;
         }
         let index = findVideoIndex(option1);
@@ -380,16 +384,17 @@ export default {
           .setCustomId(`S ${playlistID} ${index}`)
           .setStyle(ButtonStyle.Secondary)
           .setEmoji("🔀");
-        await interaction.channel?.send({
-          content: `Add this playlist to the queue? (${
-            playlist.videoCount - index
-          } videos)`,
-          components: [
-            new ActionRowBuilder<ButtonBuilder>()
-              .addComponents(button1)
-              .addComponents(button2),
-          ],
-        });
+        if (interaction.channel?.isSendable())
+          await interaction.channel?.send({
+            content: `Add this playlist to the queue? (${
+              playlist.videoCount - index
+            } videos)`,
+            components: [
+              new ActionRowBuilder<ButtonBuilder>()
+                .addComponents(button1)
+                .addComponents(button2),
+            ],
+          });
       });
     }
     if (ytdl.validateURL(option1)) {
