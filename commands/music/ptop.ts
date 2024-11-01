@@ -1,8 +1,8 @@
-import ytdl from "ytdl-core";
-import { mendicantCreateItem, mendicantPlay, mendicantSearch } from "./play";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import ytdl from "@distube/ytdl-core";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
+import { mendicantCreateItem, mendicantPlay, mendicantSearch } from "./play";
 
 export default {
   data: new SlashCommandBuilder()
