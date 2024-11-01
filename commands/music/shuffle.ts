@@ -1,7 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getVoiceConnection } from "@discordjs/voice";
-import { Mendicant } from "../../classes/Mendicant";
+import { InteractionContextType } from "discord.js";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import { Mendicant } from "../../classes/Mendicant";
 
 export function mendicantShuffle(queue: any[]) {
   const tmpArray = [...queue.slice(1)];
@@ -16,7 +17,8 @@ export function mendicantShuffle(queue: any[]) {
 export default {
   data: new SlashCommandBuilder()
     .setName("shuffle")
-    .setDescription("Shuffles the current playlist"),
+    .setDescription("Shuffles the current playlist")
+    .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     console.log(`${interaction.member.displayName} used /shuffle`);

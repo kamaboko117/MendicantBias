@@ -1,12 +1,13 @@
 import {
-    SlashCommandBuilder,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  InteractionContextType,
+  SlashCommandBuilder,
 } from "discord.js";
-import Match from "../../schemas/match";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
+import Match from "../../schemas/match";
 
 export default {
   data: new SlashCommandBuilder()
@@ -17,7 +18,8 @@ export default {
         .setName("match_id")
         .setDescription("the ID of the match you want to reveal")
         .setRequired(true)
-    ),
+    )
+    .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     console.log(`${interaction.member.displayName} used /reveal`);

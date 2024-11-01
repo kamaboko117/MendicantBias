@@ -1,17 +1,18 @@
 import {
-  SlashCommandBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
+  InteractionContextType,
+  SlashCommandBuilder,
 } from "discord.js";
+import mongoose from "mongoose";
+import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import { Mendicant } from "../../classes/Mendicant.js";
 import ChallongeMatch from "../../schemas/challongeMatch";
 import ChallongeTournament, {
   IChallongeTournament,
 } from "../../schemas/challongeTournament";
-import mongoose from "mongoose";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
 
 const ChallongeAPI = `https://api.challonge.com/v1/`;
 const ChallongeAPIKey = process.env.CHALLONGE_KEY;
@@ -295,7 +296,9 @@ export default {
     .setDescription("post next matches for the tournament")
     .addStringOption((option) =>
       option.setName("name").setDescription("tournament name").setRequired(true)
-    ),
+    )
+    .setContexts([InteractionContextType.Guild]),
+
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const name = interaction.options.getString("name");
 

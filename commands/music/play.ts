@@ -17,6 +17,7 @@ import {
   ButtonStyle,
   EmbedBuilder,
   Guild,
+  InteractionContextType,
   SlashCommandBuilder,
   VoiceState,
 } from "discord.js";
@@ -356,7 +357,9 @@ export default {
         .setName("url-or-search")
         .setDescription("youtube video link or search")
         .setRequired(true)
-    ),
+    )
+    .setContexts([InteractionContextType.Guild]),
+    
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("url-or-search")!;
     console.log(`${interaction.member.displayName} used /play ${option1}`);

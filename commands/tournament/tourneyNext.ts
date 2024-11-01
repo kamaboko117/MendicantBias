@@ -1,16 +1,17 @@
 import {
-  SlashCommandBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
+  InteractionContextType,
+  SlashCommandBuilder,
 } from "discord.js";
-import Round, { IRound } from "../../schemas/round";
-import Match from "../../schemas/match";
-import Tournament, { ITournament } from "../../schemas/tournament";
 import mongoose from "mongoose";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
+import Match from "../../schemas/match";
+import Round, { IRound } from "../../schemas/round";
+import Tournament, { ITournament } from "../../schemas/tournament";
 
 const maxMatches = 16;
 
@@ -519,7 +520,9 @@ export default {
     .setDescription("post next matches for the tournament")
     .addStringOption((option) =>
       option.setName("name").setDescription("tournament name").setRequired(true)
-    ),
+    )
+    .setContexts([InteractionContextType.Guild]),
+    
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const name = interaction.options.getString("name");
 

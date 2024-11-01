@@ -1,12 +1,14 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getVoiceConnection } from "@discordjs/voice";
+import { InteractionContextType } from "discord.js";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
 import { Mendicant } from "../../classes/Mendicant";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("clear")
-    .setDescription("Empty the current queue"),
+    .setDescription("Empty the current queue")
+    .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     console.log(`${interaction.member.displayName} used /clear`);

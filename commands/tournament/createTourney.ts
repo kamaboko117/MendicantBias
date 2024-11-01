@@ -1,7 +1,8 @@
 import {
-  SlashCommandBuilder,
-  ModalBuilder,
   ActionRowBuilder,
+  InteractionContextType,
+  ModalBuilder,
+  SlashCommandBuilder,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
@@ -11,7 +12,9 @@ import { Mendicant } from "../../classes/Mendicant";
 export default {
   data: new SlashCommandBuilder()
     .setName("create-tourney")
-    .setDescription("create an emotedokai tournament through a form"),
+    .setDescription("create an emotedokai tournament through a form")
+    .setContexts([InteractionContextType.Guild]),
+
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const modal = new ModalBuilder()
       .setCustomId("tournament-form")
