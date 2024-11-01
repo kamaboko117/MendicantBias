@@ -1,12 +1,12 @@
-import { SlashCommandBuilder, EmbedBuilder } from "@discordjs/builders";
-import commands from "../index";
+import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
+import { APIEmbedField } from "discord.js";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
 import { Command } from "../../types/Command.js";
-import { APIEmbedField } from "discord.js";
+import commands from "../index";
 
 function listCommands(interaction: GuildCommandInteraction, mendicant: Mendicant) {
-  console.log(`${interaction.member.displayName} used /help`);
+  mendicant.logInteraction(interaction);
 
   const fields: APIEmbedField[] = Object.keys(commands).map((key) => {
     const group = commands[key as keyof typeof commands];

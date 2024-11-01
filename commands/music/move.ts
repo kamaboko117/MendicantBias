@@ -46,7 +46,7 @@ export default {
       option2 = 1;
     }
     console.log(
-      `${interaction.member.displayName} used /move ${option1} ${option2}`
+      `${interaction.user.username} used /move ${option1} ${option2}`
     );
 
     const { voice } = interaction.member;

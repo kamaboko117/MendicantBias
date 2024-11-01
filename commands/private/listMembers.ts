@@ -26,7 +26,7 @@ export default {
     // update the cache
     await guild.members.fetch();
     // get the members of the guild
-    const members = guild.members.cache.map((member) => member.displayName);
+    const members = guild.members.cache.map((member) => member.user.username);
 
     await interaction.reply({
       content: `**Number of Members:** ${

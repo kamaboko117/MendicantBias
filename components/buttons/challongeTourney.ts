@@ -1,7 +1,7 @@
 import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
-import challongeTournament from "../../schemas/challongeTournament";
 import ChallongeMatch from "../../schemas/challongeMatch";
+import challongeTournament from "../../schemas/challongeTournament";
 
 function arrayRemove(arr: any[], value: any) {
   return arr.filter(function (ele) {
@@ -69,7 +69,7 @@ export async function executeVote(interaction: GuildButtonInteraction) {
     } else msg = "what?";
     await match.save().catch(console.error);
   }
-  console.log(interaction.member.displayName);
+  console.log(interaction.user.username);
   await interaction.editReply({
     content: msg,
   });

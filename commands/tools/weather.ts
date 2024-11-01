@@ -1,8 +1,8 @@
+import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
 import dotenv from "dotenv";
-dotenv.config({ path: "./.env" });
-import { SlashCommandBuilder, EmbedBuilder } from "@discordjs/builders";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
 import { Mendicant } from "../../classes/Mendicant";
+dotenv.config({ path: "./.env" });
 const key = process.env.WEATHER;
 const MAPBOX_BASE = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 const WEATHER_BASE = "https://api.openweathermap.org/data/2.5/weather";
@@ -12,7 +12,7 @@ interface IWeather {
   description: string;
   feelsLike: number;
   humidity: number;
-  windSpeed: number;
+  windSpeed: string;
   windDirection: string;
 }
 
@@ -79,7 +79,7 @@ const getWeather = async (location: string) => {
   const feelsLike = weatherResult.main.feels_like;
   const description = weatherResult.weather[0].description;
   const humidity = weatherResult.main.humidity;
-  const windSpeed = MPStoKPH(weatherResult.wind.speed);
+  const windSpeed = MPStoKPH(weatherResult.wind.speed).toFixed(2);
   const windDirection = getWindDirection(weatherResult.wind.deg);
 
   return [
@@ -98,7 +98,7 @@ export default {
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("location");
-    console.log(`${interaction.member.displayName} used /weather ${option1}`);
+    console.log(`${interaction.user.username} used /weather ${option1}`);
 
     const response = await getWeather(option1!);
     const weatherResult = response[0] as IWeather;

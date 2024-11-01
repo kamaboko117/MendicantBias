@@ -7,7 +7,7 @@ export default {
     name: "stop",
   },
   async execute(interaction: GuildButtonInteraction, mendicant: Mendicant) {
-    console.log(`${interaction.member.displayName} used stop button`);
+    mendicant.logInteraction(interaction);
     const { voice } = interaction.member;
     if (!voice.channelId) {
       interaction.reply("Error: You are not in a voice channel");

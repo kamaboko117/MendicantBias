@@ -1,6 +1,6 @@
-import { ClientOptions, Collection, Client } from "discord.js";
-import { Queue } from "./Queue";
+import { Client, ClientOptions, Collection, Interaction } from "discord.js";
 import functions from "../functions/index";
+import { Queue } from "./Queue";
 
 export class Mendicant extends Client {
   public commands: Collection<string, any>;
@@ -18,6 +18,7 @@ export class Mendicant extends Client {
   public handleComponents: () => void;
   public handleEvents: () => void;
   public voteRoutine: () => void;
+
   constructor(options: ClientOptions) {
     super(options);
     this.commands = new Collection();
@@ -38,5 +39,17 @@ export class Mendicant extends Client {
     Object.keys(functions).forEach((key) => {
       functions[key as keyof typeof functions](this);
     });
+  }
+
+  public logInteraction(interaction: Interaction) {
+    if (interaction.isCommand()) {
+      console.log(
+        `${interaction.user.username} used /${interaction.commandName}`
+      );
+    } else if (interaction.isButton()) {
+      console.log(
+        `${interaction.user.username} clicked button ${interaction.customId}`
+      );
+    }
   }
 }

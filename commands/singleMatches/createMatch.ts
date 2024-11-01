@@ -39,7 +39,7 @@ export default {
     const option1 = interaction.options.getString("emote1")!;
     const option2 = interaction.options.getString("emote2")!;
     console.log(
-      `${interaction.member.displayName} used /create-match ${option1} ${option2}`
+      `${interaction.user.username} used /create-match ${option1} ${option2}`
     );
 
     const re1 = emojiRegex();

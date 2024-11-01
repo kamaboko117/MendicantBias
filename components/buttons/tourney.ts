@@ -68,7 +68,7 @@ export async function executeVote(interaction: GuildButtonInteraction) {
     } else msg = "what?";
     await tourney.save().catch(console.error);
   }
-  console.log(interaction.member.displayName);
+  console.log(interaction.user.username);
   await interaction.editReply({
     content: msg,
   });
