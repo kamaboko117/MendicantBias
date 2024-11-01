@@ -1,14 +1,14 @@
 import { getVoiceConnection } from "@discordjs/voice";
-import { getQueueMessage } from "../../commands/music/queue";
 import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
 import { Mendicant } from "../../classes/Mendicant.js";
+import { getQueueMessage } from "../../commands/music/queue";
 
 export default {
   data: {
     name: "skip",
   },
   async execute(interaction: GuildButtonInteraction, mendicant: Mendicant) {
-    console.log(`${interaction.member.displayName} used skip button`);
+    mendicant.logInteraction(interaction);
     const idsplit = interaction.customId.split(" ");
     const index = Number(idsplit[1]);
 

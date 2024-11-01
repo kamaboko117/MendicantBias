@@ -65,7 +65,7 @@ const radioCommand = {
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("radio-name")!;
-    console.log(`${interaction.member.displayName} used /radio ${option1}`);
+    console.log(`${interaction.user.username} used /radio ${option1}`);
     const { voice } = interaction.member;
     if (!voice.channelId) {
       interaction.reply("Error: You are not in a voice channel");

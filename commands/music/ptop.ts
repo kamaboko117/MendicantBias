@@ -19,7 +19,7 @@ export default {
     
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("url-or-search")!;
-    console.log(`${interaction.member.displayName} used /play ${option1}`);
+    console.log(`${interaction.user.username} used /play ${option1}`);
 
     if (ytdl.validateURL(option1)) {
       let ID = ytdl.getURLVideoID(option1);

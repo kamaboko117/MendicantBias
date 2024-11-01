@@ -139,7 +139,7 @@ export default {
     .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
-    console.log(`${interaction.member.displayName} used /queue`);
+    mendicant.logInteraction(interaction);
 
     const queue = mendicant.queues.find(
       (q) => q.id === interaction.guild.id

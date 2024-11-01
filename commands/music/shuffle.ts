@@ -21,7 +21,7 @@ export default {
     .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
-    console.log(`${interaction.member.displayName} used /shuffle`);
+    mendicant.logInteraction(interaction);
     const { voice } = interaction.member;
     if (!voice.channelId) {
       await interaction.reply("Error: You are not in a voice channel");

@@ -22,7 +22,7 @@ export default {
     .setContexts([InteractionContextType.Guild]),
 
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
-    console.log(`${interaction.member.displayName} used /reveal`);
+    mendicant.logInteraction(interaction);
     const options = interaction.options.getNumber("match_id")!;
     if (isNaN(options)) {
       await interaction.reply({
