@@ -19,7 +19,7 @@
   "homepage": "https://github.com/kamaboko117/MendicantBias#readme",
   "dependencies": {
     "@discordjs/voice": "^0.17.0",
-    "@distube/ytdl-core": "^4.13.5",
+    "@distube/ytdl-core": "^4.15.8",
     "@types/got": "9.6.12",
     "chalk": "4.1.2",
     "discord.js": "^14.11.0",
