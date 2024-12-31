@@ -216,6 +216,7 @@ function mendicantCreateResource(
 ) {
   const agent = ytdl.createAgent(cookies);
   let stream = ytdl(videoDetails.id, {
+    playerClients: ["IOS", "WEB_CREATOR"],
     agent: agent,
     filter: "audioonly",
     highWaterMark: 1 << 25,
