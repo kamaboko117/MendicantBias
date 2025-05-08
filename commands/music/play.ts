@@ -147,7 +147,7 @@ export async function mendicantPlay(
     const player = createAudioPlayer();
     // An AudioPlayer will always emit an "error" event with a .resource property
     player.on("error", (error) => {
-      console.error("Error:", error.message, "with track", error.resource);
+      console.error("Error:", error.message);
     });
 
     const dispatcher = connection.subscribe(player);
@@ -364,7 +364,7 @@ export default {
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("url-or-search")!;
     console.log(`${interaction.user.username} used /play ${option1}`);
-    let playlistFlag = isPlaylist(option1);
+    const playlistFlag = isPlaylist(option1);
     if (playlistFlag) {
       let playlistID = getPlaylistId(option1);
       console.log("playlist");
@@ -402,8 +402,8 @@ export default {
       });
     }
     if (ytdl.validateURL(option1)) {
-      let ID = ytdl.getURLVideoID(option1);
-      let item = await mendicantCreateItem(ID, null);
+      const ID = ytdl.getURLVideoID(option1);
+      const item = await mendicantCreateItem(ID, null);
       if (!item) {
         interaction.reply("Error: Could not create item");
         return;
