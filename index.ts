@@ -1,11 +1,17 @@
-import dotenv from "dotenv";
-dotenv.config({ path: "./.env" });
-const token = process.env.TOKEN;
-const databaseToken = process.env.DATABASE;
-import { connect } from "mongoose";
 import { GatewayIntentBits } from "discord.js";
-import Match from "./schemas/match";
+import dotenv from "dotenv";
+import { connect } from "mongoose";
 import { Mendicant } from "./classes/Mendicant";
+import Match from "./schemas/match";
+
+dotenv.config({ path: "./.env" });
+
+// check if env is dev or prod
+const isDev = process.env.NODE_ENV === "development";
+
+const token = isDev ? process.env.TOKEN2 : process.env.TOKEN;
+const databaseToken = isDev ? process.env.DATABASE2 : process.env.DATABASE;
+
 const mendicant = new Mendicant({
   intents: [
     GatewayIntentBits.Guilds,
