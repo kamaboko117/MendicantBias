@@ -14,6 +14,7 @@ export class Mendicant extends Client {
   public challongeVoteQueue: Queue;
   public timeoutIds: any[];
   public matchCount: number;
+  public osuApiUrl: string;
   public handleCommands: () => void;
   public handleComponents: () => void;
   public handleEvents: () => void;
@@ -32,6 +33,7 @@ export class Mendicant extends Client {
     this.challongeVoteQueue = new Queue();
     this.timeoutIds = [];
     this.matchCount = 0;
+    this.osuApiUrl = "https://osu.ppy.sh/api/v2";
     this.handleCommands = () => {};
     this.handleComponents = () => {};
     this.handleEvents = () => {};
