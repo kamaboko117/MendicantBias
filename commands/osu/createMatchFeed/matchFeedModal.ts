@@ -10,7 +10,7 @@ import { OsuApiUser } from "./helpers/types";
 export const getModal = (players: OsuApiUser[], name: string) => {
   const modal = new ModalBuilder()
     .setCustomId("match-feed-form")
-    .setTitle(name);
+    .setTitle(name.slice(0, 45));
 
   const player1RollsInput = new TextInputBuilder()
     .setCustomId("player1RollsInput")

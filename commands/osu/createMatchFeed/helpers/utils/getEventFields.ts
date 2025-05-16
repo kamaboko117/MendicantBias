@@ -68,7 +68,6 @@ export const getEventFields = (
     const matchPlayers = matchScore.filter((ms) => gameUsers[ms.user.id]);
 
     const [p1, p2] = matchPlayers;
-    console.log(p1, p2);
 
     fields.push({
       name: fieldTitle,
