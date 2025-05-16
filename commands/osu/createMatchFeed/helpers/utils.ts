@@ -1,4 +1,5 @@
 import { APIEmbedField } from "discord.js";
+import { MatchScore, OsuApiEvent, OsuApiScore, OsuApiUser } from "./types";
 
 const updateMatchScore = (matchScore: MatchScore, scores: OsuApiScore[]) => {
   if (scores[0].score > scores[1].score) {
@@ -36,52 +37,35 @@ export const getFields = (
     const fieldTitle = `${beatmapset.artist} - ${beatmapset.title} [${beatmap.version}]`;
 
     const { scores } = event.game;
-    const gameUsers = [];
+    const gameUsers: Record<number, string> = {};
 
     for (const score of scores) {
       const user = users.find((u) => u.id === score.user_id);
+      if (!user) continue;
 
-      if (!user) {
-        continue;
-      }
+      const filteredScoreMods = score.mods.filter((value) => value !== "NF");
+      const mods =
+        filteredScoreMods.length > 0
+          ? `**[${filteredScoreMods.join("")}]**`
+          : "**[NM]**";
 
-      const mods = score.mods.reduce((acc: string, mod: string, idx, arr) => {
-        if (idx === 0) {
-          acc = "**[";
-        }
-
-        acc += mod;
-
-        if (idx === arr.length - 1) {
-          acc += "]**";
-        }
-
-        return acc;
-      }, `**[NM]**`);
-
-      gameUsers.push(`${mods} ${user.username}`);
+      gameUsers[user.id] = `${mods} ${user.username}`;
     }
 
-    if (gameUsers.length < 2) {
-      continue;
-    }
+    if (Object.keys(gameUsers).length < 2) continue;
 
     updateMatchScore(matchScore, scores);
 
+    // Filter only users from matchScore that exist in gameUsers
+    const matchPlayers = matchScore.filter((ms) => gameUsers[ms.user.id]);
+
+    const [p1, p2] = matchPlayers;
+    console.log(p1, p2);
+
     fields.push({
       name: fieldTitle,
-      value: `${
-        gameUsers[
-          gameUsers.findIndex((user) =>
-            user.includes(matchScore[0].user.username)
-          )
-        ]
-      } ${printScore(matchScore)} ${
-        gameUsers[
-          gameUsers.findIndex((user) =>
-            user.includes(matchScore[1].user.username)
-          )
-        ]
+      value: `${gameUsers[p1.user.id]} ${printScore(matchScore)} ${
+        gameUsers[p2.user.id]
       }`,
     });
   }

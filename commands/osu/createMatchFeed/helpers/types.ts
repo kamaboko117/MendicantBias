@@ -1,4 +1,4 @@
-type OsuApiMatch = {
+export type OsuApiMatch = {
   name: string;
   game: {};
   match: OsuApiMatch;
@@ -7,13 +7,13 @@ type OsuApiMatch = {
   events: OsuApiEvent[];
 };
 
-type OsuApiScore = {
+export type OsuApiScore = {
   user_id: number;
   mods: string[];
   score: number;
 };
 
-type OsuApiEvent = {
+export type OsuApiEvent = {
   detail: {
     type: string;
   };
@@ -29,12 +29,12 @@ type OsuApiEvent = {
   };
 };
 
-type OsuApiUser = {
+export type OsuApiUser = {
   id: number;
   username: string;
 };
 
-type MatchScore = {
+export type MatchScore = {
   user: OsuApiUser;
   score: number;
 }[];

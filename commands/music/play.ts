@@ -33,7 +33,7 @@ dotenv.config({ path: "./.env" });
 
 const cookiesBase64 = process.env.YTCOOKIE || "";
 const cookiesJson = Buffer.from(cookiesBase64, "base64").toString("utf-8");
-const cookies = JSON.parse(cookiesJson);
+const cookies = cookiesJson && JSON.parse(cookiesJson);
 
 function isValidHttpUrl(string: string) {
   let url;
@@ -360,7 +360,7 @@ export default {
         .setRequired(true)
     )
     .setContexts([InteractionContextType.Guild]),
-    
+
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("url-or-search")!;
     console.log(`${interaction.user.username} used /play ${option1}`);

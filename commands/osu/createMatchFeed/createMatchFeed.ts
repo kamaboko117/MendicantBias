@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import { Mendicant } from "../../../classes/Mendicant";
 import { getMatch } from "./helpers/api";
+import { OsuApiMatch } from "./helpers/types";
 import { createMatchScore, getFields, skipWarmupEvents } from "./helpers/utils";
 
 export default {
@@ -49,6 +50,7 @@ export default {
     const matchScore = createMatchScore(users);
 
     const fields: APIEmbedField[] = getFields(events, users, matchScore);
+    console.log(fields);
 
     const embed = new EmbedBuilder()
       .setTitle(match.name)
