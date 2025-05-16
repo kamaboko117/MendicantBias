@@ -1,7 +1,15 @@
 import { APIEmbedField } from "discord.js";
-import { MatchScore, OsuApiEvent, OsuApiScore, OsuApiUser } from "./types";
+import { MatchScore, OsuApiEvent, OsuApiScore, OsuApiUser } from "../types";
 
 const updateMatchScore = (matchScore: MatchScore, scores: OsuApiScore[]) => {
+  if (
+    scores[0].mode === "catch" &&
+    scores.every((score) => score.score < 300000)
+  ) {
+    // assume players are playing DODGE THE BEAT
+    scores[0].score = -scores[0].score;
+    scores[1].score = -scores[1].score;
+  }
   if (scores[0].score > scores[1].score) {
     const user = matchScore.find((s) => s.user.id === scores[0].user_id);
     if (user) {
@@ -20,7 +28,7 @@ const printScore = (matchScore: MatchScore) => {
   return `${score[0]} - ${score[1]}`;
 };
 
-export const getFields = (
+export const getEventFields = (
   events: OsuApiEvent[],
   users: OsuApiUser[],
   matchScore: MatchScore
@@ -70,32 +78,7 @@ export const getFields = (
     });
   }
 
+  fields.push({ name: "\u200B", value: "\u200B" });
+
   return fields;
-};
-
-export const createMatchScore = (users: OsuApiUser[]) => {
-  return users.map((user) => ({
-    user: user,
-    score: 0,
-  }));
-};
-
-export const skipWarmupEvents = (
-  events: OsuApiEvent[],
-  skip: number
-): OsuApiEvent[] => {
-  const warmupEvents: OsuApiEvent[] = [];
-  let warmupCount = 0;
-
-  for (const event of events) {
-    if (event.detail.type === "other" && event.game) {
-      warmupCount++;
-    }
-
-    if (warmupCount > skip) {
-      warmupEvents.push(event);
-    }
-  }
-
-  return warmupEvents;
 };

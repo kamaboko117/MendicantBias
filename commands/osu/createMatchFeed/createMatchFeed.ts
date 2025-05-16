@@ -1,13 +1,23 @@
-import { APIEmbedField } from "discord-api-types/v9";
 import {
+  APIEmbedField,
   ChatInputCommandInteraction,
   EmbedBuilder,
+  ModalSubmitInteraction,
   SlashCommandBuilder,
 } from "discord.js";
 import { Mendicant } from "../../../classes/Mendicant";
 import { getMatch } from "./helpers/api";
 import { OsuApiMatch } from "./helpers/types";
-import { createMatchScore, getFields, skipWarmupEvents } from "./helpers/utils";
+import { getConclusionField } from "./helpers/utils/getConclusionFields";
+import { getDraftFields } from "./helpers/utils/getDraftFields";
+import { getEventFields } from "./helpers/utils/getEventFields";
+import {
+  createDraft,
+  createMatchScore,
+  getActiveUsers,
+  skipWarmupEvents,
+} from "./helpers/utils/utils";
+import { getModal } from "./matchFeedModal";
 
 export default {
   data: new SlashCommandBuilder()
@@ -47,21 +57,41 @@ export default {
 
     const { match, users } = data;
     const events = skipWarmupEvents(data.events, skip);
-    const matchScore = createMatchScore(users);
+    const scores = events.map((event) => event.game.scores).flat();
+    const players = getActiveUsers(users, scores);
 
-    const fields: APIEmbedField[] = getFields(events, users, matchScore);
-    console.log(fields);
+    await interaction.showModal(getModal(players, match.name));
+
+    const filter = (i: ModalSubmitInteraction) =>
+      i.customId === "match-feed-form" && i.user.id === interaction.user.id;
+
+    const submitted = await interaction.awaitModalSubmit({
+      filter,
+      time: 60_000,
+    });
+
+    const { fields } = submitted;
+
+    const draft = createDraft(players, fields);
+    const matchScore = createMatchScore(players);
+
+    const eventFields: APIEmbedField[] = getEventFields(
+      events,
+      players,
+      matchScore
+    );
+    const draftFields = getDraftFields(draft);
+    const conclusionField = getConclusionField(matchScore);
 
     const embed = new EmbedBuilder()
       .setTitle(match.name)
       .setURL(`https://osu.ppy.sh/community/matches/${matchId}`)
       .setColor(mendicant.color)
-      .addFields(fields)
+      .addFields([draftFields, eventFields, conclusionField].flat())
       .setTimestamp(new Date(match.start_time));
 
-    interaction.reply({
+    submitted.reply({
       embeds: [embed],
-      ephemeral: true,
     });
   },
 };
