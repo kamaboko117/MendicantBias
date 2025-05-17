@@ -11,7 +11,7 @@ export type OsuApiScore = {
   user_id: number;
   mods: string[];
   score: number;
-  mode: "osu" | "taiko" | "catch" | "mania";
+  mode: "osu" | "taiko" | "fruits" | "mania";
 };
 export type OsuApiGame = {
   scores: OsuApiScore[];

@@ -3,7 +3,7 @@ import { MatchScore, OsuApiEvent, OsuApiScore, OsuApiUser } from "../types";
 
 const updateMatchScore = (matchScore: MatchScore, scores: OsuApiScore[]) => {
   if (
-    scores[0].mode === "catch" &&
+    scores[0].mode === "fruits" &&
     scores.every((score) => score.score < 300000)
   ) {
     // assume players are playing DODGE THE BEAT
