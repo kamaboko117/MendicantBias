@@ -65,10 +65,21 @@ export default {
     const filter = (i: ModalSubmitInteraction) =>
       i.customId === "match-feed-form" && i.user.id === interaction.user.id;
 
-    const submitted = await interaction.awaitModalSubmit({
-      filter,
-      time: 60_000,
-    });
+    const submitted = await interaction
+      .awaitModalSubmit({
+        filter,
+        time: 60_000 * 15,
+      })
+      .catch((err) => {
+        interaction.followUp({
+          content: err.toString(),
+          flags: ["Ephemeral"],
+        });
+      });
+
+    if (!submitted) {
+      return;
+    }
 
     const { fields } = submitted;
 
