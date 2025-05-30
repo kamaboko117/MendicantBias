@@ -1,8 +1,8 @@
 import { getVoiceConnection } from "@discordjs/voice";
+import GuildButtonInteraction from "../../classes/GuildButtonInteraction";
+import { Mendicant } from "../../classes/Mendicant";
 import { getQueueMessage } from "../../commands/music/queue";
 import { mendicantShuffle } from "../../commands/music/shuffle";
-import { Mendicant } from "../../classes/Mendicant";
-import GuildButtonInteraction from "../../classes/GuildButtonInteraction";
 
 export default {
   data: {
@@ -29,7 +29,8 @@ export default {
 
     const queue = mendicant.queues.find(
       (queue) => queue.id === interaction.guild.id
-    )?.queue;
+    )?.items;
+
     if (!queue || !queue.length) {
       await interaction.update({
         content: "Queue is empty",

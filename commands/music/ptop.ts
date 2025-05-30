@@ -1,14 +1,18 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import ytdl from "@distube/ytdl-core";
 import { InteractionContextType } from "discord.js";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
-import { mendicantCreateItem, mendicantPlay, mendicantSearch } from "./play";
+import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import { Mendicant } from "../../classes/Mendicant";
+import { mendicantCreateItem } from "./helpers/mendicantCreateItem";
+import { mendicantPlay } from "./helpers/mendicantPlay";
+import { mendicantSearch } from "./helpers/mendicantSearch";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("ptop")
-    .setDescription("plays a video from youtube in voice chat at the top of the queue")
+    .setDescription(
+      "plays a video from youtube in voice chat at the top of the queue"
+    )
     .addStringOption((option) =>
       option
         .setName("url-or-search")
@@ -16,14 +20,14 @@ export default {
         .setRequired(true)
     )
     .setContexts([InteractionContextType.Guild]),
-    
+
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const option1 = interaction.options.getString("url-or-search")!;
     console.log(`${interaction.user.username} used /play ${option1}`);
 
     if (ytdl.validateURL(option1)) {
-      let ID = ytdl.getURLVideoID(option1);
-      let item = await mendicantCreateItem(ID, null);
+      const ID = ytdl.getURLVideoID(option1);
+      const item = await mendicantCreateItem(ID, null);
       if (!item) {
         interaction.reply("Error: Could not create item");
         return;

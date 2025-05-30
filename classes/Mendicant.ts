@@ -1,5 +1,6 @@
 import { Client, ClientOptions, Collection, Interaction } from "discord.js";
 import functions from "../functions/index";
+import { MusicQueue } from "../types/MusicQueue";
 import { Queue } from "./Queue";
 
 export class Mendicant extends Client {
@@ -9,12 +10,13 @@ export class Mendicant extends Client {
   public modals: Collection<string, any>;
   public commandArray: any[];
   public color: number;
-  public queues: any[];
+  public queues: MusicQueue[];
   public voteQueue: Queue;
   public challongeVoteQueue: Queue;
   public timeoutIds: any[];
   public matchCount: number;
   public osuApiUrl: string;
+
   public handleCommands: () => void;
   public handleComponents: () => void;
   public handleEvents: () => void;

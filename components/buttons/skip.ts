@@ -38,9 +38,9 @@ export default {
     //player's event listener on idle will play next resource automatically
     player.stop();
 
-    let queue = mendicant.queues.find(
+    const queue = mendicant.queues.find(
       (queue) => queue.id === interaction.guild.id
-    )?.queue;
+    )?.items;
 
     if (!queue || !queue.length) {
       await interaction.update({

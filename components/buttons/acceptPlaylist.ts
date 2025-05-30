@@ -1,15 +1,8 @@
-import { Mendicant } from "../../classes/Mendicant.js";
-import { mendicantPlay } from "../../commands/music/play";
-// import youtubesearchapi from "youtube-search-api";
 import * as youtubei from "youtubei";
-import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
+import GuildButtonInteraction from "../../classes/GuildButtonInteraction";
+import { Mendicant } from "../../classes/Mendicant";
 import VideoDetails from "../../classes/VideoDetails";
-
-function toSeconds(str: string) {
-  return str.split(":").reduce(function (seconds, v) {
-    return +v + seconds * 60;
-  }, 0);
-}
+import { mendicantPlay } from "../../commands/music/helpers/mendicantPlay";
 
 export const youtubeiGetPlaylist = async (idsplit: string[]) => {
   const youtube = new youtubei.Client();
@@ -28,7 +21,7 @@ export const youtubeiGetPlaylist = async (idsplit: string[]) => {
       videos: {
         items: mix.videos,
       },
-    }
+    };
     return newPlaylist as youtubei.Playlist;
   }
 };
@@ -59,23 +52,8 @@ export default {
   },
   async execute(interaction: GuildButtonInteraction, mendicant: Mendicant) {
     await interaction.deferReply();
-    let idsplit = interaction.customId.split(" ");
-    let index = parseInt(idsplit[2]);
-    // with youtubesearchapi
-    // DOESN'T HANDLE MORE THAN 100 VIDEOS
-    // youtubesearchapi.GetPlaylistData(idsplit[1], 1000).then(async (playlist) => {
-    //   let i = 0;
-    //   for (const video of playlist.items) {
-    //     if (i < index) i++;
-    //     else {
-    //       let videoDetails = new Object();
-    //       videoDetails.id = video.id;
-    //       videoDetails.title = video.title;
-    //       videoDetails.length = toSeconds(video.length.simpleText);
-    //       mendicantPlay(interaction, videoDetails, client, true);
-    //     }
-    //   }
-    // });
+    const idsplit = interaction.customId.split(" ");
+    const index = parseInt(idsplit[2]);
 
     const playlist = await youtubeiGetPlaylist(idsplit);
     mendicantPlayPlaylist(playlist, index, interaction, mendicant);

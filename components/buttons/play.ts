@@ -1,7 +1,7 @@
-import { APIButtonComponentWithCustomId } from "discord.js";
-import { mendicantPlay, mendicantCreateItem } from "../../commands/music/play";
-import { Mendicant } from "../../classes/Mendicant";
 import GuildButtonInteraction from "../../classes/GuildButtonInteraction";
+import { Mendicant } from "../../classes/Mendicant";
+import { mendicantCreateItem } from "../../commands/music/helpers/mendicantCreateItem";
+import { mendicantPlay } from "../../commands/music/helpers/mendicantPlay";
 
 export default {
   data: {
@@ -11,11 +11,13 @@ export default {
     const idsplit = interaction.customId.split(" ");
     const option1 = idsplit[1];
     const option2 = Number(idsplit[2]);
-    let item = await mendicantCreateItem(option1, null);
+    const item = await mendicantCreateItem(option1, null);
+
     if (!item) {
       interaction.channel?.send("Error: Could not create item (3)");
       return;
     }
+
     return mendicantPlay(interaction, item, mendicant, false, option2);
   },
 };

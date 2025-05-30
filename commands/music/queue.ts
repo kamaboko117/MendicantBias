@@ -63,7 +63,7 @@ export function getQueueMessage(
     j++;
   }
   const fields: Array<any> = [];
-  for (const item of items){
+  for (const item of items) {
     fields.push({
       name: item.title,
       value: `${item.length} | [Link](${item.link})`,
@@ -143,7 +143,7 @@ export default {
 
     const queue = mendicant.queues.find(
       (q) => q.id === interaction.guild.id
-    )?.queue;
+    )?.items;
     if (!queue || !queue.length) {
       await interaction.reply({
         content: "Queue is empty",

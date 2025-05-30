@@ -23,7 +23,8 @@ export default {
 
     const queue = mendicant.queues.find(
       (queue) => queue.id === interaction.guild.id
-    )?.queue;
+    )?.items;
+
     if (!queue || !queue.length || connection.state.status === "destroyed") {
       await interaction.update({
         content: "Queue is empty",

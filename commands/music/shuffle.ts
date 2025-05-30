@@ -3,8 +3,9 @@ import { getVoiceConnection } from "@discordjs/voice";
 import { InteractionContextType } from "discord.js";
 import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
 import { Mendicant } from "../../classes/Mendicant";
+import { MusicQueue } from "../../types/MusicQueue";
 
-export function mendicantShuffle(queue: any[]) {
+export function mendicantShuffle(queue: MusicQueue["items"]) {
   const tmpArray = [...queue.slice(1)];
   tmpArray.sort(() => Math.random() - 0.5);
   tmpArray.push(queue[0]);
@@ -37,8 +38,11 @@ export default {
 
     const queue = mendicant.queues.find(
       (q) => q.id === interaction.guild.id
-    )?.queue;
-    mendicantShuffle(queue);
+    )?.items;
+
+    if (queue) {
+      mendicantShuffle(queue);
+    }
 
     await interaction.reply({
       content: "Done",

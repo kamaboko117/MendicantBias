@@ -6,9 +6,9 @@ import {
 } from "@discordjs/voice";
 import { InteractionContextType } from "discord.js";
 import TuneIn from "node-tunein-api";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
-import { mendicantJoin } from "./play";
+import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import { Mendicant } from "../../classes/Mendicant";
+import { mendicantJoin } from "./helpers/mendicantJoin";
 
 const mendicantRadioSearch = async (
   option1: string,

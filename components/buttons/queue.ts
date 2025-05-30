@@ -1,6 +1,6 @@
 import { ButtonInteraction } from "discord.js";
-import { getQueueMessage } from "../../commands/music/queue";
 import { Mendicant } from "../../classes/Mendicant";
+import { getQueueMessage } from "../../commands/music/queue";
 
 export default {
   data: {
@@ -11,7 +11,7 @@ export default {
     const index = Number(idsplit[1]);
     const queue = mendicant.queues.find(
       (q) => q.id === interaction.guild?.id
-    )?.queue;
+    )?.items;
 
     if (!queue || !queue.length) {
       await interaction.update({
