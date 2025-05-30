@@ -8,8 +8,8 @@ import {
 } from "discord.js";
 import dotenv from "dotenv";
 import * as youtubei from "youtubei";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction";
+import type { Mendicant } from "../../classes/Mendicant";
 import { mendicantCreateItem } from "./helpers/mendicantCreateItem";
 import { mendicantPlay } from "./helpers/mendicantPlay";
 import { mendicantSearch } from "./helpers/mendicantSearch";
@@ -34,7 +34,7 @@ export default {
     const playlistFlag = isPlaylist(option1);
 
     if (playlistFlag) {
-      let playlistID = getPlaylistId(option1);
+      const playlistID = getPlaylistId(option1);
       console.log("playlist");
       console.log(`URL: ${option1} ID: ${playlistID}`);
 

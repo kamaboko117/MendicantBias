@@ -1,6 +1,11 @@
-import { ChatInputCommandInteraction, Guild, GuildMember } from "discord.js";
+import type {
+  ChatInputCommandInteraction,
+  Guild,
+  GuildMember,
+} from "discord.js";
 
-export default interface GuildCommandInteraction extends ChatInputCommandInteraction<'raw' | 'cached'> {
+export interface GuildCommandInteraction
+  extends ChatInputCommandInteraction<"raw" | "cached"> {
   guild: Guild;
   member: GuildMember;
 }

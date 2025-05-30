@@ -1,13 +1,12 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+import type { CommandInteraction } from "discord.js";
 import Tournament from "../../schemas/tournament";
-import { CommandInteraction } from "discord.js";
-import { Mendicant } from "../../classes/Mendicant";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("purge-tourney")
     .setDescription("Delete all tourneys from database"),
-  async execute(interaction: CommandInteraction, mendicant: Mendicant) {
+  async execute(interaction: CommandInteraction) {
     if (interaction.member?.user.id !== "180611811412803584") {
       await interaction.reply("forbidden");
       return;

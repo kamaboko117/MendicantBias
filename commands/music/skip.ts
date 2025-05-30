@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getVoiceConnection } from "@discordjs/voice";
 import { InteractionContextType } from "discord.js";
-import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction";
 import type { Mendicant } from "../../classes/Mendicant";
 
 export default {

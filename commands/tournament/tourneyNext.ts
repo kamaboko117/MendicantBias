@@ -7,7 +7,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import mongoose from "mongoose";
-import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction.js";
 import type { Mendicant } from "../../classes/Mendicant.js";
 import Match from "../../schemas/match";
 import type { IRound } from "../../schemas/round";

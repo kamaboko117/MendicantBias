@@ -1,6 +1,7 @@
-import { ButtonInteraction, Guild, GuildMember } from "discord.js";
+import type { ButtonInteraction, Guild, GuildMember } from "discord.js";
 
-export default interface GuildButtonInteraction extends ButtonInteraction<'raw' | 'cached'> {
+export interface GuildButtonInteraction
+  extends ButtonInteraction<"raw" | "cached"> {
   guild: Guild;
   member: GuildMember;
 }

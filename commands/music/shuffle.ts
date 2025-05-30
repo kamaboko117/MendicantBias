@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getVoiceConnection } from "@discordjs/voice";
 import { InteractionContextType } from "discord.js";
-import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction";
 import type { Mendicant } from "../../classes/Mendicant";
 import type { MusicQueue } from "../../types/MusicQueue";
 
@@ -10,9 +10,8 @@ export function mendicantShuffle(queue: MusicQueue["items"]) {
   tmpArray.sort(() => Math.random() - 0.5);
   tmpArray.push(queue[0]);
   queue.length = 0;
-  while (tmpArray.length) {
-    queue.push(tmpArray.pop());
-  }
+
+  queue.push(...tmpArray);
 }
 
 export default {

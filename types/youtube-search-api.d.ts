@@ -1,1 +1,1 @@
-declare module 'youtube-search-api';
+declare module "youtube-search-api";

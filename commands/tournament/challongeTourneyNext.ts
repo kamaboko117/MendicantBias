@@ -7,11 +7,15 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import mongoose from "mongoose";
-import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction.js";
 import type { Mendicant } from "../../classes/Mendicant.js";
 import ChallongeMatch from "../../schemas/challongeMatch";
 import type { IChallongeTournament } from "../../schemas/challongeTournament";
 import ChallongeTournament from "../../schemas/challongeTournament";
+import type {
+  ChallongeMatchType,
+  ChallongeParticipant,
+} from "../../types/challonge.js";
 
 const ChallongeAPI = `https://api.challonge.com/v1/`;
 const ChallongeAPIKey = process.env.CHALLONGE_KEY;
@@ -38,29 +42,25 @@ const challongeGetMatches = async (tourneyID: number) => {
   )
     .then((response) => response.json())
     .then((data) => {
-      return data;
+      return data.map(() => {
+        return data.match;
+      }) as ChallongeMatchType[];
     });
 };
 
 const challongeGetMatchesSorted = async (tourneyID: number) => {
   const matches = await challongeGetMatches(tourneyID);
   // there can sometimes be matches with a null suggested_play_order, we remove these from the array
-  const matchesFiltered = matches.filter(
-    (match: { match: { suggested_play_order: number } }) =>
-      match.match.suggested_play_order
-  );
+  const matchesFiltered = matches.filter((match) => match.suggested_play_order);
   // challonge may give us a bracket reset match marked as "optional"
   // this is not supposed to even be in this tournament format so we remove it
   const matchesFilteredFiltered = matchesFiltered.filter(
-    (match: { match: { optional: boolean } }) => !match.match.optional
+    (match) => !match.optional
   );
 
   // sort the matches by recommended play order
   matchesFilteredFiltered.sort(
-    (
-      a: { match: { suggested_play_order: number } },
-      b: { match: { suggested_play_order: number } }
-    ) => a.match.suggested_play_order - b.match.suggested_play_order
+    (a, b) => a.suggested_play_order - b.suggested_play_order
   );
   return matchesFilteredFiltered;
 };
@@ -77,22 +77,21 @@ const challongeGetPlayers = async (tourneyID: number) => {
   )
     .then((response) => response.json())
     .then((data) => {
-      return data;
+      return data.map((item: { participant: ChallongeParticipant }) => {
+        return item.participant;
+      });
     });
 };
 
 const showFinalResults = async (
   interaction: GuildCommandInteraction,
-  players: any,
+  players: ChallongeParticipant[],
   mendicant: Mendicant,
   tourney: Tourney
 ) => {
   const matches = await challongeGetMatchesSorted(tourney.id);
-  const winner = matches[matches.length - 1].match.winner_id;
-  const winnerName = players.find(
-    (player: { participant: { id: number } }) =>
-      player.participant.id === winner
-  ).participant.name;
+  const winner = matches[matches.length - 1].winner_id;
+  const winnerName = players.find((player) => player.id === winner)?.name || "";
   const winnerEmote = winnerName.split(" | ")[1];
   const emote = mendicant.emojis.cache.find(
     (emoji) => emoji.id === winnerEmote.split(":")[2].slice(0, -1)
@@ -109,8 +108,8 @@ const showFinalResults = async (
 const showPreviousResults = async (
   interaction: GuildCommandInteraction,
   mendicant: Mendicant,
-  matches: any,
-  players: any,
+  matches: ChallongeMatchType[],
+  players: ChallongeParticipant[],
   tourneyID: number,
   tourney: Tourney
 ) => {
@@ -120,7 +119,7 @@ const showPreviousResults = async (
   // skip completed matches
   while (
     matches[currentMatchIndex] &&
-    matches[currentMatchIndex].match.state === "complete" &&
+    matches[currentMatchIndex].state === "complete" &&
     currentMatchIndex < matches.length
   ) {
     currentMatchIndex++;
@@ -168,11 +167,10 @@ const showPreviousResults = async (
 
     const winner_id = players.find(
       // player name is in the format "name | emote"
-      (player: { participant: { name: string } }) =>
-        player.participant.name.split(" | ")[1] === challongeMatchProfile.winner
-    ).participant.id;
+      (player) => player.name.split(" | ")[1] === challongeMatchProfile.winner
+    )?.id;
     await fetch(
-      `${ChallongeAPI}tournaments/${tourneyID}/matches/${matches[currentMatchIndex].match.id}.json?api_key=${ChallongeAPIKey}`,
+      `${ChallongeAPI}tournaments/${tourneyID}/matches/${matches[currentMatchIndex].id}.json?api_key=${ChallongeAPIKey}`,
       {
         method: "PUT",
         headers: {
@@ -209,7 +207,7 @@ const showPreviousResults = async (
 const updateRoundTitle = (
   interaction: GuildCommandInteraction,
   round: number,
-  matches: any,
+  matches: ChallongeMatchType[],
   currentMatchIndex: number
 ) => {
   if (currentMatchIndex === matches.length - 1) {
@@ -225,8 +223,8 @@ const showNextMatches = async (
   interaction: GuildCommandInteraction,
   tourney: Tourney,
   currentMatchIndex: number,
-  matches: any,
-  players: any
+  matches: ChallongeMatchType[],
+  players: ChallongeParticipant[]
 ) => {
   let round = 0;
   tourney.open = true;
@@ -238,27 +236,17 @@ const showNextMatches = async (
     currentMatchIndex++
   ) {
     const match = matches[currentMatchIndex];
-    if (
-      !match ||
-      match.match.state === "complete" ||
-      match.match.state === "pending"
-    ) {
+    if (!match || match.state === "complete" || match.state === "pending") {
       break;
     }
-    if (round !== matches[currentMatchIndex].match.round) {
-      round = matches[currentMatchIndex].match.round;
+    if (round !== matches[currentMatchIndex].round) {
+      round = matches[currentMatchIndex].round;
       updateRoundTitle(interaction, round, matches, currentMatchIndex);
     }
-    const player1 = players.find(
-      (player: { participant: { id: number } }) =>
-        player.participant.id === match.match.player1_id
-    );
-    const emote1 = player1.participant.name.split(" | ")[1];
-    const player2 = players.find(
-      (player: { participant: { id: number } }) =>
-        player.participant.id === match.match.player2_id
-    );
-    const emote2 = player2.participant.name.split(" | ")[1];
+    const player1 = players.find((player) => player.id === match.player1_id);
+    const emote1 = player1?.name.split(" | ")[1];
+    const player2 = players.find((player) => player.id === match.player2_id);
+    const emote2 = player2?.name.split(" | ")[1];
     const challongeMatchProfile = new ChallongeMatch({
       _id: new mongoose.Types.ObjectId(),
       matchId: `${tourney.id}:${currentMatchIndex + 1}`,

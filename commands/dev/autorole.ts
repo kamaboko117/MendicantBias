@@ -1,12 +1,11 @@
+import type { CommandInteraction } from "discord.js";
 import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  CommandInteraction,
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
-import { Mendicant } from "../../classes/Mendicant";
 
 export default {
   data: new SlashCommandBuilder()
@@ -14,18 +13,18 @@ export default {
     .setDescription("create autorole button")
     .setContexts([InteractionContextType.Guild]),
 
-  async execute(interaction: CommandInteraction, mendicant: Mendicant) {
+  async execute(interaction: CommandInteraction) {
     const button1 = new ButtonBuilder()
       .setCustomId("autorole")
       .setStyle(ButtonStyle.Secondary)
       .setEmoji("✅");
-      
 
     await interaction.reply({
-      components: [new ActionRowBuilder<ButtonBuilder>().addComponents(button1)],
+      components: [
+        new ActionRowBuilder<ButtonBuilder>().addComponents(button1),
+      ],
     });
   },
 
-  usage:
-    "",
+  usage: "",
 };

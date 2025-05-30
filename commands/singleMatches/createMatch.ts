@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 import emojiRegex from "emoji-regex";
 import mongoose from "mongoose";
-import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction.js";
 import type { Mendicant } from "../../classes/Mendicant.js";
 import Match from "../../schemas/match";
 

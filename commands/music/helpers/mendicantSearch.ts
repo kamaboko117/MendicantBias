@@ -1,14 +1,17 @@
+import type { APIEmbedField } from "discord.js";
 import {
   ActionRowBuilder,
-  APIEmbedField,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
 import youtubesearchapi from "youtube-search-api";
-import GuildCommandInteraction from "../../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../../classes/Mendicant";
+import type { GuildCommandInteraction } from "../../../classes/GuildCommandInteraction";
+import type { Mendicant } from "../../../classes/Mendicant";
 
+type YtsearchResult = {
+  id: string;
+};
 export const mendicantSearch = async (
   option1: string,
   interaction: GuildCommandInteraction,
@@ -29,7 +32,7 @@ export const mendicantSearch = async (
   }
 
   const titles: string[] = results.items.map(
-    (result: { title: any }, i: number) => `**${i + 1}:** ${result.title}`
+    (result: { title: string }, i: number) => `**${i + 1}:** ${result.title}`
   );
 
   const fields: APIEmbedField[] = titles.map((title) => ({
@@ -42,13 +45,15 @@ export const mendicantSearch = async (
     .setColor(mendicant.color)
     .addFields(fields);
 
-  const buttons = results.items.slice(0, 5).map((result: any, i: number) => {
-    const customID = `P ${result.id} ${index ? index : "0"}`.substring(0, 99);
-    return new ButtonBuilder()
-      .setCustomId(customID)
-      .setStyle(ButtonStyle.Secondary)
-      .setLabel(`${i + 1}`);
-  });
+  const buttons = results.items
+    .slice(0, 5)
+    .map((result: YtsearchResult, i: number) => {
+      const customID = `P ${result.id} ${index ? index : "0"}`.substring(0, 99);
+      return new ButtonBuilder()
+        .setCustomId(customID)
+        .setStyle(ButtonStyle.Secondary)
+        .setLabel(`${i + 1}`);
+    });
 
   await interaction.reply({
     ephemeral: false,

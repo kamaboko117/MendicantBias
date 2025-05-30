@@ -4,7 +4,7 @@ export const isValidHttpUrl = (string: string) => {
   try {
     const url = new URL(string);
     return url.protocol === "http:" || url.protocol === "https:";
-  } catch (_) {
+  } catch {
     return false;
   }
 };
@@ -19,6 +19,7 @@ export const getPlaylistId = (url: string) => {
   const keyword = url.includes("&list=") ? "&list=" : "?list=";
   const index = url.indexOf(keyword);
   const end = url.indexOf("&", index + 1);
+
   console.log(`index: ${index}`);
   return end === -1
     ? url.substring(index + keyword.length)

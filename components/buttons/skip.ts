@@ -1,5 +1,5 @@
 import { getVoiceConnection } from "@discordjs/voice";
-import type GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
+import type { GuildButtonInteraction } from "../../classes/GuildButtonInteraction.js";
 import type { Mendicant } from "../../classes/Mendicant.js";
 import { getQueueMessage } from "../../commands/music/queue";
 

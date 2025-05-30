@@ -4,8 +4,8 @@ import {
   joinVoiceChannel,
   VoiceConnectionStatus,
 } from "@discordjs/voice";
-import { Guild, VoiceState } from "discord.js";
-import { Mendicant } from "../../../classes/Mendicant";
+import type { Guild, VoiceState } from "discord.js";
+import type { Mendicant } from "../../../classes/Mendicant";
 
 export const mendicantJoin = (
   voice: VoiceState,
@@ -21,7 +21,7 @@ export const mendicantJoin = (
   const newConnection = joinVoiceChannel({
     channelId: voice.channelId as string,
     guildId: guild.id,
-    adapterCreator: guild.voiceAdapterCreator as any,
+    adapterCreator: guild.voiceAdapterCreator,
   });
 
   if (!mendicant.queues.find((queue) => queue.id === guild.id)) {
@@ -48,7 +48,7 @@ export const mendicantJoin = (
         ]);
         // Seems to be reconnecting to a new channel - ignore disconnect
       }
-    } catch (error) {
+    } catch {
       // Seems to be a real disconnect which SHOULDN'T be recovered from
       let logMsg = `Connection destroyed`;
       try {

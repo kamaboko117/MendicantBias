@@ -1,17 +1,17 @@
+import type { VoiceConnection } from "@discordjs/voice";
 import {
   AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
   StreamType,
-  VoiceConnection,
 } from "@discordjs/voice";
 import ytdl from "@distube/ytdl-core";
 import dotenv from "dotenv";
-import GuildButtonInteraction from "../../../classes/GuildButtonInteraction";
-import GuildCommandInteraction from "../../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../../classes/Mendicant";
-import VideoDetails from "../../../classes/VideoDetails";
-import { MusicQueue } from "../../../types/MusicQueue";
+import type { GuildButtonInteraction } from "../../../classes/GuildButtonInteraction";
+import type { GuildCommandInteraction } from "../../../classes/GuildCommandInteraction";
+import type { Mendicant } from "../../../classes/Mendicant";
+import type VideoDetails from "../../../classes/VideoDetails";
+import type { MusicQueue } from "../../../types/MusicQueue";
 import { mendicantJoin } from "./mendicantJoin";
 import { mendicantMove } from "./mendicantMove";
 dotenv.config({ path: "./.env" });

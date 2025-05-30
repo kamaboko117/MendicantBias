@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
 import type { APIEmbedField } from "discord.js";
-import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction.js";
 import type { Mendicant } from "../../classes/Mendicant.js";
 import type { Command } from "../../types/Command.js";
 import commands from "../index";

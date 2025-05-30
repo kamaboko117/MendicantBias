@@ -10,7 +10,7 @@ import {
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
-import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction";
 import type { Mendicant } from "../../classes/Mendicant";
 import type { MusicQueue } from "../../types/MusicQueue";
 

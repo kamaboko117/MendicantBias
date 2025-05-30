@@ -34,8 +34,9 @@ export default (mendicant: Mendicant) => {
       console.error(error);
     }
     Object.keys(privateCommandsList).forEach((key) => {
-      const command =
-        privateCommandsList[key as keyof typeof privateCommandsList];
+      const command = privateCommandsList[
+        key as keyof typeof privateCommandsList
+      ] as Command;
       mendicant.commands.set(command.data.name, command);
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

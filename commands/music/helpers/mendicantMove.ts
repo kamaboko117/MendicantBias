@@ -1,4 +1,10 @@
-export const mendicantMove = (queue: any[], src: number, dst: number) => {
+import type { MusicQueue } from "../../../types/MusicQueue";
+
+export const mendicantMove = (
+  queue: MusicQueue["items"],
+  src: number,
+  dst: number
+) => {
   console.log(`mendicantMove(${src}, ${dst})`);
   if (
     src === dst ||

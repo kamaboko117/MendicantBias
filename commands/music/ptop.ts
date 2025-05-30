@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import ytdl from "@distube/ytdl-core";
 import { InteractionContextType } from "discord.js";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction";
+import type { Mendicant } from "../../classes/Mendicant";
 import { mendicantCreateItem } from "./helpers/mendicantCreateItem";
 import { mendicantPlay } from "./helpers/mendicantPlay";
 import { mendicantSearch } from "./helpers/mendicantSearch";

@@ -1,5 +1,5 @@
 import { getVoiceConnection } from "@discordjs/voice";
-import type GuildButtonInteraction from "../../classes/GuildButtonInteraction";
+import type { GuildButtonInteraction } from "../../classes/GuildButtonInteraction";
 
 export default {
   data: {

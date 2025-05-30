@@ -1,5 +1,5 @@
 import * as youtubei from "youtubei";
-import type GuildButtonInteraction from "../../classes/GuildButtonInteraction";
+import type { GuildButtonInteraction } from "../../classes/GuildButtonInteraction";
 import type { Mendicant } from "../../classes/Mendicant";
 import VideoDetails from "../../classes/VideoDetails";
 import { mendicantPlay } from "../../commands/music/helpers/mendicantPlay";

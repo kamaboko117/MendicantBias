@@ -1,4 +1,4 @@
-import type GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
+import type { GuildButtonInteraction } from "../../classes/GuildButtonInteraction.js";
 import type { Mendicant } from "../../classes/Mendicant.js";
 import Tournament from "../../schemas/tournament";
 

@@ -6,7 +6,7 @@ import {
 } from "@discordjs/voice";
 import { InteractionContextType } from "discord.js";
 import TuneIn from "node-tunein-api";
-import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import type { GuildCommandInteraction } from "../../classes/GuildCommandInteraction";
 import type { Mendicant } from "../../classes/Mendicant";
 import { mendicantJoin } from "./helpers/mendicantJoin";
 
