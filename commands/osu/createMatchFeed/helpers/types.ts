@@ -1,6 +1,6 @@
 export type OsuApiMatch = {
   name: string;
-  game: {};
+  game: object;
   match: OsuApiMatch;
   users: OsuApiUser[];
   start_time: string;

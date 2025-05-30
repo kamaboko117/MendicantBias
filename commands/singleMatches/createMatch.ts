@@ -1,16 +1,15 @@
+import type { GuildEmoji } from "discord.js";
 import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
-  GuildEmoji,
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
 import emojiRegex from "emoji-regex";
 import mongoose from "mongoose";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import Match from "../../schemas/match";
 
 function isUnicode(emoji: GuildEmoji | string): emoji is string {
@@ -50,23 +49,19 @@ export default {
     let emote1: GuildEmoji | undefined | string = mendicant.emojis.cache.find(
       (emoji) => emoji.name === option1.split(":")[1]
     );
-    let unicode1 = false;
     let emote2: GuildEmoji | undefined | string = mendicant.emojis.cache.find(
       (emoji) => emoji.name === option2.split(":")[1]
     );
-    let unicode2 = false;
 
     //if no emotes are found in cache, we check if the emotes are unicode
     if (!emote1) {
-      unicode1 = true;
-      let unicodeEmoji1 = re1.exec(option1);
+      const unicodeEmoji1 = re1.exec(option1);
       if (unicodeEmoji1) {
         emote1 = unicodeEmoji1[0];
       }
     }
     if (!emote2) {
-      unicode2 = true;
-      let unicodeEmoji2 = re2.exec(option2);
+      const unicodeEmoji2 = re2.exec(option2);
       if (unicodeEmoji2) {
         emote2 = unicodeEmoji2[0];
       }
@@ -96,12 +91,6 @@ export default {
     });
     await matchProfile.save().catch(console.error);
     mendicant.matchCount++;
-
-    //create embed
-    const embed = new EmbedBuilder()
-      .setTitle(`Match ${matchProfile.matchId}`)
-      .setColor(mendicant.color)
-      .setURL("https://challonge.com");
 
     //create buttons
     const button1 = new ButtonBuilder()

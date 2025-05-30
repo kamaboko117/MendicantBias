@@ -1,13 +1,13 @@
-import { ButtonInteraction, GuildMember, Role } from "discord.js";
-import { Mendicant } from "../../classes/Mendicant";
+import type { ButtonInteraction, Role } from "discord.js";
+import { GuildMember } from "discord.js";
 
 export default {
   data: {
     name: "autorole",
   },
-  async execute(interaction: ButtonInteraction, mendicant: Mendicant) {
+  async execute(interaction: ButtonInteraction) {
     if (interaction.member instanceof GuildMember) {
-      let role: Role | undefined = interaction.member.guild.roles.cache.find(
+      const role: Role | undefined = interaction.member.guild.roles.cache.find(
         (role: Role) => role.name === "emotedokai"
       );
       if (role) {

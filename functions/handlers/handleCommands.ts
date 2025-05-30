@@ -1,9 +1,9 @@
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { Mendicant } from "../../classes/Mendicant";
+import type { Mendicant } from "../../classes/Mendicant";
 import commandsList from "../../commands/index";
 import privateCommandsList from "../../commands/private/index";
-import { Command } from "../../types/Command";
+import type { Command } from "../../types/Command";
 const devGuildId = "708111231789301891";
 
 export default (mendicant: Mendicant) => {
@@ -38,8 +38,10 @@ export default (mendicant: Mendicant) => {
         privateCommandsList[key as keyof typeof privateCommandsList];
       mendicant.commands.set(command.data.name, command);
     });
-    let privateCommandArray: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const privateCommandArray: any[] = [];
     Object.keys(privateCommandsList).forEach((key) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const command: any =
         privateCommandsList[key as keyof typeof privateCommandsList];
       privateCommandArray.push(command.data.toJSON());

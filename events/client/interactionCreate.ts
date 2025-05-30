@@ -1,5 +1,5 @@
-import { BaseInteraction } from "discord.js";
-import { Mendicant } from "../../classes/Mendicant";
+import type { BaseInteraction } from "discord.js";
+import type { Mendicant } from "../../classes/Mendicant";
 
 export default {
   name: "interactionCreate",
@@ -27,7 +27,7 @@ export default {
       const { customId } = interaction;
       const button = buttons.get(customId);
       if (!button) {
-        let type = customId.split(" ")[0];
+        const type = customId.split(" ")[0];
         if (type === "T") {
           await buttons.get("tourney").execute(interaction, mendicant);
         } else if (type === "C") {

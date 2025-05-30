@@ -1,12 +1,11 @@
-import { Mendicant } from "../../classes/Mendicant";
-import GuildButtonInteraction from "../../classes/GuildButtonInteraction";
 import { getVoiceConnection } from "@discordjs/voice";
+import type GuildButtonInteraction from "../../classes/GuildButtonInteraction";
 
 export default {
   data: {
     name: "pause",
   },
-  async execute(interaction: GuildButtonInteraction, mendicant: Mendicant) {
+  async execute(interaction: GuildButtonInteraction) {
     let msg = "";
     const voice = interaction.member?.voice;
     if (!voice) {

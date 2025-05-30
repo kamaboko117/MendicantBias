@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
-import { IMatch, matchSchema } from "./match";
+import type { IMatch } from "./match";
+import { matchSchema } from "./match";
 
 export interface IRound {
   _id: string;

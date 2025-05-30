@@ -1,5 +1,4 @@
-import { ModalSubmitInteraction } from "discord.js";
-import { Mendicant } from "../../classes/Mendicant";
+import type { ModalSubmitInteraction } from "discord.js";
 
 // match feed creation submit is handled in a separate collector
 // so that context can be kept,
@@ -12,7 +11,7 @@ export default {
   data: {
     name: "match-feed-form",
   },
-  async execute(interaction: ModalSubmitInteraction, mendicant: Mendicant) {
+  async execute(interaction: ModalSubmitInteraction) {
     // wait 2sec
     await new Promise((resolve) => setTimeout(resolve, 2000));
 

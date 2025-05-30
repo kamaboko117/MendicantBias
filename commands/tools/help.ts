@@ -1,11 +1,14 @@
 import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
-import { APIEmbedField } from "discord.js";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
-import { Command } from "../../types/Command.js";
+import type { APIEmbedField } from "discord.js";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
+import type { Command } from "../../types/Command.js";
 import commands from "../index";
 
-function listCommands(interaction: GuildCommandInteraction, mendicant: Mendicant) {
+function listCommands(
+  interaction: GuildCommandInteraction,
+  mendicant: Mendicant
+) {
   mendicant.logInteraction(interaction);
 
   const fields: APIEmbedField[] = Object.keys(commands).map((key) => {
@@ -13,7 +16,10 @@ function listCommands(interaction: GuildCommandInteraction, mendicant: Mendicant
     const field: APIEmbedField = {
       name: `${key}`,
       value: Object.keys(group)
-        .map((key) => `\`${(group[key as keyof typeof group] as Command).data.name}\``)
+        .map(
+          (key) =>
+            `\`${(group[key as keyof typeof group] as Command).data.name}\``
+        )
         .join(", "),
     };
     return field;

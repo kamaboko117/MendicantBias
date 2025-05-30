@@ -1,12 +1,15 @@
-import { StringSelectMenuInteraction } from "discord.js";
+import type { StringSelectMenuInteraction } from "discord.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import Match from "../../schemas/match";
-import { Mendicant } from "../../classes/Mendicant.js";
 
 export default {
   data: {
     name: `deleteMenu`,
   },
-  async execute(interaction: StringSelectMenuInteraction, mendicant: Mendicant) {
+  async execute(
+    interaction: StringSelectMenuInteraction,
+    mendicant: Mendicant
+  ) {
     const matchIdToDelete = interaction.values[0];
     await Match.deleteOne({ matchId: matchIdToDelete });
 

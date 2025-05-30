@@ -1,13 +1,12 @@
-import {
+import type {
   APIEmbedField,
   ChatInputCommandInteraction,
-  EmbedBuilder,
   ModalSubmitInteraction,
-  SlashCommandBuilder,
 } from "discord.js";
-import { Mendicant } from "../../../classes/Mendicant";
+import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import type { Mendicant } from "../../../classes/Mendicant";
 import { getMatch } from "./helpers/api";
-import { OsuApiMatch } from "./helpers/types";
+import type { OsuApiMatch } from "./helpers/types";
 import { getConclusionField } from "./helpers/utils/getConclusionFields";
 import { getDraftFields } from "./helpers/utils/getDraftFields";
 import { getEventFields } from "./helpers/utils/getEventFields";

@@ -1,5 +1,5 @@
-import { ModalSubmitFields } from "discord.js";
-import {
+import type { ModalSubmitFields } from "discord.js";
+import type {
   MatchScore,
   OsuApiEvent,
   OsuApiGameEvent,

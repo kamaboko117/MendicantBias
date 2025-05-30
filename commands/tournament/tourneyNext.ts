@@ -7,25 +7,18 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import mongoose from "mongoose";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import Match from "../../schemas/match";
-import Round, { IRound } from "../../schemas/round";
-import Tournament, { ITournament } from "../../schemas/tournament";
+import type { IRound } from "../../schemas/round";
+import Round from "../../schemas/round";
+import type { ITournament } from "../../schemas/tournament";
+import Tournament from "../../schemas/tournament";
 
 const maxMatches = 16;
 
-type Tournament = mongoose.Document<unknown, {}, ITournament> &
+type Tournament = mongoose.Document<unknown, unknown, ITournament> &
   ITournament & { _id: mongoose.Types.ObjectId };
-
-// export const generateId = (size = 32) => {
-//     const bytesArray = new Uint8Array(size / 2)
-
-//     window.crypto.getRandomValues(bytesArray) // search alternative to this
-//     return [...bytesArray]
-//       .map((number) => number.toString(16).padStart(2, '0'))
-//       .join('')
-//   }
 
 async function showResults(
   tourney: Tournament,
@@ -44,7 +37,7 @@ async function showResults(
   let componentArray = [];
   for (; i < count; i++) {
     j++;
-    let match = round.matches[i];
+    const match = round.matches[i];
     match.open = false;
     match.winner =
       !match.playerLeft || match.votesRight > match.votesLeft
@@ -181,7 +174,7 @@ async function createLB4(tourney: Tournament, round: IRound) {
   let i = 0;
 
   for (i = 0; i < round.numPlayers / 2 / 2; i++) {
-    let match = new Match({
+    const match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1 + tourney.currentMatch,
       playerLeft: prevWB.matches[j - i].loser,
@@ -194,7 +187,7 @@ async function createLB4(tourney: Tournament, round: IRound) {
   }
   j = prevWB.matches.length - 1 + i;
   for (i = round.numPlayers / 2 / 2; i < round.numPlayers / 2; i++) {
-    let match = new Match({
+    const match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1 + tourney.currentMatch,
       playerLeft: prevWB.matches[j - i].loser,
@@ -215,10 +208,10 @@ async function createLB4(tourney: Tournament, round: IRound) {
 async function createLB6(tourney: Tournament, round: IRound) {
   const prevWB = tourney.winnerRounds[tourney.currentWinner];
   const prevLB = tourney.loserRounds[tourney.currentLoser];
-  let j = Math.floor(prevWB.matches.length / 2);
+  const j = Math.floor(prevWB.matches.length / 2);
 
   for (let i = 0; i < Math.floor(round.numPlayers / 2 / 2); i++) {
-    let match = new Match({
+    const match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1 + tourney.currentMatch,
       playerLeft: prevWB.matches[j + i].loser,
@@ -234,7 +227,7 @@ async function createLB6(tourney: Tournament, round: IRound) {
     i < Math.floor(round.numPlayers / 2);
     i++
   ) {
-    let match = new Match({
+    const match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1 + tourney.currentMatch,
       playerLeft: prevWB.matches[i - j].loser,
@@ -257,7 +250,7 @@ async function createLB8(tourney: Tournament, round: IRound) {
   const prevLB = tourney.loserRounds[tourney.currentLoser];
 
   for (let i = 0; i < round.numPlayers / 2; i++) {
-    let match = new Match({
+    const match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1 + tourney.currentMatch,
       playerLeft: prevWB.matches[i].loser,
@@ -280,7 +273,7 @@ async function newRound(tourney: Tournament, prevRound: IRound) {
   //if previous round was winner bracket, next one has to be a loser
   if (prevRound.winnerBracket) {
     console.log(1);
-    let round = new Round({
+    const round = new Round({
       _id: new mongoose.Types.ObjectId(),
       name: `LB${tourney.currentLoser + 1}`,
       winnerBracket: false,
@@ -313,8 +306,8 @@ async function newRound(tourney: Tournament, prevRound: IRound) {
   //if previous round was a minor loser bracket, next one has to be a winner
   else if (prevRound.minor) {
     console.log(2);
-    let RO = tourney.winnerRounds[tourney.currentWinner].matches.length;
-    let round = new Round({
+    const RO = tourney.winnerRounds[tourney.currentWinner].matches.length;
+    const round = new Round({
       _id: new mongoose.Types.ObjectId(),
       name: `RO${RO}`,
       numPlayers: RO,
@@ -322,7 +315,7 @@ async function newRound(tourney: Tournament, prevRound: IRound) {
     });
 
     for (let i = 0; i < round.numPlayers / 2; i++) {
-      let match = new Match({
+      const match = new Match({
         _id: new mongoose.Types.ObjectId(),
         matchId: i + 1 + tourney.currentMatch,
         playerLeft:
@@ -346,7 +339,7 @@ async function newRound(tourney: Tournament, prevRound: IRound) {
   // its the LB finals
   else if (prevRound.numPlayers != 2) {
     console.log(3);
-    let round = new Round({
+    const round = new Round({
       _id: new mongoose.Types.ObjectId(),
       name: `LB${tourney.currentLoser + 1}`,
       numPlayers: tourney.loserRounds[tourney.currentLoser].numPlayers / 2,
@@ -354,7 +347,7 @@ async function newRound(tourney: Tournament, prevRound: IRound) {
       minor: true,
     });
     for (let i = 0; i < round.numPlayers / 2; i++) {
-      let match = new Match({
+      const match = new Match({
         _id: new mongoose.Types.ObjectId(),
         matchId: i + 1 + tourney.currentMatch,
         playerLeft:
@@ -376,14 +369,14 @@ async function newRound(tourney: Tournament, prevRound: IRound) {
 
   //grandFinals
   else {
-    let round = new Round({
+    const round = new Round({
       _id: new mongoose.Types.ObjectId(),
       name: `GRAND FINALS`,
       numPlayers: 2,
       winnerBracket: true,
     });
 
-    let match = new Match({
+    const match = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: 1 + tourney.currentMatch,
       playerLeft: tourney.winnerRounds[tourney.currentWinner].matches[0].winner,
@@ -401,63 +394,6 @@ async function newRound(tourney: Tournament, prevRound: IRound) {
   }
 }
 
-function printNextMatchesCompact(
-  tourney: Tournament,
-  round: IRound,
-  interaction: GuildCommandInteraction
-) {
-  let i = tourney.currentMatch - round.matches[0].matchId + 1;
-  let count = round.matches.length;
-  count = count > maxMatches + i ? maxMatches + i : count;
-  console.log(`i: ${i}, count: ${count}`);
-  let j = 0;
-  let componentArray = [];
-  for (; i < count; i++) {
-    j++;
-    let match = round.matches[i];
-    console.log(match.playerLeft);
-    console.log(match.playerRight);
-    if (match.playerLeft && match.playerRight) {
-      const emote1 = round.matches[i].playerLeft.split(":")[2].slice(0, -1);
-      const emote2 = round.matches[i].playerRight.split(":")[2].slice(0, -1);
-
-      const button1 = new ButtonBuilder()
-        .setCustomId(
-          `T ${tourney._id} ${tourney.currentBracket} ${
-            tourney.currentBracket
-              ? tourney.currentLoser
-              : tourney.currentWinner
-          } ${i} left`
-        )
-        .setStyle(ButtonStyle.Secondary)
-        .setEmoji(emote1);
-
-      const button2 = new ButtonBuilder()
-
-        .setCustomId(
-          `T ${tourney._id} ${tourney.currentBracket} ${
-            tourney.currentBracket
-              ? tourney.currentLoser
-              : tourney.currentWinner
-          } ${i} right`
-        )
-        .setStyle(ButtonStyle.Secondary)
-        .setEmoji(emote2);
-      componentArray.push(
-        new ActionRowBuilder<ButtonBuilder>().addComponents(button1, button2)
-      );
-    } else {
-      interaction.channel!.send(`${i + 1} bye`);
-    }
-    console.log(`i: ${i}`);
-    if ((j === 5 || i + 1 === count) && componentArray.length) {
-      j = 0;
-      interaction.channel!.send({ components: componentArray });
-      componentArray = [];
-    }
-  }
-}
-
 function printNextMatchesFull(
   tourney: Tournament,
   round: IRound,
@@ -469,7 +405,7 @@ function printNextMatchesFull(
   console.log(`i: ${i}, count: ${count}`);
   let componentArray = [];
   for (; i < count; i++) {
-    let match = round.matches[i];
+    const match = round.matches[i];
     console.log(match.playerLeft);
     console.log(match.playerRight);
     if (match.playerLeft && match.playerRight) {
@@ -522,7 +458,7 @@ export default {
       option.setName("name").setDescription("tournament name").setRequired(true)
     )
     .setContexts([InteractionContextType.Guild]),
-    
+
   async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
     const name = interaction.options.getString("name");
 

@@ -1,6 +1,6 @@
 import * as youtubei from "youtubei";
-import GuildButtonInteraction from "../../classes/GuildButtonInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type GuildButtonInteraction from "../../classes/GuildButtonInteraction";
+import type { Mendicant } from "../../classes/Mendicant";
 import VideoDetails from "../../classes/VideoDetails";
 import { mendicantPlay } from "../../commands/music/helpers/mendicantPlay";
 
@@ -36,7 +36,7 @@ export const mendicantPlayPlaylist = async (
   for (const video of playlist.videos.items) {
     if (i < index) i++;
     else {
-      let videoDetails = new VideoDetails(
+      const videoDetails = new VideoDetails(
         video.id,
         video.title,
         video.duration || 0

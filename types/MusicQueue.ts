@@ -1,4 +1,8 @@
 export type MusicQueue = {
   id: string;
-  items: any[];
+  items: {
+    id: string;
+    title: string;
+    length: number;
+  }[];
 };

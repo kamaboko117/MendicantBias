@@ -7,18 +7,17 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import mongoose from "mongoose";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import ChallongeMatch from "../../schemas/challongeMatch";
-import ChallongeTournament, {
-  IChallongeTournament,
-} from "../../schemas/challongeTournament";
+import type { IChallongeTournament } from "../../schemas/challongeTournament";
+import ChallongeTournament from "../../schemas/challongeTournament";
 
 const ChallongeAPI = `https://api.challonge.com/v1/`;
 const ChallongeAPIKey = process.env.CHALLONGE_KEY;
 const maxMatches = 16;
 
-type Tourney = mongoose.Document<unknown, {}, IChallongeTournament> &
+type Tourney = mongoose.Document<unknown, unknown, IChallongeTournament> &
   IChallongeTournament & {
     _id: mongoose.Types.ObjectId;
   };

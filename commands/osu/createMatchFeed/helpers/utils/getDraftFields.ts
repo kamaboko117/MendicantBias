@@ -1,5 +1,5 @@
-import { APIEmbedField } from "discord.js";
-import { Draft } from "../types";
+import type { APIEmbedField } from "discord.js";
+import type { Draft } from "../types";
 
 export const getDraftFields = (draft: Draft) => {
   const roll1 = `**Roll: **${draft.roll1}\n`;

@@ -1,5 +1,10 @@
-import { APIEmbedField } from "discord.js";
-import { MatchScore, OsuApiEvent, OsuApiScore, OsuApiUser } from "../types";
+import type { APIEmbedField } from "discord.js";
+import type {
+  MatchScore,
+  OsuApiEvent,
+  OsuApiScore,
+  OsuApiUser,
+} from "../types";
 
 const updateMatchScore = (matchScore: MatchScore, scores: OsuApiScore[]) => {
   if (

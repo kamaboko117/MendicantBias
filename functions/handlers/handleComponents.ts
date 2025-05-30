@@ -1,4 +1,4 @@
-import { Mendicant } from "../../classes/Mendicant";
+import type { Mendicant } from "../../classes/Mendicant";
 import components from "../../components/index";
 
 export default (mendicant: Mendicant) => {

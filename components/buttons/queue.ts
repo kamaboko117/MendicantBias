@@ -1,5 +1,5 @@
-import { ButtonInteraction } from "discord.js";
-import { Mendicant } from "../../classes/Mendicant";
+import type { ButtonInteraction } from "discord.js";
+import type { Mendicant } from "../../classes/Mendicant";
 import { getQueueMessage } from "../../commands/music/queue";
 
 export default {

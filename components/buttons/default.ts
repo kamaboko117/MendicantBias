@@ -1,7 +1,7 @@
-import { ButtonInteraction } from "discord.js";
+import type { ButtonInteraction } from "discord.js";
 import Match from "../../schemas/match";
-import { Mendicant } from "../../classes/Mendicant";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function arrayRemove(arr: any[], value: any) {
   return arr.filter((ele) => ele !== value);
 }
@@ -10,10 +10,11 @@ export default {
   data: {
     name: "default",
   },
-  async execute(interaction: ButtonInteraction, mendicant: Mendicant) {
+  async execute(interaction: ButtonInteraction) {
     const matchId = interaction.customId.split(" ");
-    let matchProfile = await Match.findOne({ _id: matchId[0] });
+    const matchProfile = await Match.findOne({ _id: matchId[0] });
     let newMessage = "";
+
     if (!interaction.member) {
       return;
     }

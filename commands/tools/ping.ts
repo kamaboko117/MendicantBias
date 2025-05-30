@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import type { Mendicant } from "../../classes/Mendicant";
 
 export default {
   data: new SlashCommandBuilder()

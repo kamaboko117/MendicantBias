@@ -1,4 +1,4 @@
-import { Mendicant } from "../../classes/Mendicant.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import { executeVote as executeChallongeVote } from "../../components/buttons/challongeTourney";
 import { executeVote } from "../../components/buttons/tourney";
 

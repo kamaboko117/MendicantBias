@@ -1,4 +1,4 @@
-import { MatchScore } from "../types";
+import type { MatchScore } from "../types";
 
 export const getConclusionField = (matchScore: MatchScore) => {
   const winner = matchScore[0].score > matchScore[1].score ? 0 : 1;

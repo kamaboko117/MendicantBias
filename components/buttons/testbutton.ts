@@ -1,11 +1,10 @@
-import GuildButtonInteraction from "../../classes/GuildButtonInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type GuildButtonInteraction from "../../classes/GuildButtonInteraction";
 
 export default {
   data: {
     name: "test",
   },
-  async execute(interaction: GuildButtonInteraction, mendicant: Mendicant) {
+  async execute(interaction: GuildButtonInteraction) {
     await interaction.reply({
       content: "https://www.twitch.tv/kamaboko117",
     });

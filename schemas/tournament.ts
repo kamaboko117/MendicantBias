@@ -1,5 +1,7 @@
-import { Schema, model, Document } from "mongoose";
-import { IRound, roundSchema } from "./round";
+import type { Document } from "mongoose";
+import { Schema, model } from "mongoose";
+import type { IRound } from "./round";
+import { roundSchema } from "./round";
 
 export interface ITournament extends Document {
   id: string;

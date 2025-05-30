@@ -1,15 +1,18 @@
+import type {
+  InteractionReplyOptions,
+  InteractionUpdateOptions,
+} from "discord.js";
 import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
   InteractionContextType,
-  InteractionReplyOptions,
-  InteractionUpdateOptions,
   SlashCommandBuilder,
 } from "discord.js";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import type { Mendicant } from "../../classes/Mendicant";
+import type { MusicQueue } from "../../types/MusicQueue";
 
 const toHHMMSS = (numSecs: string) => {
   const secNum = parseInt(numSecs, 10);
@@ -28,7 +31,7 @@ const toHHMMSS = (numSecs: string) => {
 };
 
 export function getQueueMessage(
-  queue: any[],
+  queue: MusicQueue["items"],
   index: number,
   mendicant: Mendicant
 ): InteractionUpdateOptions {
@@ -42,13 +45,13 @@ export function getQueueMessage(
     index--;
   }
   let j = 0;
-  const items: Array<any> = [];
+  const items = [];
 
   if (index === 0 && queue.length) {
     items[0] = {
       title: `**▶️ ${queue[0].title}**`,
       link: `https://www.youtube.com/watch?v=${queue[0].id}`,
-      length: `${toHHMMSS(queue[0].length)}`,
+      length: `${toHHMMSS(queue[0].length.toString())}`,
     };
   }
   if (index === 0) {
@@ -58,11 +61,11 @@ export function getQueueMessage(
     items[j] = {
       title: `**${i}:** ${queue[i].title}`,
       link: `https://www.youtube.com/watch?v=${queue[i].id}`,
-      length: `${toHHMMSS(queue[i].length)}`,
+      length: `${toHHMMSS(queue[i].length.toString())}`,
     };
     j++;
   }
-  const fields: Array<any> = [];
+  const fields = [];
   for (const item of items) {
     fields.push({
       name: item.title,

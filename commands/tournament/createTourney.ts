@@ -6,8 +6,7 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
 
 export default {
   data: new SlashCommandBuilder()
@@ -15,7 +14,7 @@ export default {
     .setDescription("create an emotedokai tournament through a form")
     .setContexts([InteractionContextType.Guild]),
 
-  async execute(interaction: GuildCommandInteraction, mendicant: Mendicant) {
+  async execute(interaction: GuildCommandInteraction) {
     const modal = new ModalBuilder()
       .setCustomId("tournament-form")
       .setTitle("New Tournament");

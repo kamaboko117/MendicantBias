@@ -1,7 +1,8 @@
-import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
+import type GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import Tournament from "../../schemas/tournament";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function arrayRemove(arr: any[], value: any) {
   return arr.filter(function (ele) {
     return ele != value;
@@ -10,7 +11,7 @@ function arrayRemove(arr: any[], value: any) {
 
 export async function executeVote(interaction: GuildButtonInteraction) {
   const idSplit = interaction.customId.split(" ");
-  let tourney = await Tournament.findOne({ _id: idSplit[1] });
+  const tourney = await Tournament.findOne({ _id: idSplit[1] });
   if (!tourney) {
     await interaction.editReply({
       content: "Tournament does not exist in database: Probably deleted",
@@ -22,7 +23,9 @@ export async function executeVote(interaction: GuildButtonInteraction) {
   console.log(idSplit);
   if (idSplit[2] === "1")
     match = tourney.loserRounds[Number(idSplit[3])].matches[Number(idSplit[4])];
-  else match = tourney.winnerRounds[Number(idSplit[3])].matches[Number(idSplit[4])];
+  else
+    match =
+      tourney.winnerRounds[Number(idSplit[3])].matches[Number(idSplit[4])];
   if (!match) {
     msg = "match does not exist in database: Probably deleted";
 

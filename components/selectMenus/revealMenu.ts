@@ -1,13 +1,14 @@
-import { StringSelectMenuInteraction } from "discord.js";
+import type { StringSelectMenuInteraction } from "discord.js";
 import Match from "../../schemas/match";
-import { Mendicant } from "../../classes/Mendicant.js";
 
 export default {
   data: {
     name: `revealMenu`,
   },
-  async execute(interaction: StringSelectMenuInteraction, mendicant: Mendicant) {
-    const matchProfile = await Match.findOne({ matchId: interaction.values[0] });
+  async execute(interaction: StringSelectMenuInteraction) {
+    const matchProfile = await Match.findOne({
+      matchId: interaction.values[0],
+    });
     if (!matchProfile) {
       await interaction.reply({
         content: `match does not exist in database: Probably deleted`,

@@ -1,4 +1,4 @@
-import { Mendicant } from "../../../../classes/Mendicant";
+import type { Mendicant } from "../../../../classes/Mendicant";
 
 const getToken = async () => {
   const osuClientId = process.env.ID;
@@ -41,7 +41,7 @@ export const getMatch = async (matchId: string, mendicant: Mendicant) => {
       }
       return res.json();
     })
-    .catch((err) => {
+    .catch(() => {
       return null;
     });
 

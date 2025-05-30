@@ -1,8 +1,9 @@
-import GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
+import type GuildButtonInteraction from "../../classes/GuildButtonInteraction.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import ChallongeMatch from "../../schemas/challongeMatch";
 import challongeTournament from "../../schemas/challongeTournament";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function arrayRemove(arr: any[], value: any) {
   return arr.filter(function (ele) {
     return ele != value;
@@ -11,7 +12,8 @@ function arrayRemove(arr: any[], value: any) {
 
 export async function executeVote(interaction: GuildButtonInteraction) {
   const idSplit = interaction.customId.split(" ");
-  let tourney = await challongeTournament.findOne({ id: idSplit[1] });
+  const tourney = await challongeTournament.findOne({ id: idSplit[1] });
+
   if (!tourney) {
     await interaction.editReply({
       content: "Tournament does not exist in database: Probably deleted",

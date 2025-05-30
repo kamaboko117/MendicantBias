@@ -1,4 +1,4 @@
-import { Mendicant } from "../../classes/Mendicant";
+import type { Mendicant } from "../../classes/Mendicant";
 
 export default {
   name: "ready",

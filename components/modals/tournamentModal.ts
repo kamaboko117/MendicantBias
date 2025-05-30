@@ -1,23 +1,24 @@
-import { Guild, ModalSubmitInteraction } from "discord.js";
+import type { Guild, ModalSubmitInteraction } from "discord.js";
 import mongoose from "mongoose";
-import { Mendicant } from "../../classes/Mendicant.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import ChallongeTournament from "../../schemas/challongeTournament";
 import Match from "../../schemas/match";
 import Round from "../../schemas/round";
 import Tournament from "../../schemas/tournament";
+
 const challongeAPI = `https://api.challonge.com/v1/`;
 const challongeAPIKey = process.env.CHALLONGE_KEY;
 
 function seeding(numPlayers: number) {
-  var rounds = Math.log(numPlayers) / Math.log(2) - 1;
-  var pls = [1, 2];
-  for (var i = 0; i < rounds; i++) {
+  const rounds = Math.log(numPlayers) / Math.log(2) - 1;
+  let pls = [1, 2];
+  for (let i = 0; i < rounds; i++) {
     pls = nextLayer(pls);
   }
   return pls;
   function nextLayer(pls: number[]) {
-    var out: number[] = [];
-    var length = pls.length * 2 + 1;
+    const out: number[] = [];
+    const length = pls.length * 2 + 1;
     pls.forEach(function (d) {
       out.push(d);
       out.push(length - d);
@@ -27,7 +28,7 @@ function seeding(numPlayers: number) {
 }
 
 const getEmojiIDArrayFromGuilds = async (guilds: Guild[]) => {
-  let emojiArray = [];
+  const emojiArray = [];
   for (const guild of guilds) {
     for await (const emoji of guild.emojis.cache) {
       if (!emoji[1].managed) {
@@ -39,20 +40,10 @@ const getEmojiIDArrayFromGuilds = async (guilds: Guild[]) => {
 };
 
 const getEmojiArrayFromGuilds = async (guilds: Guild[]) => {
-  let emojiArray: string[] = [];
+  const emojiArray: string[] = [];
   for (const guild of guilds) {
     for await (const emoji of guild.emojis.cache) {
       if (!emoji[1].managed) {
-        // // if emoji is animated, add "animated" to the end of the emoji name
-        // if (emoji[1].animated) {
-        //   emojiArray.push(emoji[1].name! + " animated");
-        // }
-        // // if emoji name is already in the array, add the guild name to the end of the emoji name
-        // if (emojiArray.includes(emoji[1].name!)) {
-        //   emojiArray.push(emoji[1].name + " " + guild.name);
-        // } else {
-        //   emojiArray.push(emoji[1].name!);
-        // }
         const emojiName = `${emoji[1].name!} | ${
           emoji.toString().split(",")[1]
         }`;
@@ -69,7 +60,7 @@ async function createTourney(
   mendicant: Mendicant,
   interaction: ModalSubmitInteraction
 ) {
-  let tourneyProfile = new Tournament({
+  const tourneyProfile = new Tournament({
     _id: new mongoose.Types.ObjectId(),
     type: 0,
     name: name,
@@ -78,7 +69,7 @@ async function createTourney(
     open: false,
   });
   let i = 0;
-  let emojiIDArray = await getEmojiIDArrayFromGuilds(guilds);
+  const emojiIDArray = await getEmojiIDArrayFromGuilds(guilds);
   tourneyProfile.players = emojiIDArray.sort(() => Math.random() - 0.5);
   let bracketSize = 2;
   for (i = 1; bracketSize < tourneyProfile.players.length; i++)
@@ -89,7 +80,7 @@ async function createTourney(
   tourneyProfile.currentLoser = 0;
 
   //create first round
-  let roundProfile = new Round({
+  const roundProfile = new Round({
     _id: new mongoose.Types.ObjectId(),
     name: `Ro${tourneyProfile.playerCount}`,
     numPlayers: tourneyProfile.playerCount,
@@ -98,7 +89,7 @@ async function createTourney(
   });
   const seeds = seeding(tourneyProfile.playerCount);
   for (i = 0; i < tourneyProfile.playerCount / 2; i++) {
-    let matchProfile = new Match({
+    const matchProfile = new Match({
       _id: new mongoose.Types.ObjectId(),
       matchId: i + 1,
       playerLeft: tourneyProfile.players[seeds[i * 2] - 1],
@@ -216,7 +207,7 @@ export default {
     const name = interaction.fields.getTextInputValue("tournamentName");
     const guilds = interaction.fields.getTextInputValue("guilds").split(" ");
     const challonge = interaction.fields.getTextInputValue("challonge");
-    let guildArray = [];
+    const guildArray = [];
 
     if (guilds.length > 3) {
       await interaction.editReply({
@@ -225,7 +216,9 @@ export default {
       return;
     }
     for (const guildId of guilds) {
-      let guild = mendicant.guilds.cache.find((guild) => guild.id === guildId);
+      const guild = mendicant.guilds.cache.find(
+        (guild) => guild.id === guildId
+      );
       if (!guild) {
         await interaction.editReply({
           content: `Error: ${guildId} not found. I need to be a member of the guild to use the emojis. (/invite)`,

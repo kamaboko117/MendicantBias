@@ -1,5 +1,6 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { Mendicant } from "../../classes/Mendicant";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
+import type { Mendicant } from "../../classes/Mendicant";
 
 export default {
   data: new SlashCommandBuilder()
@@ -12,7 +13,10 @@ export default {
         .setRequired(true)
     ),
 
-  async execute(interaction: ChatInputCommandInteraction, mendicant: Mendicant) {
+  async execute(
+    interaction: ChatInputCommandInteraction,
+    mendicant: Mendicant
+  ) {
     const option = interaction.options.getString("guild");
     // find the guild with the name option
     const guild = mendicant.guilds.cache.find((guild) => guild.name === option);

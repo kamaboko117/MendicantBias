@@ -1,5 +1,5 @@
-import GuildButtonInteraction from "../../classes/GuildButtonInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type GuildButtonInteraction from "../../classes/GuildButtonInteraction";
+import type { Mendicant } from "../../classes/Mendicant";
 import { mendicantCreateItem } from "../../commands/music/helpers/mendicantCreateItem";
 import { mendicantPlay } from "../../commands/music/helpers/mendicantPlay";
 

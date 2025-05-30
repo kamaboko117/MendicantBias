@@ -1,11 +1,11 @@
+import type { ModalActionRowComponentBuilder } from "discord.js";
 import {
   ActionRowBuilder,
-  ModalActionRowComponentBuilder,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { OsuApiUser } from "./helpers/types";
+import type { OsuApiUser } from "./helpers/types";
 
 export const getModal = (players: OsuApiUser[], name: string) => {
   const modal = new ModalBuilder()

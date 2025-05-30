@@ -1,9 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { getVoiceConnection } from "@discordjs/voice";
 import { InteractionContextType } from "discord.js";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../classes/Mendicant";
-import { MusicQueue } from "../../types/MusicQueue";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import type { Mendicant } from "../../classes/Mendicant";
+import type { MusicQueue } from "../../types/MusicQueue";
 
 export function mendicantShuffle(queue: MusicQueue["items"]) {
   const tmpArray = [...queue.slice(1)];

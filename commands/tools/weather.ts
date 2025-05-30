@@ -1,8 +1,10 @@
 import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
 import dotenv from "dotenv";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction";
-import { Mendicant } from "../../classes/Mendicant";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction";
+import type { Mendicant } from "../../classes/Mendicant";
+
 dotenv.config({ path: "./.env" });
+
 const key = process.env.WEATHER;
 const MAPBOX_BASE = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 const WEATHER_BASE = "https://api.openweathermap.org/data/2.5/weather";
@@ -103,7 +105,7 @@ export default {
     const response = await getWeather(option1!);
     const weatherResult = response[0] as IWeather;
     const placeResult = response[1] as IPlace;
-    let embed = new EmbedBuilder()
+    const embed = new EmbedBuilder()
       .setTitle(`Weather for **${placeResult.country}, ${placeResult.city}**`)
       // set first letter to uppercase
       .setDescription(

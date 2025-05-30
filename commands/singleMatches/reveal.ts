@@ -5,8 +5,8 @@ import {
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
-import GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
-import { Mendicant } from "../../classes/Mendicant.js";
+import type GuildCommandInteraction from "../../classes/GuildCommandInteraction.js";
+import type { Mendicant } from "../../classes/Mendicant.js";
 import Match from "../../schemas/match";
 
 export default {
@@ -68,7 +68,9 @@ export default {
 
     await interaction.reply({
       content: `${interaction.member} match results:\n${matchProfile.playerLeft} ${matchProfile.votesLeft} | ${matchProfile.votesRight} ${matchProfile.playerRight}\n${matchProfile.winner} wins !`,
-      components: [new ActionRowBuilder<ButtonBuilder>().addComponents(button1, button2)],
+      components: [
+        new ActionRowBuilder<ButtonBuilder>().addComponents(button1, button2),
+      ],
     });
   },
 
